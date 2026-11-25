@@ -1,0 +1,138 @@
+{
+  "banners": [
+    {
+      "id": "main-bareng-bipy",
+      "image": "assets/promo/banner_main_bareng_bipy.webp",
+      "title": "Main bareng Bipy, kumpulkan Kelopak",
+      "route": "/hadiah"
+    },
+    {
+      "id": "produk-gratis",
+      "image": "assets/promo/banner_produk_gratis.webp",
+      "title": "Produk gratis untukmu",
+      "route": "/event/produk-gratis"
+    },
+    {
+      "id": "black-friday",
+      "image": "assets/promo/banner_black_friday.webp",
+      "title": "Black Friday, 27 November",
+      "route": "/event/black-friday"
+    },
+    {
+      "id": "tanggal-kembar-1212",
+      "image": "assets/promo/banner_1212.webp",
+      "title": "Tanggal Kembar 12.12",
+      "route": "/event/tanggal-kembar-1212"
+    },
+    {
+      "id": "komunitas-whatsapp",
+      "image": "assets/promo/banner_komunitas.webp",
+      "title": "Komunitas WhatsApp Bpedia",
+      "route": "/event/komunitas-whatsapp"
+    }
+  ],
+  "flyers": [
+    {
+      "id": "black-friday",
+      "image": "assets/promo/flyer_black_friday.webp",
+      "title": "Black Friday, 27 November",
+      "route": "/event/black-friday",
+      "from": "2026-11-20",
+      "to": "2026-11-30"
+    },
+    {
+      "id": "kelopak",
+      "image": "assets/promo/flyer_kelopak.webp",
+      "title": "Main bareng Bipy, kumpulkan Kelopak",
+      "route": "/hadiah"
+    }
+  ],
+  "events": [
+    {
+      "id": "main-bareng-bipy",
+      "title": "Main bareng Bipy",
+      "banner": "assets/promo/banner_main_bareng_bipy.webp",
+      "period": "Setiap hari",
+      "summary": "Tiga cara seru mengumpulkan Kelopak dan hadiah: Check-in Harian, Roda Sabtu, dan Misi Belanja.",
+      "body": [
+        "Check-in Harian: klaim +1 Kelopak tiap hari. Hari ke-7 beruntun dapat bonus +3 Kelopak, dan 30 hari tanpa putus dapat 1 produk gratis.",
+        "Roda Sabtu: 1 putaran gratis tiap Sabtu. Menangkan produk gratis atau Kelopak.",
+        "Misi Belanja: belanja produk misi sampai target, dapat voucher untuk pesanan berikutnya."
+      ],
+      "terms": [
+        "1 Kelopak bernilai Rp100 dan otomatis memotong harga barang saat checkout.",
+        "Kelopak tidak memotong ongkos kirim.",
+        "Hadiah produk dikirim bersama pesanan belanja berikutnya, tanpa ongkir tambahan.",
+        "Hari dihitung dalam WIB."
+      ],
+      "cta": { "label": "Mulai main", "route": "/hadiah" }
+    },
+    {
+      "id": "produk-gratis",
+      "title": "Produk gratis untukmu",
+      "banner": "assets/promo/banner_produk_gratis.webp",
+      "period": "Setiap Sabtu, selama kuota tersedia",
+      "summary": "Putar Roda Sabtu dan menangkan produk gratis. Hadiah langsung masuk keranjang dan ikut dikirim bersama pesanan berikutnya.",
+      "body": [
+        "Setiap Sabtu kamu punya 1 putaran gratis di Roda Sabtu.",
+        "Kalau menang produk, hadiahnya tampil di keranjang sebagai baris Rp0. Cukup checkout minimal 1 produk, hadiah ikut dikirim dalam paket yang sama."
+      ],
+      "terms": [
+        "Peluang dan sisa kuota tampil di halaman Roda Sabtu sebelum memutar.",
+        "Hadiah produk dikirim bersama pesanan belanja berikutnya, tanpa ongkir tambahan.",
+        "Hadiah produk tidak bisa ditukar uang."
+      ],
+      "cta": { "label": "Putar Roda Sabtu", "route": "/hadiah/roda" },
+      "productCodes": ["P21P03C01000082", "P21F02C01000031", "P21P03C01000171", "P21P03C01000189"]
+    },
+    {
+      "id": "black-friday",
+      "title": "Black Friday",
+      "banner": "assets/promo/banner_black_friday.webp",
+      "period": "Jumat, 27 Nov 2026 · mulai 12.00 WIB",
+      "summary": "Flash sale Black Friday untuk pilihan haircare dan skincare.",
+      "body": [
+        "Flash sale dibuka Jumat, 27 November 2026 pukul 12.00 WIB.",
+        "Produk pilihan: sabun, serum rambut, facial wash, day cream, dan body serum dari brand favorit Babes."
+      ],
+      "terms": [
+        "Harga promo dan kuota mengikuti pengumuman di aplikasi pada hari promo.",
+        "Berlaku selama persediaan masih ada."
+      ],
+      "cta": { "label": "Lihat Hot Item", "route": "/hot-item" },
+      "productCodes": ["P11B11B01000004", "P02S01H01000083", "P39A06S01000089", "P39A06S01000021", "P11B11B01000022"]
+    },
+    {
+      "id": "tanggal-kembar-1212",
+      "title": "Tanggal Kembar 12.12",
+      "banner": "assets/promo/banner_1212.webp",
+      "period": "Sabtu, 12 Des 2026",
+      "summary": "Klaim voucher Rp12.000 untuk belanja minimal Rp120.000.",
+      "body": [
+        "Pada 12 Desember 2026 (WIB) kamu bisa mengklaim 1 voucher Rp12.000.",
+        "Voucher dipakai saat checkout untuk belanja minimal Rp120.000."
+      ],
+      "terms": [
+        "1 voucher per akun.",
+        "Voucher berlaku 7 hari sejak diklaim.",
+        "Syarat minimal belanja dihitung dari harga barang sebelum potongan Kelopak."
+      ],
+      "voucher": { "amount": 12000, "minSpend": 120000, "validDays": 7, "claimDate": "2026-12-12" }
+    },
+    {
+      "id": "komunitas-whatsapp",
+      "title": "Komunitas WhatsApp Bpedia",
+      "banner": "assets/promo/banner_komunitas.webp",
+      "period": "Terbuka untuk semua Babes",
+      "summary": "Gabung komunitas untuk info promo, tips kecantikan, dan event terbaru dari Bpedia.",
+      "body": [
+        "Dapatkan kabar promo lebih dulu dan ngobrol bareng sesama Babes.",
+        "Ketuk tombol di bawah untuk menghubungi Bpedia Care lewat WhatsApp dan minta tautan komunitas."
+      ],
+      "terms": [
+        "Layanan WhatsApp Bpedia Care: Senin sampai Minggu, 08.00 sampai 21.00 WIB."
+      ],
+      "cta": { "label": "Hubungi lewat WhatsApp", "url": "https://wa.me/6282318591288?text=Halo%20Bpedia%2C%20saya%20ingin%20gabung%20komunitas%20WhatsApp." }
+    }
+  ]
+}

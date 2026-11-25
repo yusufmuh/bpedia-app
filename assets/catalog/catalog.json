@@ -1,0 +1,1638 @@
+{
+ "snapshotWib": "2026-11-25T11:59:50+07:00",
+ "source": "https://bpedia.id (halaman publik sebagai tamu). Harga, stok, rating, dan Hot Item adalah potret pada snapshotWib.",
+ "siteBadges": [
+  "100% Original",
+  "BPOM Verified",
+  "Gratis Ongkir"
+ ],
+ "categories": [
+  {
+   "id": "skincare",
+   "name": "Skincare",
+   "icon": "skincare"
+  },
+  {
+   "id": "bodycare",
+   "name": "Bodycare",
+   "icon": "bodycare"
+  },
+  {
+   "id": "makeup",
+   "name": "Makeup",
+   "icon": "makeup"
+  },
+  {
+   "id": "haircare",
+   "name": "Haircare",
+   "icon": "haircare"
+  },
+  {
+   "id": "fragrance",
+   "name": "Fragrance",
+   "icon": "fragrance"
+  },
+  {
+   "id": "lashes-tools",
+   "name": "Lashes & Tools",
+   "icon": "lashes"
+  }
+ ],
+ "brands": [
+  "Accessories",
+  "Acnaway",
+  "Animate",
+  "Avoskin",
+  "Azarine",
+  "Brighty",
+  "Ciara",
+  "Emina",
+  "Evangeline",
+  "Facetology",
+  "Focallure",
+  "Glad2Glow",
+  "Gogo Tales",
+  "Hanasui",
+  "Herborist",
+  "Implora",
+  "Mustika Ratu",
+  "Newlab",
+  "Pinkflash",
+  "Salsa",
+  "Satto",
+  "Scarlett",
+  "Skintific",
+  "Somethinc",
+  "The Originote",
+  "Wardah"
+ ],
+ "products": [
+  {
+   "code": "P39A06S01000052",
+   "name": "Animate Intense Acne Solution Day Cream 10 g",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 10000,
+   "strikePrice": 21500,
+   "discountPercent": 53,
+   "description": "Animate Intense Acne Solution Day cream 10 ml Adalah krim pagi/siang yang dapat melembabkan dan merawat kulit berjerawat. Dengan kandungan utama Niacinamide dan Ceramide yang dapat memberi kelembaban dan membantu mencerahkan kulit serta meratakan warna kulit yang kusam akibat berjerawat, selain itu juga mengandung Salicylic Acid dan Tea Tree Oil sebagai anti acne system yang melawan bakteri penyebab jerawat serta mengurangi dan mengontrol sebum pada wajah. Dilengkapi juga dengan UV Filter untuk membantu melindungi kulit dari paparan sinar uv yang dapat memperparah kondisi kulit berjerawat. Best Ingredients : 1. Niacinamide 2. Salicylic Acid 3. Tea Tree Oil Saran Pemakaian: Digunakan setiap pagi hari sebelum melakukan aktifitas di luar ruangan.",
+   "rating": null,
+   "stock": 20,
+   "weightKg": 0.15,
+   "images": [
+    "img/P39A06S01000052-1.webp",
+    "img/P39A06S01000052-2.webp"
+   ],
+   "hot": {
+    "saleId": 168,
+    "theme": "Wednesday Bye-Bye Acne",
+    "price": 10000,
+    "normalPrice": 21500,
+    "discountPercent": 53,
+    "quota": 20,
+    "sold": 0,
+    "maxPerOrder": 1,
+    "start": "2026-11-25",
+    "end": "2026-11-25",
+    "image": "hot/P39A06S01000052.webp"
+   },
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000052"
+  },
+  {
+   "code": "P39A06S01000053",
+   "name": "Animate Intense Acne Solution Night Cream 10 g",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 10000,
+   "strikePrice": 23500,
+   "discountPercent": 57,
+   "description": "Animate Intense Acne Solution Night Cream Adalah krim malam yang diformulasi khusus untuk melembabkan dan merawat kulit berjerawat juga menutrisi kulit saat regenerasi kulit terjadi di malam hari. Dengan kandungan utama Niacinamide yang membantu mencerahkan dan meratakan warna kulit yang kusam akibat berjerawat, selain itu juga mengandung Salicylic Acid dan Tea Tree Oil sebagai anti acne system yang melawan bakteri penyebab jerawat serta mengurangi dan mengontrol sebum pada wajah. Dilengkapi juga dengan Retinol yang membantu mencerahkan kulit dari dalam dan mengurangi tanda penuaan dini, dan juga Hyaluronic Acid yang dapat mengunci kelembaban kulit lebih lama sehingga kulit terasa lebih elastis dan kenyal serta Calendula Extract yang dapat melembutkan kulit. Best Ingredients : 1. Niacinamide 2. Salicylic Acid 3. Tea Tree Oil Saran Pemakaian: digunakan setiap malam hari",
+   "rating": null,
+   "stock": 20,
+   "weightKg": 0.15,
+   "images": [
+    "img/P39A06S01000053-1.webp",
+    "img/P39A06S01000053-2.webp"
+   ],
+   "hot": {
+    "saleId": 169,
+    "theme": "Wednesday Bye-Bye Acne",
+    "price": 10000,
+    "normalPrice": 23500,
+    "discountPercent": 57,
+    "quota": 20,
+    "sold": 0,
+    "maxPerOrder": 1,
+    "start": "2026-11-25",
+    "end": "2026-11-25",
+    "image": "hot/P39A06S01000053.webp"
+   },
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000053"
+  },
+  {
+   "code": "P21F02S01000024",
+   "name": "Focallure Acne Pimple Patch Fa186 - 1",
+   "brand": "Focallure",
+   "category": "skincare",
+   "price": 10000,
+   "strikePrice": 11500,
+   "discountPercent": 13,
+   "description": "FOCALLURE Spot Patch Acne Treatment Day/Night Acne patch anti air yang juga dapat digunakan oleh kulit sensitif, mengandung bahan anti inflamasi seperti tea tree oil, salicylic acid, dan kim essential oil. Dapat menghilangkan jerawat, mencegah polusi, sterilisasi dan melawan inflamasi, mencegah bekas jerawat, dan lainnya. Pemakaian pagi dengan hydrocolloid 0.1mm, super tipis, transparan, menyerap kotoran dan menutupi jerawat, jerawat tidak lagi menjadi masalah dalam makeup. Ketebalan untuk acne patch malam adalah 0.3mm, dapat menyerap jerawat dengan sangat baik, mengurangi bengkak dan sakit, sterilisasi dan melawan inflamasi, perbaikan kulit 2x lipat.Melekat dengan kuat, tidak takut lepas sepanjang hari.Melindungi 24 jam, setelah pemakaian bebas jerawat dan memberikan anda kulit putih mulus.",
+   "rating": null,
+   "stock": 18,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02S01000024-1.webp"
+   ],
+   "hot": {
+    "saleId": 27,
+    "theme": "Wednesday Bye-Bye Acne",
+    "price": 10000,
+    "normalPrice": 11500,
+    "discountPercent": 13,
+    "quota": 18,
+    "sold": 2,
+    "maxPerOrder": 1,
+    "start": "2026-11-25",
+    "end": "2026-11-25",
+    "image": "hot/P21F02S01000024.webp"
+   },
+   "sourceUrl": "https://bpedia.id/product/P21F02S01000024"
+  },
+  {
+   "code": "P11B11B01000004",
+   "name": "Brighty Glow & Bright Bar Soap",
+   "brand": "Brighty",
+   "category": "bodycare",
+   "price": 10000,
+   "strikePrice": 22500,
+   "discountPercent": 56,
+   "description": "GLOW & BRIGHT BAR SOAP Bersih & Cerah Dalam Sekali Mandi 70gr",
+   "rating": 5,
+   "stock": 15,
+   "weightKg": 0.1,
+   "images": [
+    "img/P11B11B01000004-1.webp"
+   ],
+   "hot": {
+    "saleId": 21,
+    "theme": "Tuesday Body Treatment",
+    "price": 10000,
+    "normalPrice": 22500,
+    "discountPercent": 56,
+    "quota": 15,
+    "sold": 12,
+    "maxPerOrder": 1,
+    "start": "2026-11-12",
+    "end": "2026-11-29",
+    "image": "hot/P11B11B01000004.webp"
+   },
+   "sourceUrl": "https://bpedia.id/product/P11B11B01000004"
+  },
+  {
+   "code": "P02S01B01000005",
+   "name": "Salsa Bleach Body Glow Serum Symphony",
+   "brand": "Salsa",
+   "category": "bodycare",
+   "price": 10000,
+   "strikePrice": 20000,
+   "discountPercent": 50,
+   "description": "Unlock Your Radiance Symphony with Salsa BLEACH Body Glow Serum! Diformulasikan khusus dengan teknologi terbaru WhiteTen™ sebagai bahan pencerah aktif yang mengandung 10+ Whitening Agent, mampu membantu mencerahkan kulit secara efektif, menjaga kelembapan yang optimal hingga 48jam dan melindungi kulit dari bahaya paparan sinar matahari secara langsung. Nikmati kelembutan dan kilau yang tak tertandingi setiap hari. Benefits: 1. New Technology: Hadir dengan teknologi terbaru WhiteTen™, formula pencerah aktif yang mengandung 10+ Whitening Agent. 2. Advanced Skin Brightening: Mengurangi flek hitam dan hiperpigmentasi untuk kulit yang lebih cerah dan merata. 3. Deep Hydration: Kombinasi formula sempurna untuk menjaga kelembaban kulit agar tetap terhidrasi dan lembut sepanjang hari. 4. Sun Protection: Melindungi kulit dari sinar UV berbahaya untuk menjaga warna kulit tetap cerah. 5. Radiance Glow: Membantu kulit terlihat lebih bercahaya dan sehat. 6. Skin Barrier Support: Memberikan kelembaban ekstra dan mendukung fungsi skin barrier. 7. Soothing and Anti-Inflammatory: Mengandung bahan yang menenangkan kulit dan mengurangi kemerahan serta iritasi.",
+   "rating": null,
+   "stock": 13,
+   "weightKg": 0.3,
+   "images": [
+    "img/P02S01B01000005-1.webp"
+   ],
+   "hot": {
+    "saleId": 22,
+    "theme": "Tuesday Body Treatment",
+    "price": 10000,
+    "normalPrice": 20000,
+    "discountPercent": 50,
+    "quota": 13,
+    "sold": 3,
+    "maxPerOrder": 1,
+    "start": "2026-11-12",
+    "end": "2026-11-29",
+    "image": "hot/P02S01B01000005.webp"
+   },
+   "sourceUrl": "https://bpedia.id/product/P02S01B01000005"
+  },
+  {
+   "code": "P68B13S01000010",
+   "name": "ACNAWAY Mugwort Daily Sunscreen SPF 35 PA+++",
+   "brand": "Acnaway",
+   "category": "skincare",
+   "price": 46196,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "ACNAWAY Mugwort Daily Sunscreen SPF 35 PA+++\nNetto: 50ml\ntabir surya dengan tekstur ringan, watery cream, dan cepat menyerap. Diformulasikan dengan kombinasi Mugwort, Centella Asiatica, dan Panthenol, sunscreen ini melembabkan tanpa membuat kulit berminyak atau kusam, serta bebas dari alkohol dan wewangian. Cocok untuk melindungi kulit berjerawat dan sensitif dari paparan sinar UV.\nMANFAAT\n- Melindungi kulit dari sinar matahari dengan SPF 35 PA+++.\n- Mencegah penuaan dini akibat sinar UV.\n- Mencegah iritasi kulit akibat paparan sinar UV.\n- Membantu merawat kulit berjerawat dengan kandungan calming ingredients.\nCARA PENGGUNAAN\nSetelah mencuci muka, aplikasikan ACNAWAY Mugwort Daily Sunscreen pada dua jari, lalu oleskan secara merata ke seluruh wajah dan leher sebelum beraktivitas. Gunakan kembali setiap 2 jam jika berada di luar ruangan untuk perlindungan maksimal.\nINGREDIENTS\n- Mugwort\n- Centella Asiatica/Cica\n- Panthenol\nAqua, Propylene Glycol, Butyl Methoxydibenzoylmethane, Butylene Glycol, Glycerin, Octocrylene, Ammonium Acryloyldimethyltaurate/VP Copolymer, Cetearyl Alcohol, Potassium Cetyl Phosphate, Niacinamide, Phenoxyethanol, PEG-20 Stearate, Allantoin, Panthenol, Bisabolol, Artemisia Vulgaris Extract, Sorbitan Olivate, Cetearyl Olivate, Anthyllis Vulneraria Flower Extract, Farnesol, Salicylic Acid, Centella Asiatica Extract, Ryoku-Cha Ekisu, Saururus Chinensis Leaf/Root Extract, 1,2-Hexanediol, Hydroxyacetophenone, Quaternium-73, Ethylhexylglycerin, Artemisia Vulgaris Oil, Melaleuca Alternifolia (Tea Tree) Leaf Oil",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000010-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000010"
+  },
+  {
+   "code": "P39A06S01000002",
+   "name": "Animate 24K Gold Serum 20 ml",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 20500,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Diformulasikan secara khusus dengan menggunakan bahan aktif seperti Gold 24K, Niacinamide, Vitamin E, Hyaluronic Acid, dan Allantoin yang efektif untuk mencerahkan wajah, membuat wajah tampak lebih glowing, menjaga kelembapan wajah, dan menghaluskan serta meremajakan kulit. Animate 24K Gold Serum aman digunakan untuk semua jenis kulit, ibu hamil dan menyusui karena sudah BPOM, Halal Jenis Kulit: - Kulit kusam - Semua jenis kulit Manfaat: - Mencerahkan wajah - Membuat wajah tampak lebih glowing - Menjaga kelembapan wajah - Menghaluskan dan meremajakan kulit Kandungan Utama: - Gold 24K - Niacinamide - Vitamin E - Hyaluronic Acid - Allantoin Cara Pakai: Aplikasikan 2-3 tetes serum dan usapkan pada wajah secara merata. Gunakan pada pagi & sore hari setelah membersihkan wajah.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06S01000002-1.webp",
+    "img/P39A06S01000002-2.webp",
+    "img/P39A06S01000002-3.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000002"
+  },
+  {
+   "code": "P39A06S01000003",
+   "name": "Animate Acne Care Serum 20 ml",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 20500,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Diformulasikan secara khusus dengan menggunakan bahan aktif seperti Salicilyc Acid, Niacinamide, Tea Tree Oil, dan Centella Asiatica Extract yang efektif untuk melawan jerawat, mengontrol produksi minyak berlebih pada wajah, memudarkan noda bekas jerawat, serta mengurangi kemerahan akbiat peradangan jerawat di wajah. Animate Acne Care Serum aman digunakan untuk semua jenis kulit, ibu hamil dan menyusui karena sudah BPOM dan Halal. Jenis Kulit: - Kulit Berjerawat - Kulit berminyak - Kulit kusam - Semua jenis kulit Manfaat: - Membantu menghilangkan jerawat - Meredakan kemerahan akibat jerawat - Menyamarkan noda bekas jerawat - Mengontrol produksi minyak berlebih. Kandungan Utama: - Salicylic Acid - Niacinamide - Tea Tree Oil - Centella Asiatica Extract Cara Pakai: Aplikasikan 2-3 tetes serum dan usapkan pada wajah secara merata. Gunakan pada pagi & sore hari setelah membersihkan wajah.",
+   "rating": 5,
+   "stock": 1,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06S01000003-1.webp",
+    "img/P39A06S01000003-2.webp",
+    "img/P39A06S01000003-3.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000003"
+  },
+  {
+   "code": "P39A06S01000007",
+   "name": "Animate Acne Solution Night Cream 10 g",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 26000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Animate Intense Acne Solution Night Cream 10g Animate Acne Solution Night Cream Adalah krim malam yang diformulasi khusus untuk melembabkan dan merawat kulit berjerawat juga menutrisi kulit saat regenerasi kulit terjadi di malam hari. Dengan kandungan utama Niacinamide 5% yang membantu mencerahkan dan meratakan warna kulit yang kusam akibat berjerawat, selain itu juga mengandung Salicylic Acid dan Tea Tree Oil sebagai anti acne system yang melawan bakteri penyebab jerawat serta mengurangi dan mengontrol sebum pada wajah. Dilengkapi juga dengan Retinol yang membantu mencerahkan kulit dari dalam dan mengurangi tanda penuaan dini, dan juga Hyaluronic Acid yang dapat mengunci kelembaban kulit lebih lama sehingga kulit terasa lebih elastis dan kenyal serta Calendula Extract yang dapat melembutkan kulit. Best Ingredients : 1. Niacinamide 2. Salicylic Acid 3. Tea Tree Oil Saran Pemakaian: digunakan setiap malam hari",
+   "rating": 5,
+   "stock": 95,
+   "weightKg": 0.15,
+   "images": [
+    "img/P39A06S01000007-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000007"
+  },
+  {
+   "code": "P39A06S01000021",
+   "name": "Animate Brightening Facial Wash 100 ml",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 17800,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Pembersih wajah yang di formulasikan dengan mild surfactant yang dapat membersihkan wajah dengan busa yang lembut tanpa merusak lapisan kulit / tanpa efek menarik pada wajah, mengangkat seluruh kotoran pada permukaan wajah dengan minim residu, serta dapat melembabkan dan mencerahkan kulit setelah dibersihkan. Cara pemakaian : •Bersihkan wajah dengan Animate 5x Active Brightening Facial Wash secara menyeluruh, lakukan gerakan memijat di area wajah untuk membantu melancarkan peredaran darah. •Lalu bilas hingga bersih dan keringkan wajah menggunakan tisu atau handuk bersih.",
+   "rating": 5,
+   "stock": 84,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06S01000021-1.webp",
+    "img/P39A06S01000021-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000021"
+  },
+  {
+   "code": "P39A06S01000032",
+   "name": "Animate Facial Essence 60 Kapsul @0.42 g",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 16000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Serum ANIMATE 60 Softgel Capsules | Essences Capsule ✅Facial Essence With Vitamin Adalah Serum Vitamin E yang memperkaya kecantikan. Diformulasikan khusus untuk kulit normal dan kering untuk memperbaiki kondisi kulit yang disebabkan oleh paparan sinar matahari dan penuaan dini. Kulit menjadi lebih halus dan lebih sehat bila digunakan terus-menerus dan setiap hari. ______________________________ ✅Facial Oil With Vitamin & Aloe Vera + Collagen Adalah Serum Vitamin E yang diperkaya dengan indah dengan Aloe Vera + Collagen. ini diformulasikan secara khusus untuk kulit normal hingga kering untuk mengurangi garis-garis penuaan yang disebabkan oleh matahari dan penuaan kulit pada kulit. Kandungan Collagen (Anti Aging) sangat dibutuhkan bagi Anda yg sering terkena paparan sinar matahari. Apabila digunakan setiap hari, produk ini akan membantu kulit Anda terasa halus dan sehat di seluruh tubuh __",
+   "rating": 5,
+   "stock": 22,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06S01000032-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000032"
+  },
+  {
+   "code": "P39A06S01000044",
+   "name": "Animate Glowing Barrier Day Cream 10 g",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 24800,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Krim yang diformulasi khusus untuk digunakan pada pagi & siang hari yang memiliki UV Filter yang dapat membantu mengurangi paparan sinar UV dan meningkatkan skin tone 1 tingkat lebih cerah Benefits : Krim yang diformulasi khusus untuk digunakan pada pagi dan siang hari Meningkatkan skin tone 1 tingkat lebih cerah tanpa membuat kulit terlihat keabu-abuan (ashy) Mengandung UV Filter yang dapat membantu mengurangi paparan sinar UV Gunakan pada pagi hari, ratakan pada seluruh bagian wajah hingga leher dan tunggu hingga meresap setelah itu bisa lanjutkan dengan menggunakan riasan wajah lainnya",
+   "rating": 5,
+   "stock": 73,
+   "weightKg": 0.15,
+   "images": [
+    "img/P39A06S01000044-1.webp",
+    "img/P39A06S01000044-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000044"
+  },
+  {
+   "code": "P39A06S01000046",
+   "name": "Animate Glowing Barrier Facial Wash 100 ml",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 22200,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Animate Perfect Glowing Barrier Facial Wash 100 ml Pembersih wajah yang diformulasikan dengan mild surfactant yang dapat membersihkan wajah dengan busa yang lembut tanpa merusak lapisan kulit / tanpa efek menarik pada wajah. Active Ingredients : - Verryberry White - Tranexamic Acid - 10X Ceramide - 11X Hyaluronan - Panthenol - Avocado Oil - Aloe Vera Extract Benefits : • Dengan mild surfactant yang dapat membersihkan wajah dengan busa yang lembut tanpa merusak lapisan kulit / tanpa efek menarik pada wajah • Mengangkat seluruh kotoran pada permukaan wajah dengan minim residu • Melembabkan dan melembutkan kulit setelah dibersihkan Cara pemakaian: • Bersihkan wajah pada pagi dan malam hari menggunakan Animate Perfect Glowing Barrier Cleanser bilas dengan air, dan k",
+   "rating": 5,
+   "stock": 57,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06S01000046-1.webp",
+    "img/P39A06S01000046-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000046"
+  },
+  {
+   "code": "P39A06S01000089",
+   "name": "Animate Whitening Day Cream 10 g",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 19900,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Animate 5X Whitening Active Day Cream.\nMerupakan krim wajah yang diformulasikan untuk membantu merawat kulit agar tampak lebih cerah, halus, dan fresh. Diperkaya dengan berbagai kandungan seperti Tranexamic Acid, Centella Asiatica, Niacinamide, Vitamin E, Cherry Blossom Extract, Rice Extract, dan Tiny White yang membantu menjaga kelembapan sekaligus merawat tampilan kulit kusam. Teksturnya nyaman digunakan sebagai skincare harian di pagi atau siang hari. Cocok untuk melengkapi rutinitas skincare dan membantu membuat kulit terlihat lebih cerah dan terawat.",
+   "rating": 5,
+   "stock": 6257,
+   "weightKg": 0.15,
+   "images": [
+    "img/P39A06S01000089-1.webp",
+    "img/P39A06S01000089-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000089"
+  },
+  {
+   "code": "P39A06S01000090",
+   "name": "Animate Whitening Facial Serum 20 ml",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 20500,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Diformulasikan secara khusus dengan menggunakan bahan aktif seperti Niacinamide, Vitamin E, dan Rice Extract yang efektif untuk mencerahkan kulit dalam waktu 7 hari. Jenis Kulit: ● Kulit kusam ● Kulit kering ● semua jenis kulit Manfaat: ● Serum pencerah wajah yang dapat membantu membuat kulit cerah dan glowing lebih maksimal ● Membantu meratakan warna kulit ● Menyamarkan noda hitam ● Efektif mengurangi kulit kusam Cara Pakai: ● Aplikasikan 2-3 tetes serum dan usapkan pada wajah secara merata ● Gunakan pada pagi & malam hari setelah membersihkan wajah",
+   "rating": 5,
+   "stock": 20,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06S01000090-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000090"
+  },
+  {
+   "code": "P39A06S01000091",
+   "name": "Animate Whitening Facial Toner 100 ml",
+   "brand": "Animate",
+   "category": "skincare",
+   "price": 18100,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Animate 5x Active Whitening Facial Toner Penyegar wajah yang dapat membantu mengembalikan pH kulit untuk kembali seimbang setelah dibersihkan, mampu mengembalikan kelembaban kulit, mencerahkan kulit, dapat membantu kulit menyerap active lebih mudah meresap ke dalam kulit. Cara Pemakaian : • Setelah membersihkan wajah, semprotkan Animate 5x Active Whitening Facial Toner ke seluruh area wajah dengan jarak -/+ 15 cm dari wajah, untuk mendapatkan hasil penyemprotan yang rata maksimal. • Lalu tunggu hingga meresap sempurna ke dalam kulit • Atau dengan menyemprotkan Whitening Toner pada kapas, lalu usapkan pada wajah dengan lembut untuk menghindari iritasi akibat gosokan berlebih. • Lalu tunggu hingga meresap sempurna ke dalam kulit",
+   "rating": 5,
+   "stock": 36,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06S01000091-1.webp",
+    "img/P39A06S01000091-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06S01000091"
+  },
+  {
+   "code": "P68B13S01000001",
+   "name": "Serum Avoskin Your Skin Bae Niacinamide 30 ml",
+   "brand": "Avoskin",
+   "category": "skincare",
+   "price": 122570,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Avoskin Your Skin Bae Niacinamide 12% + Centella Asiatica Serum 30 ml\nSerum Avoskin dari Your Skin Bae Series dengan kandungan utama Niacinamide 12% dan Centella Asiatica Extract yang berfungsi optimal untuk mencerahkan kulit, menyamarkan tampilan pori-pori, menenangkan kulit, merawat kekencangan kulit, melembapkan kulit, merawat elastisitas sehingga kulit halus dan sehat.\nDapat digunakan untuk semua jenis kulit dan bisa dipakai untuk usia mulai dari 15 tahun.\nCara Penggunaan:\n- Setelah mencuci muka dan memakai toner/essence, oleskan beberapa tetes serum ke wajah dan pijat perlahan.\n- Gunakan moisturizer untuk memberikan hidrasi ekstra.\n- Untuk perlindungan kulit, akhiri rutinitas skincare pagi dengan sunscreen.\n- Serum ini bisa digunakan di pagi dan malam hari.\nKandungan utama:\nNiacinamide 12% dan Ekstrak Centella Asiatica\nBahan-bahan:\nWater, Niacinamide, Glycerin, Butylene Glycol, Biosaccharide gum-1, Hydroxyethyl Cellulose, Centella asiatica extract, Phenoxyethanol, Chlorphenesin, Disodium EDTA, Sodium Bisulfite, 1,2 Hexanediol.",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000001-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000001"
+  },
+  {
+   "code": "P58A08S01000009",
+   "name": "Azarine HydraMax -C Sunscreen Serum 40 ml",
+   "brand": "Azarine",
+   "category": "skincare",
+   "price": 49000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "HYDRAMAX C SUNSCREEN SPF50 PA++++\nExtra Moist, Extra Glow\nTabir surya dalam bentuk cream gel untuk melembabkan dan melindungi kulit dari pengaruh buruk sinar matahari, sinar bluelight dan polusi. Di formulasikan dengan 11 ukuran Hyaluronic Acid untuk melembabkan agar kulit kenyal. Kandungan vit C & E sebagai antioksidan.\nManfaat:\n1. High protection SPF 50 PA++++ with no whitecast\n2. Dengan Blue light protection & anti polusi\n3. 0% alkohol, fragrance, mineral oil\n4. Dewy Glow Finish\n5. Ringan, cepat meresap & tidak lengket\n6. Dermatologically tested\nCara Pakai:\nOleskan pada wajah 15 menit sebelum keluar rumah.",
+   "rating": null,
+   "stock": 29,
+   "weightKg": 0.1,
+   "images": [
+    "img/P58A08S01000009-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P58A08S01000009"
+  },
+  {
+   "code": "P68B13S01000012",
+   "name": "NEW! Emina Bright Stuff Ultra-Light Moisturizing Cream 20 ml",
+   "brand": "Emina",
+   "category": "skincare",
+   "price": 28840,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "NEW! EMINA Bright Stuff Ultra-Light Moisturizing Cream 20ml adalah versi terbaru dari Emina Bright Stuff Moisturizing Cream 20ml. Memiliki tekstur yang ringan dapat memberikan hidrasi maksimal tanpa rasa lengket dan cepat meresap. Dengan Multi-Lamellar Emulsion™ (MLE™) Technology yang meresap optimal hingga ke lapisan dalam kulit untuk memberikan hidrasi tahan lama, membantu mencerahkan kulit, sekaligus memperkuat skin barrier.\nDiperkaya dengan 4% Niacinamide yang membantu mencerahkan kulit kusam dan menyamarkan noda hitam, CicaBiome™ yang mampu menenangkan kulit dan memperkuat skin barrier, dan 2% NAG untuk meningkatkan hidrasi dan menghaluskan tekstur kulit, serta SPF 30 PA+++ yang memproteksi kulit dari sinar UV.\nKeunggulan:\n- Ultra-Lightweight Formula\n- Easy to blend, fast absorb, fresh, no oily, & no whitecast\n- Comfy under makeup\nVisibly Brighter and More Hydrated in 7 Days!\nDelivers 3X Care: Deep Hydration, Visible Brightening, and Barrier Protect.\nDermatologically Tested\nNon-comedogenic & Non-acnegenic\nFor all skin types even for sensitive skin\nNo Stinging & No Irritation\nHasil uji Emina Bright Stuff Ultra-Light Moisturizing Cream 20ml :\n93%* Setuju, tekstur ringan, mudah menyerap dan mudah merata di kulit\n93%* Setuju, wajah terasa lembap setelah pemakaian\n+19.6%** Kelembapan kulit meningkat dalam 7 hari\n19X*** Lebih melembapkan kulit dibandingkan produk sebelumnya (Emina Bright Stuff Moisturizing Cream 20 ml)\n87%^ Setuju, kulit tampak cerah dalam 7 hari\n87%^^ Setuju, wajah terasa lebih halus\n-17.02%^^^ Tampilan pori-pori wajah berkurang\n93%* Setuju, moisturizer tidak whitecast dan abu di kulit, serta fresh saat digunakan\n83%* Setuju, moisturizer tidak terasa berminyak / greasy di kulit\n93%* Setuju, moisturizer tidak pilling jika dilayering dengan sunscreen\n83%* Setuju, moisturizer tidak membuat makeup pilling setelah penggunaan 8 jam\n93%* Setuju, penggunaan moisturizer dengan makeup tetap nyaman digunakan seharian",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000012-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000012"
+  },
+  {
+   "code": "P65F06S01000004",
+   "name": "Scora Panthenol Gentle Low PH Facial Wash",
+   "brand": "Facetology",
+   "category": "skincare",
+   "price": 33000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SCORA D-Panthenol Gentle Low pH Cleanser merupakan pembersih wajah dengan kandungan bahan D-Panthenol yang membantu membersihkan wajah sekaligus melembabkan dan menenangkan kemerahan dan iritasi di kulit wajah\nKey Ingredients:\nD-Panthenol (0.6%), Allantoin, Hymagic 4d, Tranexamic Acid, Probiotic (Bifida Ferment Lysate)\nBenefits:\nCocok untuk normal + sensitive skin\nGentle deep cleansing\nMembantu menjaga dan mengunci kelembaban alami kulit\nMenenangkan kulit\npH balance",
+   "rating": null,
+   "stock": 13,
+   "weightKg": 0.1,
+   "images": [
+    "img/P65F06S01000004-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P65F06S01000004"
+  },
+  {
+   "code": "P68B13S01000021",
+   "name": "Glad2Glow Advanced Mugwort Acne Gel Mask 50 g",
+   "brand": "Glad2Glow",
+   "category": "skincare",
+   "price": 38245,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "GLAD2GLOW MUGWORT ACNE GEL MASK\nMasker gel ringan dengan 100% Ekstrak Mugwort & Dual Anti-Acne Ingredients yang membantu meredakan jerawat, mengontrol minyak, dan mencegah pori tersumbat. Dilengkapi 4X Soothing Complex untuk menenangkan kulit kemerahan, serta 3D Brightening Complex untuk mencerahkan dan meratakan tekstur kulit. Dengan sensasi dingin yang menenangkan, membuat wajah terasa calming dan soothing saat digunakan. Cocok untuk kulit berjerawat, kusam, dan berminyak.\nNetto: 50g\nUSP Function:\nMenenangkan Jerawat dan Kemerahan Secara Instan\nMengontrol Minyak & Meningkatkan Kecerahan\nEksfoliasi Lembut untuk Kulit Lebih Halus\nHero Ingredients:\nMugwort Extract : Mengontrol produksi sebum dan mengurangi jerawat berkat sifat anti-inflamasi alaminya.\nWhite Willow Bark Extract (Natural Salicin) : Bahan alami yang memberikan manfaat anti-inflamasi dan melawan jerawat, membantu memperkuat pertahanan kulit, serta memiliki sifat anti-aging.\nCentella Asiatica : Menenangkan jerawat aktif dan mempercepat penyembuhan kulit sekaligus memperkuat skin barrier.\nSymCalmin® : Secara efektif mengurangi rasa gatal dan kemerahan pada kulit.\nKorean Fermented Red Pine Extract : Mengurangi produksi sebum berlebih dan membantu mencegah pori-pori tersumbat\nCara Penggunaan:\nSetelah membersihkan wajah, aplikasikan masker secara merata pada kulit, hindari area mata dan mulut.\nDiamkan selama 10–15 menit, lalu bilas dengan air hingga bersih.",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000021-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000021"
+  },
+  {
+   "code": "P68B13S01000022",
+   "name": "Glad2Glow Blueberry Ceramide Low pH Gel Cleanser",
+   "brand": "Glad2Glow",
+   "category": "skincare",
+   "price": 39380,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Pembersih wajah dengan pH rendah (5.5~6) yang mendekati pH kulit, terasa lembut untuk kulit dan skin barrier. Mengandung Ceramide dan Centella Asiatica, menjaga kelembaban kulit serta membantu mengontrol minyak berlebih pada wajah. Dengan tekstur gel, menghasilkan busa yang halus dan lembut, membersihkan kulit wajah sekaligus melembabkan.\nUkuran: 70 ml\nManfaat:\nMembersihkan kotoran dan minyak tanpa rasa kering tertarik\npH level 5.5 yang nyaman untuk skin barrier\nMembuat kulit terasa bersih dan segar\nHero Ingredients:\nBlueberry Extract: Menenangkan kulit dan merawat kemerahan\nCentella Asiatica: Membantu merawat kulit berjerawat\nCeramide: Menjaga skin barrier & melembabkan\nCara pemakaian:\n1. Basahi wajah dengan air, ambil produk secukupnya\n2. Busakan produk kemudian aplikasikan dan pijat ke seluruh wajah\n3. Bilas dengan air hingga bersih",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000022-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000022"
+  },
+  {
+   "code": "P68B13S01000018",
+   "name": "Hanasui Advance Retinol Serum",
+   "brand": "Hanasui",
+   "category": "skincare",
+   "price": 24617,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Hanasui Advance Retinol Serum bantu cerahkan dan kenyalkan kulit dalam 8 hari\nSerum yang menggabungkan komplek Retinol terbaru dengan natural peptide yang dapat membantu meregenerasi, memudarkan flek hitam, dan melembabkan kulit hanya dalam 8 hari*.\nUntuk hasil yang maksimal gunakan bersamaan dengan Hanasui Flawless Glow 10 Series pada malam hari.\nKandungan Utama\n1. 3X Retinol Complex : Formulasi kombinasi 3 tipe Retinol yaitu HPR, Retinol, Retinyl Palmiate\n2. HPR (Hydroxypin acolone Retinoate) : kandungan retinol yang stabil untuk mencegah tanda penuaan dini\n3. Retinol : Membuat kulit terasa kencang, kenyal, dan cerah\n4. Retinyl : Membantu menstabilkan kerja retinol serta dapat membantu mengurangi iritasi pada kulit.\n5. Natural Peptides : Meningkatkan hidrasi kulit\n6. 5x Ceramide : Meningkatkan elastisitas kulit, menjaga kelembapan kulit, dan memperkuat skin barrier.\n7. Advance Niacinamide : Meratakan warna kulit & mengurangi kusam pada kulit.\n8. AHA (Lactic Acid) : Membantu mencerahkan dan mengurangi hiperpigmentasi pada kulit.\nBenefit\n1. Meregenerasi dan memudarkan flek dan bintik hitam.\n2. Membuat terasa lebih kenyal.\n3. Menjaga kelembapan dan memperkuat skin barrier\n4. Mencerahkan dan melawan hiperpigmentasi\nRekomendasi kondisi kulit\n1. Kulit yang memiliki tekstur kasar, bertekstur, dan kusam.\n2. Flek hitam & noda hitam.\n3. Kulit yang kendur & muncul tanda penuaan.\n4. Bekas Jerawat.\n5. Kusam dan warna kulit tidak merata\nCara Pakai\n1. Aplikasikan 3-5 tetes retinol pada kulit wajah yang sudah dibersihkan.\n2. Gunakan serum pada malam hari untuk hasil yang maksimal.\n3. Pemakaian dilakukan 2-3 kali dalam seminggu untuk penggunaan pertama.\n4. Hindari kontak pada mata, lakukan patch test sebelum penggunaan pertama.\n5. Gunakan SPF pada pagi hari.\nPatch test\n1. Teteskan pada bagian leher\n2. Tunggu selama 24 jam\n3. Jika ada iritasi, ruam, dan kemerahan maka tidak dianjurkan untuk dilanjutkan",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000018-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000018"
+  },
+  {
+   "code": "P02S01S01000007",
+   "name": "Salsa Brightening Facial Wash",
+   "brand": "Salsa",
+   "category": "skincare",
+   "price": 20499,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Salsa Brightening Facial Wash.\nMerupakan sabun pembersih wajah dengan kandungan 2% Niacinamide, Vitamin C, Citric Acid, dan Aloe Vera yang membantu membersihkan wajah sekaligus merawat tampilan kulit agar terlihat lebih cerah dan fresh. Formulanya cocok untuk kulit normal hingga sensitif dan dapat membantu mengangkat kotoran serta minyak berlebih tanpa membuat kulit terasa terlalu kering. Cocok digunakan setiap hari sebagai langkah awal dalam rutinitas skincare untuk menjaga wajah tetap bersih, segar, dan terawat.",
+   "rating": null,
+   "stock": 22,
+   "weightKg": 1.0,
+   "images": [
+    "img/P02S01S01000007-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01S01000007"
+  },
+  {
+   "code": "P68B13S01000063",
+   "name": "Skintific Anti-Pore Mugwort Acne Clay Stick",
+   "brand": "Skintific",
+   "category": "skincare",
+   "price": 77250,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Mugwort Acne Clay Stick\nDiformulasikan dengan Mugwort, ingredients yang populer di Korea untuk merawat jerawat. Dilengkapi dengan Niacinamide, Salicylic Acid, dan juga Centella yang dapat mengontrol minyak berlebih, membersihkan pori-pori secara mendalam, membersihkan komedo, dan menenangkan kulit. Mudah digunakan dengan bentuk stick, berfokus untuk menenangkan kulit dan merawat kemerahan, membersihkan pori dan merawat kulit berjerawat, mengontrol minyak dan menjaga skin barrier. Coverage yang baik, dengan 1 usapan dapat menutup satu area pada wajah. Hasil penggunaan pori-pori mengecil, warna kulit lebih cerah dan merata.\nUkuran: 40 gr\nManfaat:\nMembersihkan pori-pori dan komedo\nMerawat kulit kemerahan\nMengontrol minyak berlebih pada kulit\nMenjaga skin barrier dan merawat kulit berjerawat\nHero Ingredients:\nMugwort : Membersihkan & menenangkan kulit. Skin barrier kulit akan selalu terjaga dan mengecilkan pori-pori\nSalicylic Acid : Membantu membersihkan pori-pori tersumbat, mengontrol minyak berlebih\nNiacinamide : Membantu menenangkan kulit wajah\nCara pemakaian:\n1. Lepaskan bagian tutup stick, lalu putar bagian bawahnya untuk mengeluarkan stick.\n2. Lepaskan pelindung stick, lalu oleskan ke seluruh wajah secara merata\n3. Diamkan selama 10-15 menit, lalu bilas\n4. Gunakan 2-3 kali seminggu untuk hasil maksimal",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000063-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000063"
+  },
+  {
+   "code": "P42S09S01000021",
+   "name": "Somethinc 5% Niacinamide Barrier Serum - 20 ml",
+   "brand": "Somethinc",
+   "category": "skincare",
+   "price": 106800,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SOMETHINC 5% Niacinamide Barrier Serum\nSay goodbye to Dark Spot, Dull, & Damaged Skin Barrier!\nRENEWAL Niacinamide OG, a Vegan Formula with 3 types of Ceramide & Hydrolyzed Algae Extract. Helps Strengthen Skin barrier, Brighten, Disguise dark spots/hyperpigmentation, Reduce acne, Redness, Moisturize skin, & Minimize dry chapped skin.\nQUICK FACT:\nVegan Friendly\nHypoallergenic\nNon-Comedogenic Certified\nDermatologist Tested\nFungal Acne Friendly\nPreggo & Teenagers Friendly\nFULL INGREDIENTS:\nRosa Damascena flower water (48%), glycerin, Niacinamide(5%), water, methylpropanediol, sodium pca, Betaine, 1,2 hexanediol, Zinc pca, ammonium acryloyldimethyltaurate/vp copolymer, butylene glycol, sodium lauroyl lactylate, pentylene glycol, xanthan gum, adenosine, octanediol, ethylhexylglycerin, Ceramide NP, Hydrolyzed Algae Extract (Retired), Anthemis nobilis flower extract, Ceramide AP, phytosphingosine, cholesterol, carbomer, Beta Vulgaris (Beet) Root Extract, allantoin, Caffeine, Ceramide EOP, Tocopherol.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P42S09S01000021-1.webp",
+    "img/P42S09S01000021-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P42S09S01000021"
+  },
+  {
+   "code": "P42S09S01000317",
+   "name": "Somethinc Holyshield!Sunscreen Mist Spf46+ Pa+++",
+   "brand": "Somethinc",
+   "category": "skincare",
+   "price": 130800,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Holyshield! Sunscreen Shake Mist SPF46 PA+++\nProtect your skin from #SunTerror\nApply & Re-apply Wherever You Go & Whenever You Want\nSunscreen Shake Mist bebas alkohol dengan SPF 46 PA+++. Memanfaatkan teknologi Encapsulated UV Filter yang memberikan perlindungan lebih maksimal dari sinar UVA & UVB. Mudah diaplikasikan kembali tanpa menggeser makeup, No White Cast, tidak lengket, & memberikan tampilan Healthy Glow Finish!\nQUICK FACTS:\nHybrid Sunscreen: Physical & Chemical\nAlcohol-Free & Suitable for Sensitive Skin\nEncapsulated UV Filter : less-irritant & maximum protection\nEasy to Apply & Re-Apply especially on top of makeup\nLightweight Texture\nHealthy-Glow Finish\nNo White-Cast, Non-Patchy, Non-Sticky, Non-Peeling, Non-Dull\nSmells Fresh\nNo Stinging Eyes/Skin\n0% Benzene\nVegan Friendly\nHypoallergenic\nFungal Acne Friendly\nDermatologically tested\nUVA & UVB Protection (broad spectrum)",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P42S09S01000317-1.webp",
+    "img/P42S09S01000317-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P42S09S01000317"
+  },
+  {
+   "code": "P42S09S01000319",
+   "name": "Somethinc Holyshield!Sunscreen Spf50+ Pa++++ 50 ml",
+   "brand": "Somethinc",
+   "category": "skincare",
+   "price": 178800,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Holyshield! Sunscreen Comfort Corrector Serum SPF 50+ PA++++\nSKIN CORRECTION & SUN PROTECTION ALL DAY\nSkin Redness Correction Multitask Sunscreen SPF 50+ PA++++yang bisa melindungi kulit dari UVA & UVB, serta berfungsi sebagai color corrector yang menjadikan warna kulit tampak lebih merata & cerah. Bertekstur ringan sehingga cepat menyerap, tidak lengket, & memberikan Satin skin-like finish. Bersifat antioksidan & efektif menyamarkan kemerahan karena dikombinasikan dari bahan alami yang cocok untuk kulit sensitif.\n#HolyShield #SunTerror\nQUICK FACTS:\nSUNSCREEN SEKALIGUS CORRECTOR YANG DAPAT MERATAKAN WARNA KULIT & KEMERAHAN\nTerdapat Alpha-Bisabolol yang merupakan formulasi cocok untuk kulit sensitif & kulit berjerawat\nMeredakan kemerahan, jerawat & iritasi\nTekstur ringan & efek tone-up\nTidak lengket, non-patchy, non-peeling & tidak kusam\nSPF50+ PA++++\nVegan friendly\nDermatologically tested\nHypoallergenic\nSuitable for sensitive skin\nNon-Irritation Formula\nNon-Comedogenic Certified\nSuitable for acne prone skin\nUVA & UVB Protection\nBenzene-free tested",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P42S09S01000319-1.webp",
+    "img/P42S09S01000319-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P42S09S01000319"
+  },
+  {
+   "code": "P66T05S01000002",
+   "name": "The Originote Brightening Moisturizer",
+   "brand": "The Originote",
+   "category": "skincare",
+   "price": 35000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "The Originote Brightening Moisturizer merupakan pelembab wajah yang membantu menjaga hidrasi kulit, mencegah tanda-tanda penuaan dini dengan menjaga kelembapan kulit. Mencerahkan dan meratakan warna kulit.How to use:Setelah membersihkan muka, menggunakan toner dan serum, ambil moisturizer secukupnya dan pijat perlahan ke seluruh muka secara merata, tepuk perlahan dan biarkan hingga meresap sempurna pada kulit.Suitable for:Semua jenis kulitIngredients:Niacinamide, Tranexamix Acid, Fruit Blend Extract.",
+   "rating": null,
+   "stock": 20,
+   "weightKg": 0.1,
+   "images": [
+    "img/P66T05S01000002-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P66T05S01000002"
+  },
+  {
+   "code": "P66T05S01000001",
+   "name": "The Originote Hyalucera Moisturizer",
+   "brand": "The Originote",
+   "category": "skincare",
+   "price": 32000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "The Originote Hyalucera Moisturizer adalah pelembap yang diformulasikan untuk menjaga skin barrier dengan menggunakan gabungan dari bahan aktif laboratorium kimia yang teruji secara klinis aman dan bahan natural dari alam. Diformulasikan dengan Hyaluronic Acid dan Ceramide yang dapat memperbaiki dan menjaga skin barrier, mengunci hidrasi pada kulit, menjaga elastisitas kulit serta membantu menyembuhkan breakout. Mengandung Chlorelina gabungan antara chlorella dan spirulina yang berfungsi untuk menjaga elastisitas, sebagai antioksidan bagi kulit, sebagai oil control dan teksturnya yang gel membuat moisturizer ini cocok untuk segala jenis kulit. How to use:Setelah membersihkan muka, menggunakan toner dan serum, ambil moisturizer secukupnya dan pijat perlahan ke seluruh muka secara merata, tepuk perlahan dan biarkan hingga meresap sempurna pada kulit. Suitable for:Semua jenis kulitIngredients:Hyaluronic Acid + Ceramide with Chlorelina",
+   "rating": null,
+   "stock": 24,
+   "weightKg": 0.1,
+   "images": [
+    "img/P66T05S01000001-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P66T05S01000001"
+  },
+  {
+   "code": "P68B13S01000053",
+   "name": "Wardah Face Wash Hydra Rose NMF Amino Pentavitin Barrier",
+   "brand": "Wardah",
+   "category": "skincare",
+   "price": 40608,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Wardah Hydra Rose Barrier Replenish pH 5.5 Gel Cleanser\nWardah Hydra Rose Barrier Replenish pH 5.5 Gel Cleanser, face wash dengan Acid Mantle ExpertTM Technology yang diformulasikan dengan NM Amino, inovasi terbaru Amino dari Wardah yang dikombinasikan dengan NMF (Natural Moisturizing Factors) yang membantu menjaga pertahanan acid mantle sebagai garda terdepan skin barrier-mu. Kandungan NMF Amino dan Pentavitin melembapkan kulit dan membantu memperkuat skin barrier. Diformulasikan dengan pH 5,5 yang sesuai dengan pH alami kulit, Wardah Hydra Rose face wash cocok digunakan untuk semua tipe kulit, terutama kulit kering.\nKeyword: face wash, facial wash, facial wash wardah, hydra rose, face wash hydra rose wardah\nHow to use :\nBasahi dengan air dan busakan di wajah. Pijat lembut dan bilas hingga bersih. Hindari daerah mata. Untuk hasil maksimal, gunakan bersama dengan rangkaian Wardah Hydra Rose Series lainnya.\nIngredients:\nAqua, Glycerin, Sodium Laureth Sulfate, Cocamidopropyl Betaine, Propylene Glycol, Acrylates Copolymer, Sodium PCA, Decyl Glucoside, Phenoxyethanol, Sodium Lauroyl Sarcosinate, Sodium Chloride, Citric Acid, Sodium Hydroxide, Chlorphenesin, Glyceryl Polyacrylate, Brassica Campestris (Rapeseed) Seed Oil, Disodium EDTA, Saccharide Isomerate, Fragrance, Rose Extract, Sodium Citrate, Tocopherol.",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000053-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000053"
+  },
+  {
+   "code": "P39A06B01000096",
+   "name": "Animate Brightening Face & Body Soap 80 g",
+   "brand": "Animate",
+   "category": "bodycare",
+   "price": 16500,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Animate Brightening Face & Body Soap 80 gr",
+   "rating": null,
+   "stock": 69,
+   "weightKg": 0.1,
+   "images": [
+    "img/P39A06B01000096-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06B01000096"
+  },
+  {
+   "code": "P39A06B01000127",
+   "name": "Animate Upgrade + Gold Brightening Soap 70 g",
+   "brand": "Animate",
+   "category": "bodycare",
+   "price": 18600,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "sabun multifungsi (2-in-1) untuk wajah dan tubuh yang diformulasikan khusus untuk membersihkan, mencerahkan, dan melembapkan kulit tanpa membuat rasa kering atau ketarik.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 1.0,
+   "images": [
+    "img/P39A06B01000127-1.webp",
+    "img/P39A06B01000127-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P39A06B01000127"
+  },
+  {
+   "code": "P68B13S01000400",
+   "name": "BRIGHTY GLOW IT UP BODY SERUM 180 ml",
+   "brand": "Brighty",
+   "category": "bodycare",
+   "price": 52762,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "BRIGHTY GLOW IT UP BODY SERUM 180 ML",
+   "rating": null,
+   "stock": 100,
+   "weightKg": 1.0,
+   "images": [
+    "img/P68B13S01000400-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000400"
+  },
+  {
+   "code": "P11B11B01000022",
+   "name": "Brighty Glow It Up Body Serum 100 ml",
+   "brand": "Brighty",
+   "category": "bodycare",
+   "price": 33000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Brighty Glow It Up Body Serum 100ML",
+   "rating": 5,
+   "stock": 100,
+   "weightKg": 0.1,
+   "images": [
+    "img/P11B11B01000022-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P11B11B01000022"
+  },
+  {
+   "code": "P68B13B01000115",
+   "name": "Herborist Body Lotion Series Melembapkan Menghaluskan Kulit 200 ml",
+   "brand": "Herborist",
+   "category": "bodycare",
+   "price": 30385,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Herborist Body Lotion Series 200ml hadir dengan tiga varian istimewa yang memberikan manfaat perawatan kulit secara optimal:\n1. Natural Olive – Diperkaya dengan ekstrak zaitun alami, varian ini efektif melembapkan kulit, menjadikannya lebih halus dan lembut. Ideal untuk kulit kering dan dehidrasi, memberikan kelembapan yang tahan lama.\nBPOM : NA18250103302\n2. Natural Frangipani – Dengan ekstrak frangipani yang harum, varian ini tidak hanya melembutkan kulit, tetapi juga memberikan aroma menenangkan yang bertahan lama. Cocok untuk Anda yang ingin merasakan ketenangan sambil merawat kulit.\nBPOM : NA18240115459\n3. Natural Coconut – Mengandung ekstrak kelapa alami yang membantu memperbaiki tekstur kulit, menjadikannya lebih halus dan kenyal. Varian ini sangat cocok untuk kulit yang membutuhkan perawatan ekstra agar lebih sehat dan terhidrasi.\nBPOM : NA18240115460\nSetiap varian Herborist Body Lotion memberikan kelembutan, kelembapan, dan perawatan intensif untuk kulit Anda, menjadikannya pilihan tepat untuk menjaga kesehatan dan kecantikan kulit setiap hari.",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13B01000115-1.webp",
+    "img/P68B13B01000115-2.webp",
+    "img/P68B13B01000115-3.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13B01000115"
+  },
+  {
+   "code": "P60M14B01000057",
+   "name": "MUSTIKA RATU KOPI BODY SCRUB 200 g RJ",
+   "brand": "Mustika Ratu",
+   "category": "bodycare",
+   "price": 42000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Body Scrub dari Mustika Ratu, terbuat dari bahan-bahan alami asli yang mengandung manfaat tinggi bagi kesehatan dan kecantikan kulit wanita Indonesia. Butiran scrub alami yang dapat membersihkan dan mempercantik kulit Anda secara maksimal. Tidak hanya itu Mustika Ratu Body Scrub juga tersedia dalam berbagai jenis varian aroma dan kandungan.\nBody Scrub\nMustika Ratu Body Scrub Coffe Kopi memiliki butiran alami yang menjadikan kulit terasa lembut dan halus, serta mampu menjaga kekencangan kulit. Butiran scrub ini akan bekerja secara maksimal untuk membersihkan kotoran-kotoran yang menempel pada kulit, dan membuat kulit tampak lebih cerah.\nEkstrak Kopi\nEkstrak kopi yang ada di dalam Mustika Ratu Body Scrub Coffe Kopi, mengandung kafein sebagai antioksidan yang baik untuk kulit. Khasiat kopi akan memberikan manfaat mengatasi bau badan, mengangkat sel kulit mati, memberi nutrisi pada kulit, serta menjaga kekencangan pada kulit.\nBahan Alami\nMustika Ratu Body Scrub mengandung bahan-bahan alami yang aman untuk penggunaan setiap hari. Gosokkan body scrub perlahan dengan gerakan memutar ke seluruh tubuh dalam kondisi tubuh kering, lalu bilas hingga bersih. Gunakan 2 kali seminggu.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.3,
+   "images": [
+    "img/P60M14B01000057-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P60M14B01000057"
+  },
+  {
+   "code": "P60M14B01000076",
+   "name": "MUSTIKA RATU ROSE RADIANCE BODY LOTION 200 ml",
+   "brand": "Mustika Ratu",
+   "category": "bodycare",
+   "price": 25000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Mustika Ratu Rose Radiance Body Lotion adalah body lotion yang membantu merawat kulit agar tampak lebih cerah, lembut, dan bercahaya. Diperkaya dengan ekstrak mawar dan vitamin E, lotion ini membantu menjaga kelembapan kulit sekaligus memberikan sentuhan keharuman mawar yang elegan dan menenangkan.\nDilengkapi dengan UV Filter untuk membantu melindungi kulit dari paparan sinar matahari serta E-Bion Technology yang membantu penyerapan bahan aktif lebih cepat ke dalam kulit. Teksturnya ringan, mudah meresap, dan nyaman digunakan setiap hari untuk semua jenis kulit.\nDengan keharuman mawar yang melekat di kulit, Rose Radiance Body Lotion membantu meningkatkan rasa percaya diri.Aman untuk penggunaan harian.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.3,
+   "images": [
+    "img/P60M14B01000076-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P60M14B01000076"
+  },
+  {
+   "code": "P68B13B01000066",
+   "name": "Satto Goat Milk Body Lotion 50 g",
+   "brand": "Satto",
+   "category": "bodycare",
+   "price": 27810,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Satto Goat Milk Body Lotion 50G\nRawat kulit tubuh dengan Satto Goat Milk Body Lotion 50G, lotion compact berbahan susu kambing yang membantu mencerahkan kulit, tone-up whitening, dan melembapkan dengan triple moisturizer. Ukuran 50G sangat praktis untuk dibawa bepergian.\nManfaat Utama:\n- Mencerahkan kulit kusam & tone-up whitening\n- Melembapkan kulit kering & kasar\n- Triple moisturizer untuk hidrasi optimal\n- Cocok untuk semua jenis kulit\nKeunggulan Produk:\n- Mengandung susu kambing untuk nutrisi kulit\n- Cepat meresap tanpa lengket\n- Travel-friendly ukuran 50G, praktis & hemat\n- Bisa digunakan setiap hari\nCara Pakai:\nOleskan lotion pada tangan dan seluruh tubuh setelah mandi atau saat kulit terasa kering. Pijat lembut hingga meresap.",
+   "rating": null,
+   "stock": 6,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13B01000066-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13B01000066"
+  },
+  {
+   "code": "P68B13S01000032",
+   "name": "SCARLETT 10% NIACINAMIDE Fragrance Brightening Body Serum 170 ml",
+   "brand": "Scarlett",
+   "category": "bodycare",
+   "price": 40170,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Scarlett Whitening Body Serum Jolly 250 ML\nBODY SERUM\n3x Lebih Mencerahkan dengan bantuan dari Glutathione + Niacinamide + Glycolic Acid\nKandungan :\nGlutathione :\nMembantu meratakan warna kulit\nNiacinamide :\nMembantu mencerahkan kulit\nMembantu menyamarkan noda gelap pada kulit\nGlycolic Acid :\nMembantu mengangkat sel-sel kulit mati\nMembantu mencerahkan kulit\nCeramide 2 :\nMerawat kulit agar tetap halus, lembut dan tidak kering\nHyaluronic Acid :\nMenjaga kelembapan kulit sehingga kulit terasa lebih lembut\nShea Butter :\nMerawat keremajaan kulit\nMembuat kulit terasa lebih kencang\nVitamin E :\nMerawat kekencangan kulit dan keremajaan kulit\nTitanium Dioxide :\nMelindungi kulit dari efek buruk sinar UV\nCara Pakai :\nOleskan body serum ke tangan / kaki secara merata dan usapkan secara perlahan. Dapat digunakan setiap hari.",
+   "rating": null,
+   "stock": 7,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13S01000032-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13S01000032"
+  },
+  {
+   "code": "P21F02C01000002",
+   "name": "Focallure 10 Color Eyeshadow Palette Fa-158 02",
+   "brand": "Focallure",
+   "category": "makeup",
+   "price": 55927,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Focallure 10 Color Eyeshadow Palette\n3 set eyeshadow palette popular kembali lagi dengan kemasan yang lebih praktis dan kualitas yang sama baiknya. Bawa palette kami saat bepergian dan jadilah yang paling menarik diantara semua orang. Setiap palette dilengkapi dengan primer kelopak mata + matte + shimmer + glitter, mudah di pakai untuk mengkreasikan tampilan mata yang diinginkan. - Pigmentasi tinggi, dan mudah dipadukan. Finishing nya bertahan dari pagi hingga malam. Dengan tema 3 bunga, yaitu: withered rose, sakura, dan sunflower, mewujudkan makeup mata impianmu.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02C01000002-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21F02C01000002"
+  },
+  {
+   "code": "P21F02C01000011",
+   "name": "Focallure 3 In 1 Palette PC01",
+   "brand": "Focallure",
+   "category": "makeup",
+   "price": 48000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "FOCALLURE Pro-Sculpt 3-in-1 Facial Shaping Palette. The do-it-all palette which includes three facial sculpting shades that are silky rich, blendable, and buildable, can easily sculpt your facial best features like a pro, and achieve a pronounced 3D contour. [3-in-1 Pro-Sculpt Palette] This 3-in-1 facial shaping palette contains three facial sculpting shades blush, highlighter, and contour. Three blendable and buildable shades that can sculpt and define your best features like a pro, emphasize the shape of the face and create a pronounced 3D contour. [Do-it-all] This is a versatile palette that includes blush, highlighter, and contour, and can be used not only as facial sculpting but also as an eyeshadow color. In addition, there are a variety of combinations to choose from, creating more possibilities for facial sculpting. [New Upgrade] Compared with the old version, not only has the packaging been updated, but contouring and 3 blush textures and shades have been added. In addition, the formula has also been improved, and the powder has become more delicate and silky, absorbing oil while soft focus, showing a natural shaping effect. [Ultra-Pigmented] Each color is unique, beautiful, and ultra-pigmented. The rich pigment that enriched Vitamin E delivers a flattering color for all skin tones, non-comedogenic, alcohol-free, and fragrance-free. And there are 10 richly pigmented color combinations for you to choose from. [Blendable & Buildable] The texture is Soft and smooth which allows it to blend and extend to fit on the face. So that you can glide on your face smoothly, evenly, and seamlessly without crease and cakey, even if you overlay repeatedly.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02C01000011-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21F02C01000011"
+  },
+  {
+   "code": "P21F02C01000026",
+   "name": "Focallure Air Fit Matte Liquid Lipstick Fa417 - 001",
+   "brand": "Focallure",
+   "category": "makeup",
+   "price": 49091,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "🌻🌻 FOCALLURE Air Fit Matte Liquid Lipstick FA417 🌻🌻\nTekstur baru yang dapat berubah! Ketika pertama kali diaplikasikan tekstur cair dan akan mengering menjadi matte. Memberikan pengalaman riasan bibir matte baru.\nTekstur cair akan memberikan rasa ringan yang kamu belum pernah rasakan sebelumnya dan hasilnya akan berubah menjadi matte tanpa rasa lengket.\nHasil Matte Natural Setelah tekstur cair berubah menjadi hasil matte, kamu akan mendapatkan hasil matte natural yang cocok untuk peggunaan sehari-hari.\n[Mask-Proof] Dengan formula inovatif ini, pewarna bibir tidak akan berpindah ke maskermu. Kamu tidak perlu takut lagi saat menggunakan masker.\n[Warna Cerah] Tersedia dalam 5 pilihan warna. Lip tint akan menghasilkan warna yang unik kamu sendiri sesuai dengan warna dasar bibirmu.\nOleskan tipis-tipis secara merata untuk mendapatkan warna cerah. Untuk membangun warna lebih kuat, disarankan untuk menunggu lapisan pertama hingga kering sebelum ditumpuk.\n❤Available in 5 Colors\n#001\n#101\n#201\n#202\n#301",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02C01000026-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21F02C01000026"
+  },
+  {
+   "code": "P21F02C01000031",
+   "name": "Focallure Air Fit Matte Liquid Lipstick Or01",
+   "brand": "Focallure",
+   "category": "makeup",
+   "price": 49091,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Selamat Datang di era Matte Lip Tint. Focallure #SwitchMode Airy Mate Tint adalah tekstur liptint dengan formulasi terbaru yang akan menghadirkan pengalaman matte baru pada bibirmu.\n[Formula Inovatif] Tekstur baru yang dapat berubah! Ketika pertama kali diaplikasikan tekstur cair dan akan mengering menjadi matte. Memberikan pengalaman riasan bibir matte baru.\n[Tekstur Ringan] Tekstur cair akan memberikan rasa ringan yang kamu belum pernah rasakan sebelumnya dan hasilnya akan berubah menjadi matte tanpa rasa lengket.\n[Hasil Matte Natural] Setelah tekstur cair berubah menjadi hasil matte, kamu akan mendapatkan hasil matte natural yang cocok untuk peggunaan sehari-hari.\n[Mask-Proof] Dengan formula inovatif ini, pewarna bibir tidak akan berpindah ke maskermu. Kamu tidak perlu takut lagi saat menggunakan masker.\n[Warna Cerah] Tersedia dalam 5 pilihan warna. Lip tint akan menghasilkan warna yang unik kamu sendiri sesuai dengan warna dasar bibirmu.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02C01000031-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21F02C01000031"
+  },
+  {
+   "code": "P21F02C01000300",
+   "name": "Focallure Longlash Waterproof Mascara Fa169",
+   "brand": "Focallure",
+   "category": "makeup",
+   "price": 38628,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Brush design with 3mm small diameter .This intelligent design helps the brush be able to deliver a 360° coating .Keep eyelashes long and curled for a long time, specially suitable for those who have short and fine lashes.（Fiber-filled Mascara for Crazy length & Curled & Seperate natural lashes）Lightweight and never weight your lashes down.\nOn top of the unique brush design, it is also able to resist water, sweat, sebum, and smudge.Easy to get hottest korean star eyelash makeup.\n1.Long & Curled & Seperate\n(Formulated with fiber to grow lashes longer)\n2.3mm Micro-brush for 360° Coating Short and Fine lashes\n3.Not clumpy & Lightweight\n4.Long-lasting & Not smudgy\n5.Resist Water, Sweat, and Sebum",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02C01000300-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21F02C01000300"
+  },
+  {
+   "code": "P21F02C01000536",
+   "name": "Focallure Volumizing Mascara Fa44",
+   "brand": "Focallure",
+   "category": "makeup",
+   "price": 28000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "FOCALLURE MASCARA MENEBALKAN DAN PANJANG\nMaskara ini mempertegas, memisahkan, dan memanjangkan bulu mata tanpa luntur, mengelupas, atau menggumpal. Tongkat ramping ini berfungsi seperti sisir bergigi rapat 360 derajat untuk memisahkan dan mengangkat setiap bulu mata, bahkan bulu mata sudut yang sulit dijangkau.\nFOCALLURE Bomb Lashes Mascara\nFOCALLURE Maskara bulu mata bom tebal adalah maskara pertama mereka untuk volume dan panjang yang menggairahkan, kini dengan lebih banyak pigmen hitam.\nSikat bulu bergelombang lembut memiliki formula maksimal untuk peningkatan volume yang dramatis.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02C01000536-1.webp",
+    "img/P21F02C01000536-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21F02C01000536"
+  },
+  {
+   "code": "P68B13C01000043",
+   "name": "Implora jelly tint with omega",
+   "brand": "Implora",
+   "category": "makeup",
+   "price": 17479,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Implora Jelly Tint Netto : 5 ml Memperkenalkan Implora Jelly Tint 3x lebih efektif untuk bibir halus, glossy, dan bervolume Dengan kandungan vitamin E, peptides, serta omega 3,6,9 yang membantu mengurangi garis halus pada bibir, membuat bibir lebih bervolume, dan melembabkan bibir Transferproof, tahan lama, kissproof. Tersedia dalam 9 warna : 01. mariposa 02. savvy red 03. true vintage 04. rosy posy 05. dream peach 06. flamingo 07. sangria 08. burnt orange 09. rosewood",
+   "rating": null,
+   "stock": 10,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13C01000043-1.webp",
+    "img/P68B13C01000043-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13C01000043"
+  },
+  {
+   "code": "P21P03C01000009",
+   "name": "Pinkflash 3 Pan Eyeshadow Pf-E23 #Br03",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 45421,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "PINKFLASH 3 Pan Eyeshadow Palette 3g – #PINKGAME\nPINKFLASH #PINKGAME Eyeshadow Palette\nSaatnya bermain warna dan bersenang-senang dengan makeup!\nEyeshadow palette terbaru dari PINKFLASH hadir dengan tema permainan warna.\nTersedia 11 pilihan warna dalam 5 jenis tekstur berbeda:\nMatte\nMatte with shimmer\nMetallic\nShimmer\nGlitter\nCocok untuk kamu yang ingin bereksperimen dengan berbagai gaya riasan mata!\nKeunggulan Produk:\nPigmentasi Tinggi – Warna keluar hanya dalam satu usapan\nTekstur Halus & Mudah Dibaurkan – Lembut seperti sutra dan mudah dibaur\nLong-lasting & Waterproof – Tahan lama, tidak menggumpal, dan tidak mudah luntur\nPilihan Warna Tersedia:\nGT01, GT02\nPK01, PK02, RD01, RD02\nBR01, BR02, BR03, BR04, BR05\nCara Penggunaan:\nGunakan kuas eyeshadow sesuai kebutuhan:\nKuas datar = hasil warna lebih intens\nKuas lembut = untuk blending yang halus\nKuas kecil bersudut = cocok sebagai eyeliner\nUntuk glitter: aplikasikan langsung dengan jari agar hasil maksimal, tanpa perlu kuas.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000009-1.webp",
+    "img/P21P03C01000009-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000009"
+  },
+  {
+   "code": "P21P03C01000022",
+   "name": "Pinkflash All Glow Eyeshadow Pf-E18 #1",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 27300,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "• Eyeshadow cair 2-in-1 untuk tampilan glowing\n• Tersedia dalam 5 warna menarik\n• Mudah diaplikasikan dan tahan lama\n• Hasil akhir satin yang elegan\n• Masa penyimpanan hingga 36 bulan\nKonten di atas dihasilkan oleh AI sebagai referensi.\nBerikut adalah detail produk:\nPINKFLASH PF-E18 2 IN 1 ALL GLOW LIQUID EYESHADOW\nTIDAK MENERIMA KOMPLEN PRODUK CUCI GUDANG BANTING HARGA MEMBELI BERARTI SETUJU\nMerek :PINKFLASH\nModel :PF-E18\nWarna :#01 SUNSET CHAMPAGNE\n#02 AURORA CRYSTAL\n#03 GOLDEN DIAMOND\n#04 RAINBOW GALAXY\n#05 STARRY PEARL\nBerat bersih:1.5 gram X 2\nDimensi :12.2 cm x 1.37 cm X 1.37 CM\nBerat produk:20 gram\nKategori :LIQUID EYESHADOW\nTahan air :\nBuatan :Tiongkok\nKeunggulan :tahan lama,mudah di aplikasikan",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000022-1.webp",
+    "img/P21P03C01000022-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000022"
+  },
+  {
+   "code": "P21P03C01000082",
+   "name": "Pinkflash Duo Lipgloss Pf-L13 - D02",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 23230,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "🌈PINKFLASH #DoubleSense Series 2 In 1 dual-ended lipstick is grandly launched! Brand new dual-ended design, more shades and more texture, satisfied with your variety of makeup finish. Follow your heart and match your sense!\n💟#DoubleSense Series featuring 3 types of lipstick:\n【2 In 1 Liquid Matte Lipstick】Both ends are liquid matte textures with different colors, providing an ultra-matte finish. High pigment, anti-transfer, non-stick cup, crackproof, waterproof and lasting.\n【2 In 1 Misty Velvet Lip Tint】Both ends are soft velvet textures with different colors, providing a misty velvet-matte finish. High pigment, Lightweight, comfortable to wear, waterproof and long-lasting.\n【2 In 1 Double Effect Matte Lipstick】One end is liquid matte texture, and the other end is soft velvet texture. It provides ultra matte finish and misty velvet-matte finish at the same time, easy to deal with makeup effect for various occasions.\n💞Color:\n🔥2 In 1 Liquid Matte Lipstick\n#M01 #M02 #M03\n🔥2 In 1 Misty Velvet Lip Tint\n#V01 #V02 #V03 #V04\n#V05 #V06 #V07\n🔥2 In 1 Double Effect Matte Lipstick\n#D01 #D02\n💛2 In 1 Liquid Matte Lipstick\nDual-ended design, two shades\n✨Liquid matte texture\n✨Ultra matte finish\n✨Smooth texture\n✨Anti-transfer\n✨Waterproof\n✨Non-stick cup\n✨High pigment\n✨Lightweight\n✨Long-lasting\n✨Non-clumping\n🧡2 In 1 Misty Velvet Lip Tint\nDual-ended design, two shades\n✨Velvet lip tint\n✨Mist velvet matte finish\n✨Smooth texture\n✨High pigment\n✨Lightweight\n✨Long-lasting\n✨Non-clumping\n💗2 In 1 Double Effect Matte Lipstick\ndual-ended design, two shades and two texture\nOne end is liquid matte texture, and the other end is soft velvet texture\nProvides ultra matte finish and misty velvet-matte finish at the same time\n✨Smooth texture\n✨Waterproof\n✨High pigment\n✨Lightweight\n✨Long-lasting\n✨Non-clumping\n💕TIPS：Before applying lipstick, use PINKFLASH lip oil to moisturize the lips",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000082-1.webp",
+    "img/P21P03C01000082-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000082"
+  },
+  {
+   "code": "P21P03C01000107",
+   "name": "Pinkflash E08 Oilproof Curl Mascara - #2 Long",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 20000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "PINKFLASH Day & Night Mascara. PINKFLASH Black For Day Mascara: This Mascara Contains Rich Fiber, Which Can Extend Eyelashes Without Limit. With The Curved Crescent-Shaped Brush Design Perfectly Fits The Eye Shape, It Can Cover Every Eyelash Easily And Make Eyelashes Curl Slightly. It Is Very Suitable For Beginners, Students, And Office Workers Who Love Korean Natural Eye Makeup PINKFLASH Pink For Night Mascara: The Soft Silica Gel Brush Can Be Used To Dip In More Mascara Liquid Without Damage To The Skin. Brand: PINKFLASH Model: PF-E08 Specifications: Normal Specifications Have Licensable Own Brand: Yes Net Content: #1 Pink Night Style, #2 Black Day Style Category: Mascara, Eyelash Growth Liquid",
+   "rating": null,
+   "stock": 22,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000107-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000107"
+  },
+  {
+   "code": "P21P03C01000149",
+   "name": "Pinkflash L01 Lasting Matte Lipcream - N01",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 11439,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "PINKFLASH Lasting Matte Lipcream | Pink Flash Lipstick\nALL DAY MATTE and MOIST LIPSTICK: This highly pigmented matte liquid lipstick goes on smooth. Water-proof, transfer-proof. It has Vitamin E which moisturizes the skin on the lips. Light and comfortable texture, make your lips feel nothing the whole day. 14 colors for choose, suitable for all skin tones. Ink your lips in gorgeous, matte lip color.\n18 shapes for choose：\n1#Canvas\n2#Rosy Rosy\n3#Best Day\n4#Flamingos\n5#Cookies\n6#Fancier\n7#Dorothy\n8#Mambo\n9#Dolly Pink\n10#Most Orange\n11#On Mode\n12 #Mysterious\n13 #Obsession\n14 #Oops！\n15 #Milk Shake\n16 #Orange Soda\n17 #Melon Smoothie\n18 #Cranberry Jam",
+   "rating": null,
+   "stock": 24,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000149-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000149"
+  },
+  {
+   "code": "P21P03C01000161",
+   "name": "Pinkflash L01 Lasting Matte Lipcream - P03",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 11439,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "PINKFLASH Lasting Matte Lipcream | Pink Flash Lipstick\nALL DAY MATTE and MOIST LIPSTICK: This highly pigmented matte liquid lipstick goes on smooth. Water-proof, transfer-proof. It has Vitamin E which moisturizes the skin on the lips. Light and comfortable texture, make your lips feel nothing the whole day. 14 colors for choose, suitable for all skin tones. Ink your lips in gorgeous, matte lip color.\n18 shapes for choose：\n1#Canvas\n2#Rosy Rosy\n3#Best Day\n4#Flamingos\n5#Cookies\n6#Fancier\n7#Dorothy\n8#Mambo\n9#Dolly Pink\n10#Most Orange\n11#On Mode\n12 #Mysterious\n13 #Obsession\n14 #Oops！\n15 #Milk Shake\n16 #Orange Soda\n17 #Melon Smoothie\n18 #Cranberry Jam",
+   "rating": null,
+   "stock": 97,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000161-1.webp",
+    "img/P21P03C01000161-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000161"
+  },
+  {
+   "code": "P21P03C01000171",
+   "name": "Pinkflash L02 Lasting Glossy Lipgloss - G03",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 11439,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "It brings long-lasting moisturizing effect to dry lips. After use, the lips are plump. The non-sticky formula makes your lips light and soft. Perfect for wearing alone or layered over lipstick for a bold lip statement.\n3 transparent color: contains coconut oil, has a super moisturizing effect, and brings luster to dry lips，The unique silicone brush head will not produce dyeing after overlay.\n2 colores with fine shimmering pearl: the faint shimmer makes your lips look unique and sexy, and the non-grainy glitter makes your lips feel more comfortable.\n6 mirror lip glosses of different colors bring a new look to your makeup，Heart-shaped hollow flocking brush head brings you the perfect color.\nEasy to use, with unique colors and brightness, different usage has different effects, choose different colors on different occasions to show different self.\nFinish: Shimmer-free | Shimmer Glossy\n#C01 river (clear）\n#S01 fireflies (clear with goldleaf）\n#S02 twinkle (clear coral with gold&pink sparkle)\n#S03 journey (peach with gold shimmer）\n#S04 vertigo (warm orange with gold shimmer）\n#G02 shelter (nude rose）\n#G03 love talk (bright coral red）\n#G05 steppin (cinnamon nude）\n#G06 milk tea (nude beige brown）\nBenefit:\n· High Shine & Shimmer Glossy ，Instant Plumper ，Color Lasts，Wrinkle Fade Away\n· Comfortable ，Kiss Like Cotton Candy A Soft and Refreshing Feel\n· Contains coconut oil to fully",
+   "rating": null,
+   "stock": 48,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000171-1.webp",
+    "img/P21P03C01000171-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000171"
+  },
+  {
+   "code": "P21P03C01000173",
+   "name": "Pinkflash L02 Lasting Glossy Lipgloss - G05",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 16091,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "It brings long-lasting moisturizing effect to dry lips. After use, the lips are plump. The non-sticky formula makes your lips light and soft. Perfect for wearing alone or layered over lipstick for a bold lip statement.\n3 transparent color: contains coconut oil, has a super moisturizing effect, and brings luster to dry lips，The unique silicone brush head will not produce dyeing after overlay.\n2 colores with fine shimmering pearl: the faint shimmer makes your lips look unique and sexy, and the non-grainy glitter makes your lips feel more comfortable.\n6 mirror lip glosses of different colors bring a new look to your makeup，Heart-shaped hollow flocking brush head brings you the perfect color.\nEasy to use, with unique colors and brightness, different usage has different effects, choose different colors on different occasions to show different self.\nFinish: Shimmer-free | Shimmer Glossy\n#C01 river (clear）\n#S01 fireflies (clear with goldleaf）\n#S02 twinkle (clear coral with gold&pink sparkle)\n#S03 journey (peach with gold shimmer）\n#S04 vertigo (warm orange with gold shimmer）\n#G02 shelter (nude rose）\n#G03 love talk (bright coral red）\n#G05 steppin (cinnamon nude）\n#G06 milk tea (nude beige brown）\nBenefit:\n· High Shine & Shimmer Glossy ，Instant Plumper ，Color Lasts，Wrinkle Fade Away\n· Comfortable ，Kiss Like Cotton Candy A Soft and Refreshing Feel\n· Contains coconut oil to fully",
+   "rating": null,
+   "stock": 20,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000173-1.webp",
+    "img/P21P03C01000173-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000173"
+  },
+  {
+   "code": "P21P03C01000184",
+   "name": "Pinkflash Lasting Matte Loose Pressed Powder - 000",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 37240,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Pinkflash Lasting Matte Loose Pressed Powder - 000",
+   "rating": null,
+   "stock": 20,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000184-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000184"
+  },
+  {
+   "code": "P21P03C01000189",
+   "name": "Pinkflash Lasting Moist Lipbalm Pf-L03 - #4",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 14000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "memberikan bibir dengan kelembaban yang tahan lama.\n[Menutrisi Secara Mendalam] Berbasis Minyak Nabati Alami, ia dapat meniru minyak kulit dalam memberikan nutrisi dan melembabkan bibir kering atau pecah-pecah. Selain itu, produk ini juga mudah menyerap dan dapat menutrisi bibir sepanjang hari. Kamu tidak perlu khawatir untuk mengaplikasikan lagi dan lagi.\n[Ringan & Tidak Lengket] Minyak nabati alami memiliki tekstur yang lebih ringan pada bibir, tidak berasa berminyak ataupun berat.\n[Penggunaan Kapanpun] Dapat digunakan sendiri sebagai perawatan bibir sehari-hari untuk mempertahankan kesehatan bibir. Dapat digunakan juga sebagai lip primer agar pengaplikasian lipstick lebih halus.\n[Aroma Mawar] Mengandung minyak mawar Bulgaria untuk membuatmu merasa santai seperti sedang berada di Taman Mawar.\nMerek lain: Kelembaban sementara --> Pinkflash: Kelembaban tahan lama\nMerek lain: Berminyak --> Pinkflash: Tidak berminyak\nMerek lain: Tidak menutrisi --> Pinkflash: Menutrisi secara mendalam dengan minyak nabati\nMerek lain: Aroma yang kurang sedap --> Pinkflash: Aroma Mawar yang wangi\nBerbasis Minyak Nabati Khusus\nBahan Alami Murni\nKelembaban Tahan Lama\nLebih Mudah Menyerap\nTidak Berminyak\nAroma Mawar yang Wangi\nQ&A:\nQ: Apakah lengket di bibir?\nA: Tidak lengket karena ini diformulasikan menggunakan minyak nabati\nQ: Apakah memiliki efek kelembaban yang nyata?\nA: Tentu! Ia dapat menutrisi dan melembabkan secara mendalam\nQ: Apakah dapat digunakan sebagai lip primer?\nA: Bisa, ia dapat membuat riasan bibir anda lebih sempurna",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000189-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000189"
+  },
+  {
+   "code": "P21P03C01000297",
+   "name": "Pinkflash Silky Velvet Lipstick Pf-L05 - Pk02",
+   "brand": "Pinkflash",
+   "category": "makeup",
+   "price": 20200,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "PINKFLASH #PinkDiary Velvet Matte Lipstick, rekam setiap momen pink Anda dengan lipstik ini.\n[Mousse feeling] Lembut dan halus seperti kue mousse, padat dan nyaman.\n[Pigmen tinggi] Warnanya bisa diaplikasikan dengan sentuhan ringan\n[Velvet matte] Tekstur velvet matte yang ringan, tahan lama, menciptakan efek riasan velvet yang sama dengan idol korea.\n[Anti menggumpal] Mudah dibaurkan, tidak menggumpal, lembab tapi tidak kering, di musim panas lipstik ini juga tidak lengket.\nMerk lain: Menggumpal -> Kami: Mudah diratakan dan tidak menggumpal\nMerk lain: kering dan tidak mulus -> Kami: lLembut dan halus seperti kue mousse\n#PinkDiary Velvet Matte Lipstick\nMousse feeling\nPigmen tinggi\nLembut dan mulus\nVelvet matte\nRingan\nTahan lama\nTidak menggumpal\nMudah diratakan\nHow to use / Application\n1. Ambil sedikit lip cream dan usapkan dengan aplikator untuk mendapatkan finishing velvet matte.\n2. Lakukan beberapa kali untuk mendapatkan warna yang lebih kaya.\nTips:\nSetelah mengaplikasikan, ratakan dengan jari dan dapatkan hasil yang lebih matte",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03C01000297-1.webp",
+    "img/P21P03C01000297-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03C01000297"
+  },
+  {
+   "code": "P02S01C01000001",
+   "name": "Salsa 2In1 Long Lasting Mascara And Eyeliner",
+   "brand": "Salsa",
+   "category": "makeup",
+   "price": 21000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Cantik di tengah perjalanan tak perlu repot, kini SALSA menghadirkan 2in1 Long Lashting Mascara yang praktis dengan mascara dan black eyeliner dalam 1 kemasan untuk memperindah mata. Mudah digunakan oleh pemula. Netto. 10gr Cara Penggunaan: 1. Sapukan eyeliner pada mata untuk memberikan efek mata yang lebih besar 2. Sapukan maskara pada bulu mata untuk membuat bulu mata lebih panjang dan lentik",
+   "rating": null,
+   "stock": 60,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01C01000001-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01C01000001"
+  },
+  {
+   "code": "P02S01C01000047",
+   "name": "Salsa Eyebrow Guru 4In1",
+   "brand": "Salsa",
+   "category": "makeup",
+   "price": 4500,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Salsa menghadirkan pensil alis dengan kualitas terbaik yang memiliki 2 warna dalam 1 pensil yaitu hitam dan coklat serta dilengkapi dengan pelancip pensil (rautan) dan brush untuk semakin menyempurnakan bentuk alis Sista!\n#salsa #eyebrow #guru #pensilalis",
+   "rating": null,
+   "stock": 55,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01C01000047-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01C01000047"
+  },
+  {
+   "code": "P02S01C01000212",
+   "name": "Salsa Single Eyebrow Ash Brown",
+   "brand": "Salsa",
+   "category": "makeup",
+   "price": 3600,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Salsa Single Eyebrow Pencil Define Your Brows, Define Your Look – Pensil alis dengan tekstur creamy yang lembut, tidak terlalu keras dan tidak terlalu lembek. Agar dapatkan hasil yang halus dan presisi untuk alis natural hingga bold sesuai yang diinginkan dan tahan sepanjang hari.\nTersedia dengan 4 varian warna :\n1. Dark Brown\n2. Brown\n3. Ash Brown\n4. Ash Grey\nKeunggulan :\n- Precise Application: Ujung pensil yang halus dan tajam memberikan hasil aplikasi yang presisi untuk tampilan alis natural.\n- Smooth & Creamy Texture: Tekstur creamy yang lembut, tidak terlalu keras dan tidak terlalu lembek, memastikan aplikasi yang nyaman dan mudah.\n- Long-Lasting Wear: Tahan lama dengan formula smudge-proof dan water-resistant yang menjaga alis tetap rapi sepanjang hari.\n- 4 Various Shades: Tersedia dalam 4 warna (Dark Brown, Ash Brown, Brown, Ash Grey) yang cocok untuk berbagai warna kulit dan rambut.\n- Color-Grip Technology: Teknologi yang memastikan pigmentasi warna menempel sempurna pada alis tanpa pudar, memberikan hasil yang tahan lama dan intens.\n- Gentle on Skin: Diformulasikan khusus sehingga aman untuk kulit sensitif\n- Lightweight & Travel-Friendly: Desain ramping dan ringan yang praktis untuk dibawa ke mana saja.\n- Perfect for All Brow Styles: Cocok untuk menciptakan tampilan alis natural hingga bold sesuai keinginan.\nCara Pakai:\n1. Gunakan ujung pensil untuk membentuk dan mengisi alis mengikuti bentuk alis alami\n2. Gunakan spoolie Abrakadabrush untuk merapikan dan menciptakan tampilan alis yang lebih natural\n3. Gunakan rautan pada tutup untuk meruncingkan kembali pensil alis yang sudah digunakan",
+   "rating": null,
+   "stock": 45,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01C01000212-1.webp",
+    "img/P02S01C01000212-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01C01000212"
+  },
+  {
+   "code": "P11C03H01000006",
+   "name": "Ciara Hair Conditioner Repair Treatment With Kerascalp",
+   "brand": "Ciara",
+   "category": "haircare",
+   "price": 55000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "CIARA CONDITIONER REPAIR TREATMENT WITH KERASCALP Kegunaan Produk: * Membersihkan kulit kepala & batang rambut * Mengatasi rambut kering, rusak, bercabang dan mudah patah * Menghaluskan rambut sehingga mudah diatur * Menutrisi setiap helai hingga ke akar rambut Cara Pakai: * Aplikasikan Ciara Hair Wash mulai dari kulit kepala hinggu ujung rambut yang sudah dibasahi * Pijat lembut dengan ujung jari sekitar 2-3 menit lalu bilas dengan air bersih * Peras kelebihan air di rambut * Tuang Ciara Hair Conditioner pada telapak tangan * Aplikasikan conditoner mulai dari tengah hingga ujung rambut. Hindari penggunaan conditioner pada akar rambut untuk mencegah rambut lepek * Biarkan conditioner meresap ke dalam rambut selama 3-5 menit. Lalu bilas dengan air bersih",
+   "rating": null,
+   "stock": 50,
+   "weightKg": 0.1,
+   "images": [
+    "img/P11C03H01000006-1.webp",
+    "img/P11C03H01000006-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P11C03H01000006"
+  },
+  {
+   "code": "P11C03H01000009",
+   "name": "Ciara Hair Wash Repair Treatment with Kerascalp",
+   "brand": "Ciara",
+   "category": "haircare",
+   "price": 50000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "CIARA HAIR WASH REPAIR TREATMENT WITH KERASCALP Kegunaan Produk: * Membersihkan kulit kepala & batang rambut * Mengatasi rambut kering, rusak, bercabang dan mudah patah * Menghaluskan rambut sehingga mudah diatur * Menutrisi setiap helai hingga ke akar rambut Cara Pakai: * Aplikasikan Ciara Hair Wash mulai dari kulit kepala hinggu ujung rambut yang sudah dibasahi * Pijat lembut dengan ujung jari sekitar 2-3 menit lalu bilas dengan air bersih * Peras kelebihan air di rambut * Tuang Ciara Hair Conditioner pada telapak tangan * Aplikasikan conditoner mulai dari tengah hingga ujung rambut. Hindari penggunaan conditioner pada akar rambut untuk mencegah rambut lepek * Biarkan conditioner meresap ke dalam rambut selama 3-5 menit. Lalu bilas dengan air bersih Non SLS/SLES Anti Lepek All Hair Type (Straight/Wavy/Curly) No Alcohol Bumil & Busui Friendly Hair Wash",
+   "rating": null,
+   "stock": 25,
+   "weightKg": 0.1,
+   "images": [
+    "img/P11C03H01000009-1.webp",
+    "img/P11C03H01000009-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P11C03H01000009"
+  },
+  {
+   "code": "P02S01H01000003",
+   "name": "Salsa Anti Dandruff Hair Serum",
+   "brand": "Salsa",
+   "category": "haircare",
+   "price": 18000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "• Serum rambut dengan 6 varian perawatan\n• Melindungi rambut dari sinar UV\n• Mengatasi ketombe dan gatal\n• Cocok untuk semua jenis rambut\n• Formula ringan, mudah meresap\nKonten di atas dihasilkan oleh AI sebagai referensi.\nBerikut adalah detail produk:\nSALSA Hair Serum “Unlock Your Hair-O Power“ - Serum rambut yang dirancang khusus untuk memperbaiki, melindungi, dan memberikan kilau alami pada rambut. Dengan formula yang ringan, serum ini membantu mengurangi kusut danrambut kering. Cocok untuk semua jenis rambut termasuk rusak dan sensitif. Aman digunakan sehari-hari untuk semua jenis kulit kepala.\nHadir dalam 6 varian yang diformulasikan untuk berbagai permasalahan rambut :\n1. Keratin Repair Hair Serum – perawatan rambut kusut dan kering\n2. Growth Hair Serum – perawatan rambut rontok\n3. Rose Hair Serum – perawatan rambut kusam dan bau apek\n4. Dry & Itch Scalp Hair Serum – perawatan kulit kepala sensitif dan kering. ekerja cepat untuk menenangkan kulit kepala yang gatal dan iritasi, memberikan rasa nyaman seketika.\n5. UV Protection Hair Serum – perawatan melindungi rambut dari paparan sinar matahari. Dilengkapi Teknologi UV Shield & Hydra-Lock Technology membantu melindungi rambut dari sinar UV yang\nmenyebabkan kekeringan dan warna rambut memudar.\n6. Anti-Dandruff Hair Serum – perawatan kulit kepala ketombe. Dilengkapi dengan Dandruff-Defense Technology for Flake-Free Scalp – Teknologi Dandruff-Defense bekerja dengan kombinasi Salicylic Acid & Zinc Gluconate untuk mengatasi ketombe secara efektif, mengurangi gatal, dan menjaga kesehatan kulit kepala.\nCara penggunaan :\n1. Semprotkan Hair Serum ke area batang rambut dan kulit kepala (Khusus Growth, Anti dandruff, Dry scalp) hingga meresap.\n2. Sisir halus rambut menggunakan alat sisir atau jari.\n3. Tata rambut sesuai selera.\n4. Perhatikan penggunaan pada akar rambut agar tidak berlebihan guna menghindari potensi produksi minyak berlebih pada kulit kepala tertentu.\nNetto: 80ml.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.15,
+   "images": [
+    "img/P02S01H01000003-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01H01000003"
+  },
+  {
+   "code": "P02S01H01000083",
+   "name": "Salsa Hair Serum Rose 80 ml",
+   "brand": "Salsa",
+   "category": "haircare",
+   "price": 16000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SALSA Hair Serum - Perawatan Rambut Profesional Spray. Hadir dalam 3 varian yang diformulasikan untuk berbagai permasalahan rambut. Keratin Repair Hair Serum - Perawatan rambut rusak dan bercabang Growth Hair Serum - Perawatan rambut rontok Rose Hair Serum - Perawatan rambut kusut dan bau Keratin Repair Hair Serum with Silkworm Cocoon Extract, memberikan perbaikan pada rambut dengan Keratin agar ternutrisi, mudah diatur, lebih halus dan lurus. Growth Hair Serum with Panax Ginseng Root Extract, membantu perawatan pertumbuhan dan ketebalan rambut, serta kekuatan batang rambut yang rapuh. Rose Hair Serum, memberikan perawatan rambut menjadi lebih lembut dan anti bau apek. Netto 80ml. - Licensed by BPOM Keratin Hair Serum - NA18211001044 Growth Hair Serum - NA18211001203 Rose Hair Serum - NA18201000001 Cara penggunaan : 1. Semprotkan SALSA Hair Serum pada batang rambut setengah kering atau kering 2. Usap hingga merata dan biarkan kering 3. Dapat digunakan setiap hari kapanpun dibutuhkan 4. Hindari penggunaan pada akar rambut berlebihan untuk menghindari rambut menjadi semakin berminyak.",
+   "rating": null,
+   "stock": 53,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01H01000083-1.webp",
+    "img/P02S01H01000083-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01H01000083"
+  },
+  {
+   "code": "P02S01H03000099",
+   "name": "Salsa Instan Mermaid Hair Color Spray 3 Aqua(Pwdr)",
+   "brand": "Salsa",
+   "category": "haircare",
+   "price": 30500,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SALSA Instant Mermaid Hair Color Spray - Semir Rambut Temporary\nWarnai rambut lebih cepat dan juga membuat tampilan rambut lebih fun dan menarik hanya dengan Salsa Mermaid Hair Color Spray. Hadir dalam 6 variasi warna yang bisa kamu kreasikan sesuai dengan mood-mu!\nCara Penggunaan:\nPastikan rambur kering & bersih. Semprotkan Salsa Instant Mermaid Hair Color Spray pada rambut yang bersih. Arahkan pada bagian rambut yang diinginkan dan semprotkan dari jarak 30cm. Hindari area mata.",
+   "rating": null,
+   "stock": 31,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01H03000099-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01H03000099"
+  },
+  {
+   "code": "P02S01H01000107",
+   "name": "Salsa Keratin Hair Serum",
+   "brand": "Salsa",
+   "category": "haircare",
+   "price": 16000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Keratin Repair Hair Serum - Perawatan rambut rusak dan bercabang\nCara penggunaan :\n1. Semprotkan SALSA Hair Serum pada batang rambut setengah kering atau kering\n2. Usap hingga merata dan biarkan kering\n3. Dapat digunakan setiap hari kapanpun dibutuhkan\n4. Hindari penggunaan pada akar rambut berlebihan untuk menghindari rambut menjadi semakin berminyak.",
+   "rating": null,
+   "stock": 21,
+   "weightKg": 0.15,
+   "images": [
+    "img/P02S01H01000107-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01H01000107"
+  },
+  {
+   "code": "P02S01H01000233",
+   "name": "Salsa Uv Protection Hair Serum",
+   "brand": "Salsa",
+   "category": "haircare",
+   "price": 18000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SALSA Hair Serum Spray 80ml - Rose / Keratin Repair / Growth / Treatment / UV Protection Treatment / Anti Dandruff / Dry & Itch Scalp Perawatan Rambut Kering Rontok Haircare Shampoo\n100% Original\nNomor BPOM tertera di kemasan\nHadir dalam 3 varian yang diformulasikan untuk berbagai permasalahan rambut.\nKeratin Repair Hair Serum - Perawatan rambut rusak dan bercabang\nGrowth Hair Serum - Perawatan rambut rontok\nRose Hair Serum - Perawatan rambut kusut dan bau\nKeratin Repair Hair Serum with Silkworm Cocoon Extract, memberikan perbaikan pada rambut dengan Keratin agar ternutrisi, mudah diatur, lebih halus dan lurus.\nGrowth Hair Serum with Panax Ginseng Root Extract, membantu perawatan pertumbuhan dan ketebalan rambut, serta kekuatan batang rambut yang rapuh.\nRose Hair Serum, memberikan perawatan rambut menjadi lebih lembut dan anti bau apek.\nCara penggunaan :\n1. Semprotkan SALSA Hair Serum pada batang rambut setengah kering atau kering\n2. Usap hingga merata dan biarkan kering\n3. Dapat digunakan setiap hari kapanpun dibutuhkan\n4. Hindari penggunaan pada akar rambut berlebihan untuk menghindari rambut menjadi semakin berminyak.",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.15,
+   "images": [
+    "img/P02S01H01000233-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01H01000233"
+  },
+  {
+   "code": "P23E04P01000004",
+   "name": "Evangeline Batik Edp Dream 100 ml",
+   "brand": "Evangeline",
+   "category": "fragrance",
+   "price": 31304,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Batik Series\nEvangeline Batik memberikan nuansa yang menonjolkan cantiknya Kreasi Budaya Indonesia. Aroma Parfum dari seri batik mengsimbolasikan Cita rasa Indonesia. Apa Parfummu Hari Ini?\nParfum Wanita\nModel: DREAM / Red\nUkuran: 100ml / 3.5 Fl Oz\nJenis: Eau De Parfum\nTop Note: Peach, Fruity\nMiddle Note: Floral, Muguet\nBottom Note: Chucumbar, Rose\nAyo Koleksi Wangi Lainnya\n-AURA / Biru\n-BRIGHT / Hijau\n-CHARM /Pink\n-DREAM / Merah\n-EVOLVE / Ungu\n-ELLE / Putih\nKetahanan Wangi Parfum 7 - 8 Jam",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P23E04P01000004-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P23E04P01000004"
+  },
+  {
+   "code": "P23E04P01000036",
+   "name": "Evangeline Musk Edp Black 100 ml",
+   "brand": "Evangeline",
+   "category": "fragrance",
+   "price": 31304,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Evangeline Musk Perfume merupakan EDP parfume dengan aroma Musky/Powdery yang tahan lama dan tidak bernoda pada pakaian ini akan memberikan kesegaran sepanjang hari. Dikemas dengan botol kaca 100ml sehingga memudahkan anda untuk membawa kemanapun anda pergi. Dengan aroma yang menyegarkan membuat parfum ini bertahan 7-8 jam tergantung aktivitas anda. Detail: - Parfum untuk wanita - Tidak bernoda pada pakaian - Aroma wangi Musky/Powdery - Kemasan 100ml - Wangi yang tahan lama kisaran 7-8 jam",
+   "rating": null,
+   "stock": 24,
+   "weightKg": 0.1,
+   "images": [
+    "img/P23E04P01000036-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P23E04P01000036"
+  },
+  {
+   "code": "P23E04P01000041",
+   "name": "Evangeline Musk Edp White 100 ml",
+   "brand": "Evangeline",
+   "category": "fragrance",
+   "price": 31304,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Evangeline Musk Perfume merupakan EDP parfume dengan aroma Musky/Powdery yang tahan lama dan tidak bernoda pada pakaian ini akan memberikan kesegaran sepanjang hari. Dikemas dengan botol kaca 100ml sehingga memudahkan anda untuk membawa kemanapun anda pergi. Dengan aroma yang menyegarkan membuat parfum ini bertahan 7-8 jam tergantung aktivitas anda.\nDetail:\n- Parfum untuk wanita\n- Tidak bernoda pada pakaian\n- Aroma wangi Musky/Powdery\n- Kemasan 100ml\n- Wangi yang tahan lama kisaran 7-8 jam",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P23E04P01000041-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P23E04P01000041"
+  },
+  {
+   "code": "P23E04P01000042",
+   "name": "Evangeline Premium Edp Baby Powder 100 ml",
+   "brand": "Evangeline",
+   "category": "fragrance",
+   "price": 31304,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Type: Perfume for Women Size: 100ml Eau De Parfum Parfum mewah Evangeline Premium membawa nuansa Elegan dan Glamor yang mengagumkan. Parfum ini menggabungkan keharuman segar dan mewah yang memikat hati dan meninggalkan kesan yang menawan. Parfum mewah Evangeline Premium membawa nuansa Elegan dan Glamor yang mengagumkan. Parfum ini menggabungkan keharuman segar dan mewah yang memikat hati dan meninggalkan kesan yang menawan. Evangeline Premium menghadirkan kelembutan musk dan amber yang memberikan sentuhan sensual dan misterius yang mengundang rasa kegembiraan. Dalam setiap semprotan parfum ini, kalian akan merasakan wangi yang terus melekat pada kulitmu sepanjang hari. Tak hanya menjadi pengiring setiap momen istimewa, parfum Evangeline Premium juga mencerminkan kepribadianmu yang unik dan menghiasi gaya hidupmu dengan kemewahan.",
+   "rating": null,
+   "stock": 9,
+   "weightKg": 0.1,
+   "images": [
+    "img/P23E04P01000042-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P23E04P01000042"
+  },
+  {
+   "code": "P04Y05B02000022",
+   "name": "YUNIKON KIDS BODY MIST",
+   "brand": "Newlab",
+   "category": "fragrance",
+   "price": 15000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "YUNIKON KIDS BODY MIST",
+   "rating": null,
+   "stock": 70,
+   "weightKg": 0.1,
+   "images": [
+    "img/P04Y05B02000022-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P04Y05B02000022"
+  },
+  {
+   "code": "P68B13P01000036",
+   "name": "SCARLETT Whitening Eau De Parfum 30 ml",
+   "brand": "Scarlett",
+   "category": "fragrance",
+   "price": 64375,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Scarlett Whitening Eau De Parfum 30ml\nScarlett Whitening Eau De Parfum a Perfection untuk berikan kesegaran dan keharuman mewah dalam setiap semprotan dengan kemasan yang Ready To Go cocok untuk temani harimu, mudah dibawa kemana pun dan kapan pun tanpa takut pecah! dengan wangi yang mewah\nLuxurious Scent with Affordable Price.\nSemprotkan Scarlett Whitening Eau De Parfum di area titik nadi dan area leher agar wangi tahan lebih lama.",
+   "rating": null,
+   "stock": 9,
+   "weightKg": 0.1,
+   "images": [
+    "img/P68B13P01000036-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P68B13P01000036"
+  },
+  {
+   "code": "I01A01M01000090",
+   "name": "PEMASANG BULU MATA PALSU",
+   "brand": "Accessories",
+   "category": "lashes-tools",
+   "price": 4750,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "PEMASANG BULU MATA PALSU",
+   "rating": null,
+   "stock": 46,
+   "weightKg": 1.0,
+   "images": [
+    "img/I01A01M01000090-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/I01A01M01000090"
+  },
+  {
+   "code": "P21F02M01000195",
+   "name": "Focallure Fa73 Eyebrow Brush - 02",
+   "brand": "Focallure",
+   "category": "lashes-tools",
+   "price": 6853,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Soft brush head.\nThe secret of lasting charming eyes, define by yourself\nThree-step of delicate eye makeup\nStep 1. Draw from the eye position to the end of the eyelashes smoothly,then to the end of the eye\nStep 2. Carefully draw according to the makeup needs, fill the thickness\nStep 3. Draw again to enhance the depth of eye makeup",
+   "rating": null,
+   "stock": 49,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21F02M01000195-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21F02M01000195"
+  },
+  {
+   "code": "P35G02C01000019",
+   "name": "Gogotales Crystal Slipper Soft Non-Sticky Mirror Lip Glaze G02",
+   "brand": "Gogo Tales",
+   "category": "lashes-tools",
+   "price": 55000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Keunggulan : - Tahan lama dengan pigmentasi tinggi dan tahan air - Hasil akhir velvet matte yang sempurna menutupi warna asli bibir Anda - Tersedia beragam warna untuk semua jenis dan warna kulit Cara Penggunaan: - Gunakan lip scrub yang baik terlebih dahulu - Setelah itu, oleskan lip balm yang menghidrasi - Gunakan aplikator untuk mengaplikasikan lipstik ke bibir Anda dengan presisi Tersedia Varian - Crystal Slipper Soft Non Sticky Mirror Lip Glaze G01 - Crystal Slipper Soft Non Sticky Mirror Lip Glaze G02 - Crystal Slipper Soft Non Sticky Mirror Lip Glaze G03 - Crystal Slipper Soft Non Sticky Mirror Lip Glaze G04 - Crystal Slipper Soft Non Sticky Mirror Lip Glaze G05",
+   "rating": null,
+   "stock": 36,
+   "weightKg": 0.1,
+   "images": [
+    "img/P35G02C01000019-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P35G02C01000019"
+  },
+  {
+   "code": "P21P03M01000068",
+   "name": "Pinkflash Double Head Eyeshadow Brush Pf-T04 #02",
+   "brand": "Pinkflash",
+   "category": "lashes-tools",
+   "price": 19720,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "PINKFLASH T04 Fairy Wand Beauty Brush Makeup Tool Multi-use\nMakeup Brushes are made of high-quality synthetic fiber, which are cruelty-free, soft, fluffy and will not fall off easily. The rich bristles can strong grasp the powder and spread evenly on the face, but also gentle and non-skin irritation.\n【Sturdy & Durable Handle】The makeup brush handle is made of sturdy and durable materials. The aluminum ferrule is not easily broken and deformed, which can well prevent the bristles from falling off. The unique crystal handle is not only exquisite in appearance, but also ergonomic design, comfortable to hold, and easy to use.\n【Multifunctional use】Cover 6pcs brushes for eyebrows, eyeshadow, nose shadow, contour, pressed or loose powder, highlighters . Ideally for applying, blending and shading products. Easy and convenient for daily makeup use.\n#01 dual-ended eyebrow brush\n- for sharping brow & combing the brows\n#02 dual-ended eyeshadow brush\n- for applying eye socket & local smudge\n#03 eyeshadow/nose Shadow Brush\n- for applying eye socket & local smudge\n#04 sector highlight Brush\n- for a highlighter to brighten facial features\n#05 blush brush\n-for blush to create a soft & natural effect\n#06 angled shading brush\n- for bronzer to shaping 3D face contour\n#07 powder brush\n- for all-over application of powders\nHigh-quality synthetic fibe\nSoft and comfortable bristles\nCruelty-free\nNon-skin irritation\nStrong grasp powder\nAluminum ferrule, not break easily\nErgonomic design\nOthers：Poor quality bristles, uncomfortable → Ours： high quality synthetic fiber, cruelty free, soft bristles, comfortable\nOthers：hard to catch powder—— Ours：strong ability to catch powder\nOthers Ordinary material ferrule, easy to break → Ours： aluminum ferrule, durable and not break easily\nTips: After use, the brushes can be covered with a plastic net or PVC bag to prevent from being frizzy & bifurcated.",
+   "rating": null,
+   "stock": 24,
+   "weightKg": 0.1,
+   "images": [
+    "img/P21P03M01000068-1.webp",
+    "img/P21P03M01000068-2.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P21P03M01000068"
+  },
+  {
+   "code": "P02S01M01000011",
+   "name": "Salsa Brush Abrakada 04",
+   "brand": "Salsa",
+   "category": "lashes-tools",
+   "price": 16800,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SALSA Abrakada Brush – Spark your magical beauty with Salsa Abrakada Brush!\nMakeup Brush dengan PREMIUM QUALITY MATERIAL yang mudah digunakan dengan bulu/bristles ULTRA SOFT & FLUFFY.\nDengan desain premium & kokoh, lebih nyaman digunakan terasa seperti sutra!\n- Easy to Use and Beginner Friendly, mudah digunakan dan ramah bagi pemula\n- Silky soft and fluffy bristles, bulu halus dan lembut seperti sutra\n- Ultra soft on skin, terasa lembut di kulit\n- Premium Quality Material, lebih tahan lama & nyaman digunakan\n- Easy to Achieve flawless makeup finish, membantu hasilkan makeup yang lebih sempurna\nComplete your magical set:\n01 - Powder Brush: Fluffy brush dengan bulu ultra lembut untuk pengaplikasian bedak/powder yang merata dan flawless.\n02 - Shadow Brush: Eyeshadow brush lembut dan presisi untuk look mata yang eye-catching!\n03 - Fan Brush: Highlighter brush yang pipih dan lebar untuk tampilan makeup yang glowing maksimal!\n04 – 3-in-1 Foundation Brush + Small Angled brush + EXTRA Spoolie:\nGunakan Foundation brush untuk mengaplikasikan foundation/contour/concealer yang lebih presisi dan natural. Dilengkapi dengan Angled & Spoolie Brush untuk tampilan alis yang on fleek!\nCara Penggunaan:\n1. Aplikasikan produk makeup pada wajah dengan SALSA Abrakada Brush yang sesuai\n2. Kemudian cukup usapkan SALSA Abrakada Brush ke kulit wajah secara merata\nCara Pembersihan:\n1. Basahi SALSA Abrakada Brush dengan air hangat\n2. Gunakan shampoo/sabun cair lalu tuang ke telapak tangan. Usapkan bulu brush ke tangan secara halus. Juga bisa dengan tuangkan ke air hangat dalam gelas, lalu rendam brush ke dalam gelas dan tunggu beberapa saat sampai sisa makeup rontok.\n3. Bilas dengan air hangat dan pastikan brush sudah bersih\n4. Biarkan kering terkena udara alami",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01M01000011-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01M01000011"
+  },
+  {
+   "code": "P02S01C01000145",
+   "name": "Salsa Mascara Everlash",
+   "brand": "Salsa",
+   "category": "lashes-tools",
+   "price": 20800,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "Salsa Everlash Mascara 12H Long-lasting Mascara Lashes Your Way, 12 Hours a Day! – Hadir dengan formula 12 jam tahan lama dan anti air / waterproof tidak mudah luntur jika terkena air ataupun berkeringat sepanjang hari. Menciptakan bulu mata ekstra panjang dan tebal hanya dalam satu aplikasi.\nKeunggulan :\n- 12-Hour Long-Lasting Effect: Bulu mata tetap ON POINT dengan formula tahan lama hingga 12 jam.\n- Smudge-Proof & Waterproof: Tidak luntur, bahkan saat berkeringat atau terkena air.\n- Lash-Wrap Technology: Teknologi eksklusif yang membungkus setiap helai bulu mata dengan lapisan ultra-tipis untuk efek memanjang, melentik, dan tahan lama tanpa membuatnya terasa berat.\n- Volumizing Power: Memberikan volume maksimal hanya dalam satu aplikasi.\n- Precise Curl & Lift: Melentikkan bulu mata secara sempurna untuk tampilan dramatis.\n- Lightweight Comfort: Formulanya ringan, memberikan kenyamanan sepanjang hari tanpa terasa berat.\n- Non-Clumping Formula: Hasil akhir halus dan natural tanpa menggumpal.\n- Quick-Drying Formula: Kering seketika untuk hasil yang bebas belepotan.\n- Daily Essential: Cocok untuk pemakaian sehari-hari, memberikan tampilan natural hingga dramatis yang sesuai untuk segala aktivitas.\n- Suitable for All Eye Types: Dirancang aman untuk semua jenis bulu mata, termasuk yang sensitif.\n- Easy to Remove: Dapat dibersihkan dengan mudah menggunakan makeup remover tanpa meninggalkan residu.\nCara Pakai :\n1. Sebelum mengaplikasikan mascara, jepit bulu mata dengan Vinylash Pro/Pastel Eyelash Curler untuk hasil lebih maksimal.\n2. Aplikasikan Salsa Everlash Mascara dengan aplikatornya dari akar hingga ujung bulu mata.\n3. Ulangi hingga mendapatkan volume dan panjang yang diinginkan",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01C01000145-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01C01000145"
+  },
+  {
+   "code": "P02S01M01000240",
+   "name": "Salsa Vinylash Pastel Color Pink",
+   "brand": "Salsa",
+   "category": "lashes-tools",
+   "price": 12000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SALSA Vinylash Pro Color Eyelash Curler – Eyelashes Curler dengan SISIR BULU MATA buat 2X LEBIH LENTIK DALAM 1x JEPIT. Terbuat dari material premium yang lebih praktis dan mudah digunakan untuk melentikkan bulu mata. Buat bulu matamu semakin cantik!\nDengan desain ergonomis & kokoh, lebih nyaman digunakan di mata.\n- 2x* lebih LENTIK dalam 1x JEPIT\n- Bulu mata lentik tahan seharian*\n- Dengan sisir bulu mata, 2-in-1 untuk menyisir & melentikkan sekaligus\n- Anti kejepit club! Nyaman dan tidak merusak bulu mata\nCara Penggunaan:\n1. Posisikan Vinylash Pro Color Eyelash Curler pada area bulu mata\n2. Jepit dan perlahan tekan kearah atas selama kurang lebih 5 detik\n3. Bulu mata langsung lentik seharian!",
+   "rating": null,
+   "stock": 12,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01M01000240-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01M01000240"
+  },
+  {
+   "code": "P02S01M01000243",
+   "name": "Salsa Vinylash Premium Color Pink",
+   "brand": "Salsa",
+   "category": "lashes-tools",
+   "price": 12000,
+   "strikePrice": null,
+   "discountPercent": null,
+   "description": "SALSA Vinylash Pro Color Eyelash Curler – Eyelashes Curler dengan SISIR BULU MATA buat 2X LEBIH LENTIK DALAM 1x JEPIT. Terbuat dari material premium yang lebih praktis dan mudah digunakan untuk melentikkan bulu mata. Buat bulu matamu semakin cantik! Dengan desain ergonomis & kokoh, lebih nyaman digunakan di mata. - 2x* lebih LENTIK dalam 1x JEPIT - Bulu mata lentik tahan seharian* - Dengan sisir bulu mata, 2-in-1 untuk menyisir & melentikkan sekaligus - Anti kejepit club! Nyaman dan tidak merusak bulu mata Cara Penggunaan: 1. Posisikan Vinylash Pro Color Eyelash Curler pada area bulu mata 2. Jepit dan perlahan tekan kearah atas selama kurang lebih 5 detik 3. Bulu mata langsung lentik seharian!",
+   "rating": null,
+   "stock": 26,
+   "weightKg": 0.1,
+   "images": [
+    "img/P02S01M01000243-1.webp"
+   ],
+   "hot": null,
+   "sourceUrl": "https://bpedia.id/product/P02S01M01000243"
+  }
+ ]
+}
