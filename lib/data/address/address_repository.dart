@@ -1,7 +1,8 @@
 /// Buku alamat: daftar, tambah, ubah, hapus, alamat utama (tanpa peta di demo).
 library;
 
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 import '../auth/auth_validators.dart';
 import '../storage/document_repository.dart';

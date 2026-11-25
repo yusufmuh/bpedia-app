@@ -8,7 +8,8 @@ import 'package:bpedia_app/data/shipping/shipping_repository.dart';
 import 'package:bpedia_app/data/wib_dates.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 import 'support/fakes.dart';
 

@@ -5,7 +5,8 @@ import 'package:bpedia_app/data/auth/auth_repository.dart';
 import 'package:bpedia_app/data/storage/app_document.dart';
 import 'package:bpedia_app/services/analytics/analytics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 const String _secret = 'RahasiaBanget#2026';
 

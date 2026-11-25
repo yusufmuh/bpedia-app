@@ -1,7 +1,8 @@
 /// Geseran hari Mode Demo yang tersimpan (untuk uji Sabtu dan streak).
 library;
 
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 import '../storage/document_repository.dart';
 

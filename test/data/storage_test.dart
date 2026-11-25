@@ -5,7 +5,8 @@ import 'package:bpedia_app/data/storage/document_repository.dart';
 import 'package:bpedia_app/data/storage/migrate_v2.dart';
 import 'package:bpedia_app/data/storage/shared_preferences_store.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 /// Seksi contoh: satu bilangan tak negatif.
 class CounterRepository extends DocumentRepository {

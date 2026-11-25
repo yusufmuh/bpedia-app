@@ -3,7 +3,8 @@ library;
 
 import 'dart:async';
 
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 import '../../services/analytics/analytics.dart';
 import '../storage/document_repository.dart';

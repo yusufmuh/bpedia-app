@@ -4,7 +4,8 @@
 /// `assets/catalog/catalog.json`; tidak ada nilai karangan.
 library;
 
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 import '../wib_dates.dart';
 

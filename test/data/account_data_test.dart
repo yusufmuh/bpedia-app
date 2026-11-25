@@ -7,7 +7,8 @@ import 'package:bpedia_app/data/wishlist/wishlist_repository.dart';
 import 'package:bpedia_app/services/analytics/analytics.dart';
 import 'package:flutter/material.dart' show Brightness, ThemeMode;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kelopak_hub/kelopak_hub.dart';
+import 'package:kelopak_hub/kelopak_hub.dart'
+    hide CheckoutQuote, CheckoutRequest, v2DocumentKey;
 
 import 'support/fakes.dart';
 
