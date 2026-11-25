@@ -24,7 +24,11 @@ enum SoundCue {
   winProduct('win_product', haptic: HapticKind.heavy),
   unlock('unlock', haptic: HapticKind.light),
   softError('soft_error'),
-  brandNotifikasi('brand_notifikasi', haptic: HapticKind.success);
+  brandNotifikasi('brand_notifikasi', haptic: HapticKind.success),
+  winKelopak('win_kelopak', haptic: HapticKind.medium),
+  missionDone('mission_done', haptic: HapticKind.medium),
+  pop('pop', volume: 0.5, minIntervalMs: 60, haptic: HapticKind.selection),
+  winJingle('win_jingle', volume: 0.6, maxPlayers: 1, minIntervalMs: 2000);
 
   const SoundCue(
     this.id, {
@@ -64,6 +68,9 @@ enum SoundCue {
 /// Jingle Bpedia sebagai musik latar zona Hadiah.
 const String bgmAsset = 'audio/bgm_jingle.mp3';
 
+/// Musik latar halaman Roda Sabtu.
+const String bgmWheelAsset = 'audio/bgm_roda.mp3';
+
 /// Volume musik latar.
 const double bgmVolume = 0.35;
 
@@ -99,10 +106,11 @@ class SoundService {
   Future<void>? _contextReady;
   Future<void> _musicQueue = Future<void>.value();
   AudioPlayer? _bgm;
+  String? _bgmSource;
   bool _bgmPlaying = false;
   bool _musicEnabled = false;
   bool _foreground = true;
-  int _musicHolders = 0;
+  final List<String> _musicRequests = <String>[];
   bool _disposed = false;
   Object? _lastError;
 
@@ -127,11 +135,15 @@ class SoundService {
   }
 
   /// Jumlah layar yang sedang meminta musik latar.
-  int get musicHolders => _musicHolders;
+  int get musicHolders => _musicRequests.length;
+
+  /// Musik latar yang diminta layar terakhir, atau null bila tidak ada.
+  String? get currentMusicAsset =>
+      _musicRequests.isEmpty ? null : _musicRequests.last;
 
   /// Apakah musik latar seharusnya berbunyi sekarang.
   bool get wantsMusic =>
-      !_disposed && _musicEnabled && _musicHolders > 0 && _foreground;
+      !_disposed && _musicEnabled && _musicRequests.isNotEmpty && _foreground;
 
   /// Memuat semua efek supaya pemutaran pertama tidak terlambat.
   Future<void> warmUp() async {
@@ -171,17 +183,20 @@ class SoundService {
     return true;
   }
 
-  /// Sebuah layar meminta musik latar. Pasangkan dengan [stopMusic].
-  void startMusic() {
+  /// Sebuah layar meminta musik latar [asset] (jalur relatif `assets/`).
+  /// Permintaan terakhir yang berbunyi. Pasangkan dengan [stopMusic].
+  void startMusic({String asset = bgmAsset}) {
     if (_disposed) return;
-    _musicHolders++;
+    _musicRequests.add(asset);
     _syncMusic();
   }
 
-  /// Layar yang meminta musik latar sudah ditutup.
-  void stopMusic() {
+  /// Layar yang meminta musik latar [asset] sudah ditutup atau tidak
+  /// terlihat lagi.
+  void stopMusic({String asset = bgmAsset}) {
     if (_disposed) return;
-    if (_musicHolders > 0) _musicHolders--;
+    final index = _musicRequests.lastIndexOf(asset);
+    if (index >= 0) _musicRequests.removeAt(index);
     _syncMusic();
   }
 
@@ -274,15 +289,27 @@ class SoundService {
 
   Future<void> _applyMusic() async {
     final shouldPlay = wantsMusic;
-    if (shouldPlay == _bgmPlaying) return;
-    if (shouldPlay) {
+    final asset = currentMusicAsset;
+    if (shouldPlay && asset != null) {
+      if (_bgmPlaying && asset == _bgmSource) return;
       final player = _bgm ??= await _createBgm();
       if (player == null) return;
+      if (asset != _bgmSource) {
+        final switched = await _guard(() async {
+          if (_bgmSource != null) await player.stop();
+          await player.setSource(AssetSource(asset));
+        });
+        if (!switched) {
+          _bgmPlaying = false;
+          return;
+        }
+        _bgmSource = asset;
+      }
       _bgmPlaying = await _guard(() async {
         await player.setVolume(bgmVolume);
         await player.resume();
       });
-    } else {
+    } else if (_bgmPlaying) {
       final player = _bgm;
       if (player != null) await _guard(player.pause);
       _bgmPlaying = false;
@@ -295,7 +322,6 @@ class SoundService {
       await _ensureAudioContext();
       player = AudioPlayer();
       await player.setReleaseMode(ReleaseMode.loop);
-      await player.setSource(AssetSource(bgmAsset));
       return player;
     } on Object catch (error) {
       _lastError = error;

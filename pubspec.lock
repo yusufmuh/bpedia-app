@@ -175,7 +175,7 @@ packages:
       path: "../bpedia-daily-checkin"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "3.0.0"
   dbus:
     dependency: transitive
     description:
@@ -394,7 +394,7 @@ packages:
       path: "../bpedia-kelopak-hub"
       relative: true
     source: path
-    version: "2.0.0+20"
+    version: "3.0.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -473,7 +473,7 @@ packages:
       path: "../bpedia-misi-belanja"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "3.0.0"
   objective_c:
     dependency: transitive
     description:
@@ -608,7 +608,7 @@ packages:
       path: "../bpedia-roda-sabtu"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "3.0.0"
   shared_preferences:
     dependency: "direct main"
     description:

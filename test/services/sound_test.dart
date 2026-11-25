@@ -7,7 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('SoundCue', () {
-    test('cue RENCANA §7.5 lengkap dan namanya unik', () {
+    test('cue RENCANA §7.5 dan §10 lengkap dan namanya unik', () {
+      expect(
+        SoundCue.values.map((cue) => cue.id).toSet(),
+        hasLength(SoundCue.values.length),
+      );
       expect(SoundCue.values.map((cue) => cue.id).toSet(), <String>{
         'claim',
         'bonus',
@@ -18,8 +22,13 @@ void main() {
         'tap',
         'soft_error',
         'brand_notifikasi',
+        'win_kelopak',
+        'mission_done',
+        'pop',
+        'win_jingle',
       });
       expect(bgmAsset, 'audio/bgm_jingle.mp3');
+      expect(bgmWheelAsset, 'audio/bgm_roda.mp3');
     });
 
     test('tiap cue dan musik latar punya berkas di assets/audio', () {

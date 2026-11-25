@@ -1,0 +1,367 @@
+/// Lembar Filter katalog (SPEC §4.3): kategori, brand dengan kolom cari,
+/// rentang harga dengan chip cepat, "Atur ulang", dan "Terapkan (N produk)".
+library;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../app/app_scope.dart';
+import '../../data/catalog/catalog_repository.dart';
+import '../../design/design.dart';
+
+/// Rentang harga cepat.
+const List<({String label, int? min, int? max})> priceRanges =
+    <({String label, int? min, int? max})>[
+      (label: 'Di bawah Rp25.000', min: null, max: 24999),
+      (label: 'Rp25.000 sampai Rp50.000', min: 25000, max: 50000),
+      (label: 'Rp50.000 sampai Rp100.000', min: 50000, max: 100000),
+      (label: 'Di atas Rp100.000', min: 100001, max: null),
+    ];
+
+/// Membuka lembar Filter untuk [initial]. Mengembalikan kueri baru bila
+/// "Terapkan" ditekan, atau null bila ditutup.
+Future<CatalogQuery?> showCatalogFilterSheet(
+  BuildContext context,
+  CatalogQuery initial,
+) {
+  return showBpSheet<CatalogQuery>(
+    context: context,
+    useRootNavigator: true,
+    builder: (context) => CatalogFilterSheet(initial: initial),
+  );
+}
+
+/// Isi lembar Filter.
+class CatalogFilterSheet extends StatefulWidget {
+  const CatalogFilterSheet({required this.initial, super.key});
+
+  final CatalogQuery initial;
+
+  @override
+  State<CatalogFilterSheet> createState() => _CatalogFilterSheetState();
+}
+
+class _CatalogFilterSheetState extends State<CatalogFilterSheet> {
+  late CatalogQuery _draft = widget.initial;
+  final TextEditingController _brandSearch = TextEditingController();
+  late final TextEditingController _min = TextEditingController(
+    text: widget.initial.minPrice?.toString() ?? '',
+  );
+  late final TextEditingController _max = TextEditingController(
+    text: widget.initial.maxPrice?.toString() ?? '',
+  );
+  String _brandNeedle = '';
+
+  @override
+  void dispose() {
+    _brandSearch.dispose();
+    _min.dispose();
+    _max.dispose();
+    super.dispose();
+  }
+
+  void _setPrice(int? min, int? max, {bool syncFields = true}) {
+    setState(() {
+      _draft = min == null && max == null
+          ? _draft.copyWith(clearPrice: true)
+          : CatalogQuery(
+              text: _draft.text,
+              categoryId: _draft.categoryId,
+              brands: _draft.brands,
+              minPrice: min,
+              maxPrice: max,
+              sort: _draft.sort,
+              hotOnly: _draft.hotOnly,
+            );
+      if (syncFields) {
+        _min.text = min?.toString() ?? '';
+        _max.text = max?.toString() ?? '';
+      }
+    });
+  }
+
+  void _onPriceTyped() {
+    _setPrice(
+      int.tryParse(_min.text),
+      int.tryParse(_max.text),
+      syncFields: false,
+    );
+  }
+
+  void _reset() {
+    _brandSearch.clear();
+    setState(() {
+      _brandNeedle = '';
+      _draft = _draft.withoutFilters();
+      _min.clear();
+      _max.clear();
+    });
+  }
+
+  void _toggleBrand(String brand) {
+    final brands = <String>{..._draft.brands};
+    if (!brands.remove(brand)) brands.add(brand);
+    setState(() => _draft = _draft.copyWith(brands: brands));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final services = AppScope.of(context);
+    final catalog = services.catalog;
+    final c = context.bp;
+    final count = catalog.search(_draft).length;
+    final min = _draft.minPrice;
+    final max = _draft.maxPrice;
+    final invalidRange = min != null && max != null && min > max;
+    final brands = catalog.brandsMatching(_brandNeedle);
+    return BpSheet(
+      title: 'Filter',
+      footer: Row(
+        children: <Widget>[
+          Expanded(
+            child: PillButton(
+              label: 'Atur ulang',
+              variant: PillButtonVariant.neutral,
+              onPressed: _draft.activeFilterCount == 0 ? null : _reset,
+            ),
+          ),
+          const SizedBox(width: BpSpace.x3),
+          Expanded(
+            flex: 2,
+            child: PillButton(
+              label: invalidRange
+                  ? 'Cek rentang harga'
+                  : 'Terapkan ($count produk)',
+              onPressed: invalidRange
+                  ? null
+                  : () => Navigator.of(context).pop(_draft),
+            ),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const _GroupTitle('Kategori'),
+          Wrap(
+            spacing: BpSpace.x2,
+            runSpacing: BpSpace.x2,
+            children: <Widget>[
+              for (final category in catalog.categories)
+                BpChip(
+                  label: category.name,
+                  selected: _draft.categoryId == category.id,
+                  leading: switch (BrandGlyph.tryParse(category.icon)) {
+                    final BrandGlyph glyph => BrandIcon(glyph, size: 16),
+                    null => null,
+                  },
+                  onTap: () => setState(
+                    () => _draft = _draft.categoryId == category.id
+                        ? _draft.copyWith(clearCategory: true)
+                        : _draft.copyWith(categoryId: category.id),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: BpSpace.x5),
+          _GroupTitle(
+            'Brand',
+            trailing: _draft.brands.isEmpty
+                ? null
+                : '${_draft.brands.length} dipilih',
+          ),
+          SearchField(
+            controller: _brandSearch,
+            hint: 'Cari brand',
+            onChanged: (value) => setState(() => _brandNeedle = value),
+          ),
+          const SizedBox(height: BpSpace.x2),
+          if (brands.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: BpSpace.x3),
+              child: Text(
+                'Brand "$_brandNeedle" belum ada di katalog.',
+                style: BpText.bodyS.copyWith(color: c.textMuted),
+              ),
+            )
+          else
+            for (final brand in brands)
+              _BrandRow(
+                brand: brand,
+                selected: _draft.brands.contains(brand),
+                onTap: () => _toggleBrand(brand),
+              ),
+          const SizedBox(height: BpSpace.x5),
+          const _GroupTitle('Harga'),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: _PriceField(
+                  controller: _min,
+                  label: 'Harga minimum',
+                  onChanged: _onPriceTyped,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: BpSpace.x2),
+                child: Text(
+                  '-',
+                  style: BpText.body.copyWith(color: c.textMuted),
+                ),
+              ),
+              Expanded(
+                child: _PriceField(
+                  controller: _max,
+                  label: 'Harga maksimum',
+                  onChanged: _onPriceTyped,
+                ),
+              ),
+            ],
+          ),
+          if (invalidRange)
+            Padding(
+              padding: const EdgeInsets.only(top: BpSpace.x2),
+              child: Text(
+                'Harga minimum lebih besar dari maksimum. Tukar angkanya, ya.',
+                style: BpText.caption.copyWith(color: c.danger),
+              ),
+            ),
+          const SizedBox(height: BpSpace.x3),
+          Wrap(
+            spacing: BpSpace.x2,
+            runSpacing: BpSpace.x2,
+            children: <Widget>[
+              for (final range in priceRanges)
+                BpChip(
+                  label: range.label,
+                  selected: min == range.min && max == range.max,
+                  onTap: () => min == range.min && max == range.max
+                      ? _setPrice(null, null)
+                      : _setPrice(range.min, range.max),
+                ),
+            ],
+          ),
+          const SizedBox(height: BpSpace.x4),
+        ],
+      ),
+    );
+  }
+}
+
+class _GroupTitle extends StatelessWidget {
+  const _GroupTitle(this.title, {this.trailing});
+
+  final String title;
+  final String? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    final note = trailing;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: BpSpace.x2),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Semantics(
+              header: true,
+              child: Text(
+                title,
+                style: BpText.subtitle.copyWith(color: c.text),
+              ),
+            ),
+          ),
+          if (note != null)
+            Text(note, style: BpText.caption.copyWith(color: c.brandStrong)),
+        ],
+      ),
+    );
+  }
+}
+
+class _BrandRow extends StatelessWidget {
+  const _BrandRow({
+    required this.brand,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String brand;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return MergeSemantics(
+      child: BpTappable(
+        onTap: onTap,
+        selected: selected,
+        semanticLabel: brand,
+        pressScale: false,
+        alignment: Alignment.centerLeft,
+        focusRadius: BpRadius.tileAll,
+        builder: (context, states) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: BpSpace.x1),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  brand,
+                  style: BpText.body.copyWith(
+                    color: c.text,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+              AnimatedContainer(
+                duration: BpMotion.micro,
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: selected ? c.brand : c.surface,
+                  borderRadius: BpRadius.badgeAll,
+                  border: Border.all(
+                    color: selected ? c.brand : c.textFaint,
+                    width: 1.5,
+                  ),
+                ),
+                child: selected
+                    ? Icon(LucideIcons.check, size: 16, color: c.onBrand)
+                    : null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PriceField extends StatelessWidget {
+  const _PriceField({
+    required this.controller,
+    required this.label,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final VoidCallback onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      keyboardType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(8),
+      ],
+      onChanged: (_) => onChanged(),
+      style: BpText.body.copyWith(fontFeatures: BpText.tabular),
+      decoration: InputDecoration(labelText: label, prefixText: 'Rp'),
+    );
+  }
+}

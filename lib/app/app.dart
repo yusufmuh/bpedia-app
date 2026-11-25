@@ -205,7 +205,9 @@ class _BpediaAppState extends State<BpediaApp> with WidgetsBindingObserver {
         child: PhoneFrame(
           child: ColoredBox(
             color: c.canvas,
-            child: child ?? const SizedBox.shrink(),
+            child: _services.navigatorWrapper?.call(context, child) ??
+                child ??
+                const SizedBox.shrink(),
           ),
         ),
       ),

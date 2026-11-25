@@ -5,6 +5,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/services.dart' show AssetBundle, rootBundle;
+import 'package:flutter/widgets.dart' show TransitionBuilder;
 import 'package:kelopak_hub/kelopak_hub.dart'
     show KeyValueStore, MemoryKeyValueStore, WibClock;
 
@@ -215,6 +216,11 @@ class AppServices {
   final ReminderService reminders;
   final Links links;
   final AppRouter router;
+
+  /// Pembungkus navigator app, dipasang penyambung integrasi (mis.
+  /// `KelopakScope` zona Hadiah) supaya halaman dan lembar di navigator bisa
+  /// membacanya. Null = tanpa pembungkus.
+  TransitionBuilder? navigatorWrapper;
 
   final Analytics? _appsFlyer;
   late final LocalAuthRepository _localAuth;
