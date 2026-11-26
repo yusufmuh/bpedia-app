@@ -10,6 +10,7 @@ import '../../design/design.dart';
 import '../cart/widgets/line_parts.dart';
 import '../checkout/widgets/payment_summary.dart';
 import 'order_actions.dart';
+import 'widgets/demo_panel.dart';
 import 'order_format.dart';
 import 'widgets/order_timeline.dart';
 
@@ -31,7 +32,17 @@ class OrderDetailPage extends StatelessWidget {
         final order = services.orders.byId(orderId);
         return Scaffold(
           backgroundColor: c.canvas,
-          appBar: const BpAppBar(title: 'Detail pesanan'),
+          appBar: BpAppBar(
+            title: 'Detail pesanan',
+            actions: <Widget>[
+              if (order != null)
+                IconButton(
+                  tooltip: 'Hubungi CS',
+                  icon: Icon(LucideIcons.headset, color: c.text),
+                  onPressed: () => contactCare(context, order),
+                ),
+            ],
+          ),
           body: order == null
               ? Center(
                   child: SingleChildScrollView(
@@ -69,6 +80,9 @@ class _DetailBody extends StatelessWidget {
     final c = context.bp;
     final left = remainingPayLabel(order, services.clock.instant);
     final mission = order.missionMessage;
+    final missionCodes = services.rewards.available
+        ? services.rewards.missionProductCodes
+        : const <String>{};
     return ListView(
       padding: const EdgeInsets.only(top: BpSpace.sectionGap),
       children: <Widget>[
@@ -104,7 +118,7 @@ class _DetailBody extends StatelessWidget {
               ),
               const SizedBox(height: BpSpace.x2),
               Text(
-                'No. pesanan ${order.id}',
+                'No. pesanan #${order.id}',
                 style: BpText.caption.copyWith(color: c.textMuted),
               ),
             ],
@@ -184,7 +198,11 @@ class _DetailBody extends StatelessWidget {
           ),
         ),
         Section(
-          header: SectionHeader(title: 'Produk (${order.itemCount})'),
+          header: SectionHeader(
+            title: 'Produk (${order.itemCount} barang)',
+            actionLabel: 'Beli lagi',
+            onAction: () => buyAgain(context, order),
+          ),
           child: Column(
             children: <Widget>[
               for (final item in order.items)
@@ -213,11 +231,21 @@ class _DetailBody extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: BpText.bodyS.copyWith(color: c.text),
                               ),
-                              Text(
-                                '${item.qty} x ${formatRupiah(item.unitPrice)}',
-                                style: BpText.caption.copyWith(
-                                  color: c.textMuted,
-                                ),
+                              Wrap(
+                                spacing: BpSpace.x2,
+                                runSpacing: 2,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    '${item.qty} x '
+                                    '${formatRupiah(item.unitPrice)}',
+                                    style: BpText.caption.copyWith(
+                                      color: c.textMuted,
+                                    ),
+                                  ),
+                                  if (missionCodes.contains(item.productCode))
+                                    const MissionChip(),
+                                ],
                               ),
                             ],
                           ),
@@ -286,10 +314,13 @@ class _DetailBody extends StatelessWidget {
                 voucherTitle: order.voucherTitle,
                 kelopakUsed: order.kelopakUsed,
                 kelopakValue: order.kelopakValue,
+                giftCount: order.gifts.length,
                 total: order.total,
                 totalLabel: order.isCod
                     ? 'Bayar di tempat'
-                    : 'Total pembayaran',
+                    : (order.status == OrderStatus.awaitingPayment
+                          ? 'Total pembayaran'
+                          : 'Total dibayar'),
               ),
             ],
           ),
@@ -321,60 +352,44 @@ class _DemoControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.bp;
-    final (label, help, action) = switch (order.status) {
+    final (label, help, icon, action) = switch (order.status) {
       OrderStatus.awaitingPayment => (
         'Simulasikan pembayaran',
         'Tandai pesanan sudah dibayar tanpa uang sungguhan.',
+        LucideIcons.wallet,
         () => simulatePayment(context, order),
       ),
       OrderStatus.packing => (
         'Kirim pesanan',
-        'Tandai paket sudah diserahkan ke kurir.',
+        'Majukan status pesanan untuk menguji alur: tandai paket sudah '
+            'diserahkan ke kurir.',
+        LucideIcons.truck,
         () => simulateShipping(context, order),
       ),
       _ => (
         'Pesanan diterima',
-        'Tandai paket sudah tiba. Misi Belanja dievaluasi setelah ini.',
+        'Tandai paket sudah tiba. Saat Selesai, progres Misi Belanja '
+            'dihitung.',
+        LucideIcons.circleCheck,
         () => completeOrder(context, order),
       ),
     };
     return Section(
       inset: true,
-      child: Container(
-        padding: const EdgeInsets.all(BpSpace.x3),
-        decoration: BoxDecoration(
-          color: c.infoTint,
-          borderRadius: BpRadius.cardAll,
-          border: Border.all(color: c.info.withValues(alpha: 0.4)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(LucideIcons.flaskConical, size: 18, color: c.info),
-                const SizedBox(width: BpSpace.x2),
-                Expanded(
-                  child: Text(
-                    'Kontrol simulasi (DEMO)',
-                    style: BpText.subtitle.copyWith(color: c.info),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: BpSpace.x1),
-            Text(help, style: BpText.caption.copyWith(color: c.text)),
-            const SizedBox(height: BpSpace.x2),
-            PillButton(
-              label: label,
-              size: PillButtonSize.small,
-              variant: PillButtonVariant.neutral,
-              busy: AppScope.of(context).orders.isBusy(order.id),
-              onPressed: action,
-            ),
-          ],
-        ),
+      child: DemoPanel(
+        title: 'Kontrol simulasi',
+        message: help,
+        actions: <Widget>[
+          PillButton(
+            label: label,
+            size: PillButtonSize.small,
+            variant: PillButtonVariant.outline,
+            icon: Icon(icon, size: 16),
+            expand: true,
+            busy: AppScope.of(context).orders.isBusy(order.id),
+            onPressed: action,
+          ),
+        ],
       ),
     );
   }
@@ -417,13 +432,27 @@ class _DetailBar extends StatelessWidget {
             onPressed: () => confirmCancelOrder(context, order),
           )
         : null;
+    final care = PillButton(
+      label: 'Hubungi CS',
+      variant: PillButtonVariant.outline,
+      icon: const BrandIcon(BrandGlyph.chat, size: 18),
+      expand: true,
+      onPressed: () => contactCare(context, order),
+    );
+    // Dua tombol paling banyak: CS mengisi slot yang kosong; bila batal dan
+    // aksi utama sama-sama ada, CS tetap tersedia lewat ikon headset.
+    final buttons = <Widget>[
+      ?cancel,
+      if (cancel == null || primary == null) care,
+      ?primary,
+    ];
     return StickyBottomBar(
       child: Row(
         children: <Widget>[
-          if (cancel != null) Expanded(child: cancel),
-          if (cancel != null && primary != null)
-            const SizedBox(width: BpSpace.x3),
-          if (primary != null) Expanded(child: primary),
+          for (final (index, button) in buttons.take(2).indexed) ...<Widget>[
+            if (index > 0) const SizedBox(width: BpSpace.x3),
+            Expanded(child: button),
+          ],
         ],
       ),
     );

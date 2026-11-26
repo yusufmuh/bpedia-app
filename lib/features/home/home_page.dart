@@ -1,6 +1,7 @@
-/// Beranda (SPEC §4.1): kepala menempel, strip akun/dompet, carousel Event
-/// Promo, pintasan 3D, strip game, pengingat bayar, Hot Item, kategori,
-/// brand, rekomendasi bertahap, baris kepercayaan, dan App Flyer harian.
+/// Beranda (SPEC §4.1, PERBAIKAN home): kepala menempel, strip akun/dompet,
+/// carousel Event Promo + baris kepercayaan, pintasan 3D, strip game,
+/// pengingat bayar, Hot Item berjalan, brand, rekomendasi bertab, dan App
+/// Flyer harian.
 library;
 
 import 'dart:async';
@@ -12,6 +13,7 @@ import '../../app/app_scope.dart';
 import '../../data/catalog/catalog_repository.dart';
 import '../../design/design.dart';
 import '../catalog/shop_common.dart';
+import '../orders/widgets/unpaid_order_banner.dart';
 import 'app_flyer.dart';
 import 'home_header.dart';
 import 'home_sections.dart';
@@ -29,6 +31,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _visible = HomePage.pageSize;
+  String? _tab;
   bool _loadingMore = false;
   bool _flyerChecked = false;
   Timer? _loadTimer;
@@ -81,11 +84,15 @@ class _HomePageState extends State<HomePage> {
     final searchRowHeight = (media.textScaler.scale(20) + 36).clamp(56.0, 96.0);
     return Scaffold(
       backgroundColor: c.canvas,
-      floatingActionButton: const HomeBipyButton(),
       body: ListenableBuilder(
         listenable: services.catalog,
         builder: (context, _) {
-          final products = services.catalog.products;
+          final tab = _tab;
+          final products = tab == null
+              ? services.catalog.products
+              : services.catalog.products
+                    .where((product) => product.categoryId == tab)
+                    .toList(growable: false);
           final total = products.length;
           final shown = _visible.clamp(0, total);
           final state = catalogStateView(context, sliver: true);
@@ -117,13 +124,7 @@ class _HomePageState extends State<HomePage> {
                       children: <Widget>[
                         const HomeAccountStrip(),
                         if (banners.isNotEmpty) ...<Widget>[
-                          SectionHeader(
-                            title: 'Event Promo',
-                            onAction: () => services.router.go(
-                              context,
-                              const EventHubRoute(),
-                            ),
-                          ),
+                          const SizedBox(height: BpSpace.x3),
                           BannerCarousel(
                             key: const ValueKey<String>('beranda-banner'),
                             items: <BannerItem>[
@@ -137,10 +138,19 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ],
-                        const SizedBox(height: BpSpace.x2),
-                        const HomeShortcutGrid(),
+                        const SizedBox(height: BpSpace.x3),
+                        const HomeTrustRow(),
                       ],
                     ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: Section(
+                    padding: EdgeInsets.only(
+                      top: BpSpace.x3,
+                      bottom: BpSpace.x3,
+                    ),
+                    child: HomeShortcutGrid(),
                   ),
                 ),
                 if (game != null)
@@ -152,22 +162,36 @@ class _HomePageState extends State<HomePage> {
                       child: game,
                     ),
                   ),
-                const SliverToBoxAdapter(child: HomeUnpaidReminder()),
+                const SliverToBoxAdapter(
+                  child: UnpaidOrderBanner(
+                    key: ValueKey<String>('beranda-bayar'),
+                    margin: EdgeInsets.fromLTRB(
+                      BpSpace.screen,
+                      0,
+                      BpSpace.screen,
+                      BpSpace.sectionGap,
+                    ),
+                  ),
+                ),
                 if (state != null)
                   state
                 else ...<Widget>[
                   const SliverToBoxAdapter(child: HomeHotSection()),
-                  const SliverToBoxAdapter(child: HomeCategorySection()),
                   const SliverToBoxAdapter(child: HomeBrandSection()),
-                  const SliverToBoxAdapter(
+                  SliverToBoxAdapter(
                     child: Section(
                       gap: false,
-                      padding: EdgeInsets.only(top: BpSpace.x1),
-                      header: SectionHeader(
-                        title: 'Rekomendasi untukmu',
-                        subtitle: 'Produk asli dari katalog Bpedia',
+                      padding: const EdgeInsets.only(top: BpSpace.x1),
+                      header: const SectionHeader(title: 'Rekomendasi untukmu'),
+                      child: HomeRecommendTabs(
+                        selected: _tab,
+                        onSelected: (id) => setState(() {
+                          _tab = id;
+                          _visible = HomePage.pageSize;
+                          _loadTimer?.cancel();
+                          _loadingMore = false;
+                        }),
                       ),
-                      child: SizedBox.shrink(),
                     ),
                   ),
                   SliverPadding(
@@ -196,7 +220,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                  const SliverToBoxAdapter(child: HomeTrustRow()),
                 ],
                 const SliverToBoxAdapter(child: SizedBox(height: 72)),
               ],

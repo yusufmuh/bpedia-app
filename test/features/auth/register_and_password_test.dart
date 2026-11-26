@@ -1,4 +1,6 @@
+import 'package:bpedia_app/data/auth/auth_validators.dart';
 import 'package:bpedia_app/design/design.dart';
+import 'package:bpedia_app/features/auth/forgot_password_page.dart';
 import 'package:bpedia_app/services/analytics/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,6 +45,41 @@ void main() {
         services.analyticsLog.eventNames,
         contains(AfEvent.completeRegistration),
       );
+    });
+
+    testWidgets('kartu manfaat member tampil bila Zona Hadiah tersedia', (
+      tester,
+    ) async {
+      final services = f3Services(rewards: FakeRewards());
+      await openF3(tester, services, '/daftar?mode=lengkap');
+      await tester.pumpAndSettle();
+      expect(find.text('Untung jadi member Bpedia'), findsOneWidget);
+      expect(find.text('Check-in harian'), findsOneWidget);
+      expect(find.text('+1 Kelopak/hari'), findsOneWidget);
+      expect(find.text('Roda Sabtu'), findsOneWidget);
+      expect(find.text('Misi Belanja'), findsOneWidget);
+      // Petunjuk kata sandi sama dengan aturan validasi.
+      expect(find.text('Minimal $minPasswordLength karakter'), findsOneWidget);
+    });
+
+    testWidgets('tanpa Zona Hadiah kartu manfaat disembunyikan', (
+      tester,
+    ) async {
+      final services = f3Services();
+      await openF3(tester, services, '/daftar');
+      await tester.pumpAndSettle();
+      expect(find.text('Untung jadi member Bpedia'), findsNothing);
+    });
+
+    testWidgets('daftar dengan Google (demo) langsung masuk', (tester) async {
+      final services = f3Services();
+      await openF3(tester, services, '/daftar');
+      await tester.pumpAndSettle();
+
+      await tapVisible(tester, find.text('Daftar dengan Google (demo)'));
+      await tester.tap(find.text('Setuju'));
+      await pumpFor(tester);
+      expect(services.auth.profile!.viaGoogle, isTrue);
     });
 
     testWidgets('daftar lengkap butuh kata sandi sama dan setuju S&K', (
@@ -96,11 +133,21 @@ void main() {
   });
 
   group('Lupa sandi', () {
+    test('maskEmail menyamarkan bagian sebelum @', () {
+      expect(maskEmail('nadia@contoh.id'), 'n***a@contoh.id');
+      expect(maskEmail('ab@x.co'), 'a***b@x.co');
+      expect(maskEmail('a@x.co'), 'a***@x.co');
+      expect(maskEmail('tanpa-at'), 'tanpa-at');
+    });
+
     testWidgets('email salah lalu layar cek email (demo)', (tester) async {
       final services = f3Services();
       await openF3(tester, services, '/lupa-sandi');
       await pumpFor(tester);
 
+      expect(find.text('Isi email akun terdaftar'), findsOneWidget);
+      expect(find.text('Buat kata sandi baru'), findsOneWidget);
+      expect(find.text('Ingat kata sandimu?'), findsOneWidget);
       await tester.enterText(_field('forgot-email'), 'ayu@');
       await tester.tap(find.text('Kirim tautan'));
       await pumpFor(tester);
@@ -110,8 +157,17 @@ void main() {
       await tester.tap(find.text('Kirim tautan'));
       await pumpFor(tester);
       expect(find.text('Cek emailmu, Babes'), findsOneWidget);
-      expect(find.textContaining('ayu@example.com'), findsOneWidget);
+      // Email disamarkan; alamat utuh tidak tampil.
+      expect(
+        find.textContaining('a***u@example.com', findRichText: true),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('ayu@example.com', findRichText: true),
+        findsNothing,
+      );
       expect(find.text('Mode demo'), findsOneWidget);
+      expect(find.text('Hubungi CS'), findsOneWidget);
 
       await tapVisible(tester, find.text('Kembali ke Masuk'), settle: false);
       expect(find.text('Masuk ke Bpedia'), findsOneWidget);

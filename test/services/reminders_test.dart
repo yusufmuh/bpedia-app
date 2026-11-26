@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bpedia_app/app/app_routes.dart';
 import 'package:bpedia_app/services/reminders/create_reminder_service.dart';
 import 'package:bpedia_app/services/reminders/local_reminder_service.dart';
@@ -274,7 +276,21 @@ void main() {
       ]);
       final settings =
           (native.single('initialize').arguments as Map<Object?, Object?>);
-      expect(settings['defaultIcon'], '@mipmap/ic_launcher');
+      expect(settings['defaultIcon'], '@drawable/ic_stat_bpedia');
+    });
+
+    test('ikon kecil notifikasi: drawable putih bertransparansi yang dijaga '
+        'dari penyusutan', () {
+      const res = 'android/app/src/main/res';
+      final icon = File('$res/drawable/ic_stat_bpedia.xml').readAsStringSync();
+      expect(icon, contains('<vector'));
+      final fills = RegExp(
+        r'android:fillColor="([^"]+)"',
+      ).allMatches(icon).map((match) => match.group(1)).toSet();
+      expect(fills, <String>{'#FFFFFFFF'}, reason: 'monokrom putih');
+      expect(icon, isNot(contains('android:background')));
+      final keep = File('$res/raw/keep.xml').readAsStringSync();
+      expect(keep, contains('@drawable/ic_stat_bpedia'));
     });
 
     test('menjadwalkan Sabtu 09.00 WIB, mingguan, tidak eksak', () async {
@@ -309,6 +325,15 @@ void main() {
       );
       expect(specifics['channelId'], 'pengingat');
       expect(specifics['channelName'], 'Pengingat');
+      expect(
+        <Object?>[
+          specifics['colorRed'],
+          specifics['colorGreen'],
+          specifics['colorBlue'],
+        ],
+        <int>[0xD8, 0x1F, 0x57],
+        reason: 'aksen merah muda brand pada ikon kecil',
+      );
       expect(
         native.methods,
         isNot(contains('requestExactAlarmsPermission')),

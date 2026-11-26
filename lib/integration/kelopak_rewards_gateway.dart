@@ -17,6 +17,10 @@ import '../features/demo/demo_rewards_tools.dart';
 import '../services/sound/sound_service.dart';
 import 'bpedia_kelopak_host.dart';
 
+/// ID aksi Mode Demo yang kembali ke tanggal nyata sekaligus mengatur ulang
+/// data Kelopak bertanggal geseran.
+const String returnToTodayActionId = 'return-to-today-reset';
+
 /// Gateway hadiah Kelopak. Tamu melihat saldo, voucher, dan hadiah kosong;
 /// data Kelopak tetap tersimpan di perangkat untuk saat masuk lagi.
 class KelopakRewardsGateway extends RewardsGateway implements DemoRewardsTools {
@@ -76,15 +80,48 @@ class KelopakRewardsGateway extends RewardsGateway implements DemoRewardsTools {
     };
   }
 
+  /// Kode produk yang dihitung untuk pesanan berikutnya: tahap aktif, atau
+  /// tahap sesudahnya bila tahap aktif sudah ditunggu pesanan lain (sama
+  /// dengan [missionHintFor]).
   @override
-  Set<String> get missionProductCodes => controller.missionProductCodes;
+  Set<String> get missionProductCodes {
+    final next = _loggedIn ? _stageAfterAwaited() : null;
+    return next == null
+        ? controller.missionProductCodes
+        : next.productCodes.toSet();
+  }
 
+  /// Tahap sesudah tahap aktif bila tahap aktif sedang ditunggu pesanan
+  /// lain; null bila tidak ada pesanan yang menunggu atau tidak ada tahap
+  /// berikutnya.
+  hub.MissionStage? _stageAfterAwaited() {
+    final stage = controller.activeMissionStage;
+    if (stage == null || controller.view.ordersAwaitingMission.isEmpty) {
+      return null;
+    }
+    return _nextStage(stage);
+  }
+
+  hub.MissionStage? _nextStage(hub.MissionStage stage) {
+    final stages = controller.missionStages;
+    final index = stages.indexOf(stage);
+    return index >= 0 && index + 1 < stages.length ? stages[index + 1] : null;
+  }
+
+  /// [lines] adalah barang yang akan dipesan (dicentang). Bila pesanan lain
+  /// sudah memenuhi tahap aktif dan menunggu diterima, keranjang tidak
+  /// menjanjikan voucher tahap itu: yang dihitung adalah tahap berikutnya.
   @override
   MissionHint? missionHintFor(List<PricedLine> lines) {
     if (!_loggedIn) return null;
     final stage = controller.activeMissionStage;
+    if (stage == null) return null;
+    final waiting = controller.view.ordersAwaitingMission;
+    if (waiting.isNotEmpty) {
+      return _awaitingHint(stage, waiting.first.id, lines);
+    }
     final progress = controller.missionProgressFor(_hubLines(lines));
-    if (stage == null || progress == null) return null;
+    if (progress == null) return null;
     final reward = 'voucher ${hub.rupiah(stage.voucherAmount)}';
     final String message;
     if (progress.reached) {
@@ -105,6 +142,43 @@ class KelopakRewardsGateway extends RewardsGateway implements DemoRewardsTools {
       current: progress.current,
       target: progress.target,
       reached: progress.reached,
+    );
+  }
+
+  MissionHint _awaitingHint(
+    hub.MissionStage stage,
+    String orderId,
+    List<PricedLine> lines,
+  ) {
+    final waitingText =
+        'Tahap ${stage.number} menunggu pesanan #$orderId diterima.';
+    final next = _nextStage(stage);
+    if (next == null) {
+      return MissionHint(
+        message:
+            '$waitingText Voucher ${hub.rupiah(stage.voucherAmount)} terbit '
+            'sesudah pesanan itu diterima.',
+        current: 0,
+        target: stage.minOrderSubtotal,
+        reached: false,
+      );
+    }
+    var current = 0;
+    for (final line in lines) {
+      if (next.countsProduct(line.productCode)) current += line.lineTotal;
+    }
+    final target = next.minOrderSubtotal;
+    final reward = 'dapat voucher ${hub.rupiah(next.voucherAmount)}';
+    final message = current == 0
+        ? '$waitingText Tahap ${next.number}: belanja produk misi '
+              '${hub.rupiah(target)}, $reward.'
+        : '$waitingText Tahap ${next.number}: produk misi '
+              '${hub.rupiah(current)} dari ${hub.rupiah(target)}, $reward.';
+    return MissionHint(
+      message: message,
+      current: current,
+      target: target,
+      reached: false,
     );
   }
 
@@ -183,6 +257,7 @@ class KelopakRewardsGateway extends RewardsGateway implements DemoRewardsTools {
         hub.OrderNotCommitted(:final problem) => CommitResult(
           ok: false,
           message: problem.message,
+          duplicateOrder: problem == hub.CheckoutProblem.duplicateOrder,
         ),
       };
     } on hub.KelopakBackendException {
@@ -195,8 +270,29 @@ class KelopakRewardsGateway extends RewardsGateway implements DemoRewardsTools {
 
   @override
   Future<void> cancel(String orderId) async {
-    await controller.cancelOrder(orderId);
+    await cancelAndReport(orderId);
   }
+
+  @override
+  Future<CancelRefund> cancelAndReport(String orderId) async {
+    final cancellation = await controller.cancelOrder(orderId);
+    if (cancellation == null) return CancelRefund.nothing;
+    return CancelRefund(
+      kelopak: cancellation.kelopakRefunded,
+      voucher: cancellation.voucher != null,
+      gifts: cancellation.gifts.length,
+    );
+  }
+
+  @override
+  bool hasOrder(String orderId) =>
+      controller.state.orders.any((order) => order.id == orderId);
+
+  @override
+  List<String> get cancellableOrderIds => <String>[
+    for (final order in controller.state.orders)
+      if (order.status == hub.KelopakOrderStatus.placed) order.id,
+  ];
 
   @override
   Future<void> ship(String orderId) async {
@@ -295,8 +391,31 @@ class KelopakRewardsGateway extends RewardsGateway implements DemoRewardsTools {
     await controller.resetAll();
   }
 
+  /// Hari WIB terbaru di catatan Kelopak (check-in, buku besar, putaran
+  /// roda), atau null bila belum ada catatan.
+  int? get latestRecordDay {
+    final state = controller.state;
+    int? latest = state.lastClaimDay;
+    for (final day in <int>[
+      for (final entry in state.ledger) entry.wibDay,
+      for (final spin in state.spins) spin.wibDay,
+    ]) {
+      if (latest == null || day > latest) latest = day;
+    }
+    return latest;
+  }
+
+  /// Apakah ada catatan Kelopak bertanggal sesudah hari nyata (dibuat saat
+  /// kalender Mode Demo digeser maju).
+  bool get recordsAfterRealToday {
+    final clock = demoClock;
+    final latest = latestRecordDay;
+    return clock != null && latest != null && latest > clock.realToday;
+  }
+
   @override
   List<DemoRewardsAction> get demoActions => <DemoRewardsAction>[
+    if (recordsAfterRealToday) _returnToTodayAction(),
     DemoRewardsAction(
       id: 'refill-wheel-quota',
       label: 'Isi kuota produk roda',
@@ -337,6 +456,24 @@ class KelopakRewardsGateway extends RewardsGateway implements DemoRewardsTools {
       },
     ),
   ];
+
+  DemoRewardsAction _returnToTodayAction() {
+    final clock = demoClock!;
+    final latest = hub.shortDateLabel(latestRecordDay!);
+    return DemoRewardsAction(
+      id: returnToTodayActionId,
+      label: 'Kembali ke hari ini + atur ulang Kelopak',
+      description:
+          'Ada catatan Kelopak bertanggal sampai $latest. Bila hanya kembali '
+          'ke hari ini, check-in terkunci sampai tanggal itu. Aksi ini '
+          'mengembalikan tanggal nyata dan menghapus data Kelopak.',
+      run: () async {
+        await controller.resetAll();
+        clock.reset();
+        return 'Kembali ke tanggal nyata. Data Kelopak diatur ulang.';
+      },
+    );
+  }
 
   @override
   void dispose() {

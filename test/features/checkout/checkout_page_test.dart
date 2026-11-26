@@ -1,6 +1,7 @@
 import 'package:bpedia_app/data/orders/order_repository.dart';
 import 'package:bpedia_app/design/design.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../orders/f2_harness.dart';
@@ -21,23 +22,45 @@ void main() {
       ..add(nightCream);
     await pumpF2(tester, services, location: '/checkout');
 
-    expect(find.text('Sinta Maharani'), findsOneWidget);
+    expect(find.textContaining('Sinta Maharani'), findsOneWidget);
     expect(find.text('Bpedia Express'), findsOneWidget);
+    // 25 Nov + 2..3 hari, dari jam app.
+    expect(find.text('Tiba 27 - 28 Nov (demo)'), findsOneWidget);
+    // K16 terlihat tanpa gulir di bilah lekat.
+    expect(find.text('Hemat Rp12.800 · 128 Kelopak'), findsOneWidget);
     await scrollTo(tester, find.text('Saldo 128 Kelopak · potong Rp12.800'));
     final toggle = tester.widget<BpSwitchTile>(find.byType(BpSwitchTile));
     expect(toggle.value, isTrue);
 
+    expect(
+      find.text(
+        '1 Kelopak = Rp100. Memotong harga barang, tidak memotong ongkir.',
+      ),
+      findsOneWidget,
+    );
+
     await scrollTo(tester, find.text('Kelopak dipakai · 128 Kelopak'));
     expect(find.text('-Rp12.800'), findsOneWidget);
     expect(find.text('Gratis'), findsWidgets);
+    await scrollTo(tester, find.text('Hadiah gratis (1 barang)'));
+    expect(find.text('Rp0'), findsOneWidget);
+    expect(
+      find.text(
+        'Kamu hemat Rp12.800. Kelopak hanya memotong harga barang, bukan '
+        'ongkir.',
+      ),
+      findsOneWidget,
+    );
     // 46.196 + 26.000 = 72.196; −12.800 Kelopak; ongkir gratis.
     expect(find.text('Rp59.396'), findsWidgets);
 
     await tester.ensureVisible(find.byType(BpSwitchTile));
+    await tester.pump();
     await tester.tap(find.byType(Switch));
     await settle(tester);
     expect(find.text('Kelopak dipakai · 128 Kelopak'), findsNothing);
     expect(find.text('Rp72.196'), findsWidgets);
+    expect(find.textContaining('Hemat Rp'), findsNothing);
   });
 
   testWidgets('alur utama: buat pesanan → bayar simulasi → sukses', (
@@ -79,6 +102,14 @@ void main() {
     services.cart.add(nightCream, qty: 2);
     await pumpF2(tester, services, location: '/checkout');
 
+    // Label tombol satu baris di lebar 390.
+    final label = find.text('Buat pesanan · Lunas dengan Kelopak');
+    expect(label, findsOneWidget);
+    final lineHeight = tester
+        .renderObject<RenderParagraph>(label)
+        .getFullHeightForCaret(const TextPosition(offset: 0));
+    expect(tester.getSize(label).height, lessThan(lineHeight * 1.5));
+
     await scrollTo(tester, find.text('Lunas dengan Kelopak'));
     await scrollTo(tester, find.text('Rincian pembayaran'));
     expect(find.text('Metode pembayaran'), findsNothing);
@@ -91,27 +122,61 @@ void main() {
     expect(find.text('Pesanan berhasil dibuat'), findsOneWidget);
   });
 
-  testWidgets('voucher: yang belum memenuhi syarat redup, yang sah memotong', (
-    tester,
-  ) async {
+  testWidgets('voucher: terbaik terpasang otomatis, bisa dilepas, kode '
+      'divalidasi', (tester) async {
     final services = f2Services(rewards: FakeRewards(balance: 0));
     services.cart
       ..add(sunscreen, qty: 2)
       ..add(nightCream);
     await pumpF2(tester, services, location: '/checkout');
 
-    await scrollTo(tester, find.text('1 bisa dipakai'));
-    await tester.tap(find.text('1 bisa dipakai'));
+    // 118.392 ≥ Rp100.000: V1 terpasang otomatis, ongkir gratis.
+    await scrollTo(tester, find.text('Voucher · 1 dipakai'));
+    expect(find.text('-Rp10.000'), findsWidgets);
+    expect(find.text('Rp108.392'), findsWidgets);
+
+    await tester.tap(find.text('Voucher · 1 dipakai'));
     await settle(tester);
     expect(find.text('Tambah Rp1.608 lagi'), findsOneWidget);
-    await tester.tap(find.text('Pakai'));
+    expect(find.text('1 voucher dipakai'), findsOneWidget);
+    // Tiket redup tetap menampilkan masa berlaku.
+    expect(find.textContaining('Berlaku s.d. 25 Des 2026'), findsWidgets);
+
+    final code = find.byKey(const ValueKey<String>('voucher-kode'));
+    final applyCode = find.byKey(const ValueKey<String>('voucher-pakai-kode'));
+    await tester.tap(applyCode);
     await settle(tester);
-    expect(find.text('-Rp10.000'), findsWidgets);
-    await scrollTo(
-      tester,
-      find.text('Saldo 0 Kelopak. Kumpulkan lewat Check-in Harian.'),
+    expect(find.text('Masukkan kode voucher dulu.'), findsOneWidget);
+    await tester.enterText(code, 'ABC');
+    await tester.tap(applyCode);
+    await settle(tester);
+    expect(
+      find.text('Kode "ABC" tidak dikenal. Periksa lagi penulisannya.'),
+      findsOneWidget,
     );
-    // 118.392 − 10.000, ongkir gratis.
+    await tester.enterText(code, 'v2');
+    await tester.tap(applyCode);
+    await settle(tester);
+    expect(find.text('Tambah Rp1.608 lagi'), findsNWidgets(2));
+
+    // Lepas voucher: kaki berubah menjadi "Tanpa voucher".
+    await tester.tap(find.text('Dipakai'));
+    await settle(tester);
+    expect(find.text('Belum ada voucher dipilih'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey<String>('voucher-konfirmasi')));
+    await settle(tester);
+    expect(find.text('1 bisa dipakai'), findsOneWidget);
+    expect(find.text('Rp118.392'), findsWidgets);
+
+    // Pakai lagi lewat kode.
+    await tester.tap(find.text('1 bisa dipakai'));
+    await settle(tester);
+    await tester.enterText(code, ' v1 ');
+    await tester.tap(applyCode);
+    await settle(tester);
+    expect(find.text('1 voucher dipakai'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey<String>('voucher-konfirmasi')));
+    await settle(tester);
     expect(find.text('Rp108.392'), findsWidgets);
   });
 
@@ -119,11 +184,8 @@ void main() {
     final services = f2Services();
     services.cart.add(sunscreen);
     await pumpF2(tester, services, location: '/checkout');
-    await scrollTo(tester, find.text('QRIS'));
-    await tester.tap(find.text('QRIS'));
-    await settle(tester);
-    await tester.ensureVisible(find.text('Bayar di tempat (COD)'));
-    await settle(tester);
+    await scrollTo(tester, find.text('Bayar di tempat (COD)'));
+    expect(find.text('Simulasi, tanpa uang sungguhan'), findsOneWidget);
     await tester.tap(find.text('Bayar di tempat (COD)'));
     await settle(tester);
     expect(find.textContaining('Bayar tunai ke kurir'), findsOneWidget);
@@ -141,6 +203,21 @@ void main() {
     await tester.tap(find.text('Wahana Express'));
     await settle(tester);
     expect(find.text('Rp36.000'), findsWidgets);
+  });
+
+  testWidgets('transfer bank: baris jenis membuka daftar bank', (tester) async {
+    final services = f2Services();
+    services.cart.add(sunscreen);
+    await pumpF2(tester, services, location: '/checkout');
+    await scrollTo(tester, find.text('Transfer bank (virtual account)'));
+    expect(find.text('8 bank tersedia'), findsOneWidget);
+    await tester.tap(find.text('Transfer bank (virtual account)'));
+    await settle(tester);
+    await tester.tap(find.text('BCA Virtual Account').last);
+    await settle(tester);
+    expect(find.text('BCA Virtual Account'), findsOneWidget);
+    await _tapBuy(tester, 'Buat pesanan');
+    expect(services.orders.orders.single.paymentMethodId, 'va-bca');
   });
 
   testWidgets('tanpa alamat: ajakan tambah alamat, pesanan ditolak', (

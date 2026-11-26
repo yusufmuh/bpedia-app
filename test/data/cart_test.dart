@@ -96,7 +96,11 @@ void main() {
       <String>[codeB, codeMany],
     );
     expect(cart.linesForCheckout.first.lineTotal, 41000);
-    expect(cart.pricedLines.length, 3);
+    expect(
+      <String>[for (final line in cart.pricedLines) line.productCode],
+      <String>[codeB, codeMany],
+      reason: 'dorongan misi hanya menghitung barang yang dicentang',
+    );
     expect(
       cart.selectedWeightGrams,
       catalog.byCode(codeB)!.weightGrams * 2 +

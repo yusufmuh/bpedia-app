@@ -7,12 +7,14 @@ import '../../app/app_scope.dart';
 import '../../app/app_services.dart';
 import '../../data/orders/order_repository.dart';
 import '../../data/payment/payment_catalog.dart';
-import '../../data/wib_dates.dart';
 import '../../design/design.dart';
 import '../../services/sound/sound_service.dart';
 import '../cart/widgets/line_parts.dart';
 import '../checkout/widgets/checkout_sheets.dart';
 import '../orders/order_format.dart';
+import '../checkout/widgets/payment_summary.dart' show SavingsNote;
+import '../orders/widgets/demo_panel.dart';
+import 'widgets/pay_countdown.dart';
 import 'widgets/qr_demo.dart';
 
 /// `/bayar/:orderId`: pembayaran simulasi. Menampilkan total, batas bayar,
@@ -88,7 +90,16 @@ class _PaymentPageState extends State<PaymentPage> {
         }
         return Scaffold(
           backgroundColor: c.canvas,
-          appBar: const BpAppBar(title: 'Pembayaran'),
+          appBar: BpAppBar(
+            title: 'Pembayaran',
+            actions: <Widget>[
+              IconButton(
+                tooltip: 'Bantuan',
+                icon: Icon(LucideIcons.circleQuestionMark, color: c.text),
+                onPressed: () => services.router.go(context, const HelpRoute()),
+              ),
+            ],
+          ),
           body: body,
           bottomNavigationBar: bottom,
         );
@@ -125,73 +136,117 @@ class _PaymentBody extends StatelessWidget {
     final c = context.bp;
     final method = PaymentCatalog.byId(order.paymentMethodId);
     final payBy = order.payBy;
-    final left = remainingPayLabel(order, services.clock.instant);
+    final savings = orderSavingsNote(order);
     return ListView(
-      padding: const EdgeInsets.only(top: BpSpace.sectionGap),
+      padding: const EdgeInsets.only(bottom: BpSpace.x2),
       children: <Widget>[
+        if (payBy != null)
+          Section(inset: true, child: PayCountdown(payBy: payBy)),
         Section(
           inset: true,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text(
-                'Total pembayaran',
-                style: BpText.bodyS.copyWith(color: c.textMuted),
+              _CopyRow(
+                label: 'Nomor pesanan',
+                value: '#${order.id}',
+                copyValue: order.id,
               ),
-              const SizedBox(height: 2),
-              Semantics(
-                label: 'Total pembayaran ${formatRupiah(order.total)}',
-                excludeSemantics: true,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    formatRupiah(order.total),
-                    style: BpText.display.copyWith(
-                      color: c.brandStrong,
-                      fontFeatures: BpText.tabular,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: BpSpace.x3),
+                child: Divider(height: 1, thickness: 1, color: c.line),
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Semantics(
+                      label: 'Total pembayaran ${formatRupiah(order.total)}',
+                      excludeSemantics: true,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Total pembayaran',
+                            style: BpText.bodyS.copyWith(color: c.textMuted),
+                          ),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Text(
+                              formatRupiah(order.total),
+                              style: BpText.display.copyWith(
+                                color: c.brandStrong,
+                                fontFeatures: BpText.tabular,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                  PillButton(
+                    label: 'Lihat rincian',
+                    variant: PillButtonVariant.text,
+                    size: PillButtonSize.small,
+                    trailing: const Icon(LucideIcons.chevronRight, size: 16),
+                    onPressed: () =>
+                        services.router.go(context, OrderDetailRoute(order.id)),
+                  ),
+                ],
               ),
-              const SizedBox(height: BpSpace.x3),
-              if (payBy != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: BpSpace.x3,
-                    vertical: BpSpace.x2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: c.warningTint,
-                    borderRadius: BpRadius.tileAll,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(LucideIcons.clock, size: 18, color: c.warning),
-                      const SizedBox(width: BpSpace.x2),
-                      Flexible(
-                        child: Text(
-                          'Bayar sebelum ${wibDateTimeLabel(payBy)}'
-                          '${left == null ? '' : ' · $left'}',
-                          style: BpText.caption.copyWith(
-                            color: c.warning,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              if (savings != null) ...<Widget>[
+                const SizedBox(height: BpSpace.x3),
+                SavingsNote(
+                  text: savings,
+                  leading: order.kelopakUsed > 0
+                      ? const AssetPicture(
+                          'assets/icons3d/kelopak.webp',
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.contain,
+                          showSkeleton: false,
+                        )
+                      : null,
                 ),
-              const SizedBox(height: BpSpace.x3),
-              _CopyRow(label: 'Nomor pesanan', value: order.id),
+              ],
             ],
           ),
         ),
         Section(
           header: SectionHeader(
             title: method?.name ?? 'Metode pembayaran',
+            subtitle: method == null ? null : _methodSubtitle(method),
             leading: method == null
                 ? null
-                : PaymentMethodBadge(kind: method.kind),
+                : Padding(
+                    padding: const EdgeInsets.only(right: BpSpace.x3),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: c.brandTint,
+                        borderRadius: BpRadius.tileAll,
+                      ),
+                      child: Icon(
+                        paymentKindIcon(method.kind),
+                        size: BpSize.iconDense,
+                        color: c.brandStrong,
+                      ),
+                    ),
+                  ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const DemoBadge(),
+                PillButton(
+                  label: 'Ganti',
+                  variant: PillButtonVariant.text,
+                  size: PillButtonSize.small,
+                  onPressed: () => _changeMethod(context),
+                ),
+              ],
+            ),
           ),
           inset: true,
           child: _Instructions(order: order, method: method),
@@ -207,30 +262,89 @@ class _PaymentBody extends StatelessWidget {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
             BpSpace.screen,
-            0,
+            BpSpace.x2,
             BpSpace.screen,
-            BpSpace.x6,
+            BpSpace.x4,
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Icon(LucideIcons.info, size: 16, color: c.textMuted),
-              const SizedBox(width: BpSpace.x2),
-              Expanded(
-                child: Text(
-                  '${PaymentCatalog.demoNote} Tekan tombol di bawah untuk '
-                  'menandai pesanan sudah dibayar.',
-                  style: BpText.caption.copyWith(color: c.textMuted),
-                ),
-              ),
-            ],
+          child: DemoPanel(
+            title: 'Pembayaran simulasi',
+            message:
+                '${PaymentCatalog.demoNote} Tekan tombol di bawah untuk '
+                'menandai pesanan sudah dibayar; pesanan langsung berstatus '
+                'Dikemas.',
           ),
         ),
       ],
     );
+  }
+
+  static String _methodSubtitle(PaymentMethod method) => switch (method.kind) {
+    PaymentKind.qris => 'Semua bank dan dompet digital',
+    PaymentKind.virtualAccount => 'Transfer bank (virtual account)',
+    PaymentKind.retail => 'Bayar di kasir gerai',
+    PaymentKind.ewallet => 'Aplikasi dompet digital',
+    PaymentKind.cod => 'Bayar tunai ke kurir',
+  };
+
+  /// Metode pesanan yang sudah dibuat tidak diubah di tempat: pesanan
+  /// dibatalkan (Kelopak, voucher, hadiah kembali), barang masuk keranjang
+  /// lagi, lalu pembeli checkout ulang dengan metode baru.
+  Future<void> _changeMethod(BuildContext context) async {
+    final restart = await showBpSheet<bool>(
+      context: context,
+      builder: (sheetContext) {
+        final c = sheetContext.bp;
+        return BpSheet(
+          title: 'Ganti metode pembayaran',
+          footer: Row(
+            children: <Widget>[
+              Expanded(
+                child: PillButton(
+                  label: 'Kembali',
+                  variant: PillButtonVariant.outline,
+                  expand: true,
+                  onPressed: () => Navigator.of(sheetContext).pop(false),
+                ),
+              ),
+              const SizedBox(width: BpSpace.x3),
+              Expanded(
+                child: PillButton(
+                  label: 'Checkout ulang',
+                  expand: true,
+                  onPressed: () => Navigator.of(sheetContext).pop(true),
+                ),
+              ),
+            ],
+          ),
+          child: Text(
+            'Metode pembayaran dikunci saat pesanan dibuat. Untuk memakai '
+            'metode lain, pesanan #${order.id} dibatalkan: Kelopak, voucher, '
+            'dan hadiah gratis kembali ke akunmu, barangnya masuk lagi ke '
+            'keranjang, lalu kamu checkout ulang.',
+            style: BpText.body.copyWith(color: c.text),
+          ),
+        );
+      },
+    );
+    if (restart != true || !context.mounted) return;
+    final result = await services.orders.cancel(
+      order.id,
+      reason: 'Ganti metode pembayaran',
+    );
+    if (!context.mounted) return;
+    if (!result.ok) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(result.message ?? 'Pesanan gagal diubah.')),
+        );
+      return;
+    }
+    services.orders.buyAgain(order.id);
+    await services.router.replace(context, const CartRoute());
   }
 
   static List<String> _steps(PaymentMethod? method) {
@@ -276,31 +390,39 @@ class _Instructions extends StatelessWidget {
     final c = context.bp;
     final kind = method?.kind;
     if (kind == PaymentKind.qris) {
-      return Column(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(BpSpace.x4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BpRadius.cardAll,
-              border: Border.all(color: c.line),
+      return Container(
+        padding: const EdgeInsets.all(BpSpace.x4),
+        decoration: BoxDecoration(
+          color: c.surfaceMuted,
+          borderRadius: BpRadius.cardAll,
+          border: Border.all(color: c.line),
+        ),
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(BpSpace.x4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BpRadius.cardAll,
+                border: Border.all(color: c.line),
+              ),
+              child: QrDemo(seed: order.id, size: 168),
             ),
-            child: QrDemo(seed: order.id, size: 184),
-          ),
-          const SizedBox(height: BpSpace.x2),
-          Text(
-            'Kode QR contoh (DEMO), tidak bisa dipindai.',
-            textAlign: TextAlign.center,
-            style: BpText.caption.copyWith(color: c.textMuted),
-          ),
-        ],
+            const SizedBox(height: BpSpace.x2),
+            Text(
+              'Kode QR contoh (DEMO), tidak bisa dipindai.',
+              textAlign: TextAlign.center,
+              style: BpText.caption.copyWith(color: c.textMuted),
+            ),
+          ],
+        ),
       );
     }
     if (kind == PaymentKind.virtualAccount || kind == PaymentKind.retail) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          _CopyRow(
+          _CopyBox(
             label: kind == PaymentKind.virtualAccount
                 ? 'Nomor virtual account (demo)'
                 : 'Kode pembayaran (demo)',
@@ -308,7 +430,6 @@ class _Instructions extends StatelessWidget {
               order.id,
               retail: kind == PaymentKind.retail,
             ),
-            large: true,
           ),
           const SizedBox(height: BpSpace.x2),
           Text(
@@ -342,54 +463,63 @@ class _CopyRow extends StatelessWidget {
   const _CopyRow({
     required this.label,
     required this.value,
+    this.copyValue,
     this.large = false,
   });
 
   final String label;
   final String value;
+
+  /// Teks yang disalin; bawaan [value] tanpa spasi.
+  final String? copyValue;
   final bool large;
 
   @override
   Widget build(BuildContext context) {
     final c = context.bp;
-    return Container(
-      padding: const EdgeInsets.only(left: BpSpace.x3),
-      decoration: BoxDecoration(
-        color: c.surfaceMuted,
-        borderRadius: BpRadius.tileAll,
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(label, style: BpText.caption.copyWith(color: c.textMuted)),
-                Text(
-                  value,
-                  style: (large ? BpText.title : BpText.subtitle).copyWith(
-                    color: c.text,
-                    fontFeatures: BpText.tabular,
-                  ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(label, style: BpText.bodyS.copyWith(color: c.textMuted)),
+              Text(
+                value,
+                style: (large ? BpText.title : BpText.subtitle).copyWith(
+                  color: c.text,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: BpText.tabular,
                 ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: BpSpace.x2),
+        Semantics(
+          label: 'Salin $label',
+          button: true,
+          excludeSemantics: true,
+          child: Tooltip(
+            message: 'Salin $label',
+            child: PillButton(
+              label: 'Salin',
+              variant: PillButtonVariant.outline,
+              size: PillButtonSize.small,
+              icon: const Icon(LucideIcons.copy, size: 16),
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                await Clipboard.setData(
+                  ClipboardData(text: copyValue ?? value.replaceAll(' ', '')),
+                );
+                messenger
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(SnackBar(content: Text('$label disalin')));
+              },
             ),
           ),
-          IconButton(
-            tooltip: 'Salin $label',
-            icon: Icon(LucideIcons.copy, size: 18, color: c.brandStrong),
-            onPressed: () async {
-              final messenger = ScaffoldMessenger.of(context);
-              await Clipboard.setData(
-                ClipboardData(text: value.replaceAll(' ', '')),
-              );
-              messenger
-                ..hideCurrentSnackBar()
-                ..showSnackBar(SnackBar(content: Text('$label disalin')));
-            },
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -458,6 +588,32 @@ class _Notice extends StatelessWidget {
           onAction: onAction,
         ),
       ),
+    );
+  }
+}
+
+/// Nomor VA atau kode gerai dalam kotak abu dengan tombol "Salin".
+class _CopyBox extends StatelessWidget {
+  const _CopyBox({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        BpSpace.x3,
+        BpSpace.x2,
+        BpSpace.x2,
+        BpSpace.x2,
+      ),
+      decoration: BoxDecoration(
+        color: c.surfaceMuted,
+        borderRadius: BpRadius.tileAll,
+      ),
+      child: _CopyRow(label: label, value: value, large: true),
     );
   }
 }

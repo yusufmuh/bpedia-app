@@ -65,7 +65,8 @@ Future<void> showAppFlyer(BuildContext context, PromoFlyer flyer) async {
 }
 
 /// Isi dialog flyer: gambar 1:1 radius 16, tombol tutup bulat di luar sudut
-/// kanan atas; seluruh gambar (yang sudah memuat ajakan) membuka promo.
+/// kanan atas, pil CTA di tepi bawah gambar, dan petunjuk tutup. Gambar dan
+/// CTA sama-sama membuka promo.
 class AppFlyerDialog extends StatelessWidget {
   const AppFlyerDialog({required this.flyer, super.key});
 
@@ -106,25 +107,60 @@ class AppFlyerDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: BpSpace.x2),
-                  BpTappable(
-                    key: const ValueKey<String>('flyer-lihat'),
-                    onTap: () => Navigator.of(context).pop(true),
-                    semanticLabel: 'Lihat promo ${flyer.title}',
-                    focusRadius: const BorderRadius.all(Radius.circular(16)),
-                    builder: (context, states) => DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(16),
+                  SizedBox(
+                    width: side,
+                    height: side + 22,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: <Widget>[
+                        BpTappable(
+                          key: const ValueKey<String>('flyer-lihat'),
+                          onTap: () => Navigator.of(context).pop(true),
+                          semanticLabel: 'Lihat promo ${flyer.title}',
+                          focusRadius: const BorderRadius.all(
+                            Radius.circular(16),
+                          ),
+                          builder: (context, states) => DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(16),
+                              ),
+                              boxShadow: BpShadows.floating(c),
+                            ),
+                            child: AssetPicture(
+                              flyer.image,
+                              width: side,
+                              height: side,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(16),
+                              ),
+                            ),
+                          ),
                         ),
-                        boxShadow: BpShadows.floating(c),
-                      ),
-                      child: AssetPicture(
-                        flyer.image,
-                        width: side,
-                        height: side,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(16),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: _FlyerCta(
+                              label: flyerCtaLabel(flyer),
+                              width: (side - 40).clamp(160.0, 255.0),
+                              onPressed: () => Navigator.of(context).pop(true),
+                            ),
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: BpSpace.x3),
+                  SizedBox(
+                    width: side,
+                    child: Text(
+                      'Ketuk di luar gambar untuk menutup',
+                      textAlign: TextAlign.center,
+                      style: BpText.caption.copyWith(
+                        fontSize: 12,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -132,6 +168,45 @@ class AppFlyerDialog extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Label tombol flyer: flyer Kelopak mengajak main, selainnya melihat promo.
+String flyerCtaLabel(PromoFlyer flyer) =>
+    flyer.route.startsWith('/hadiah') ? 'Main sekarang' : 'Lihat promo';
+
+/// Pil CTA isi brand berbingkai putih yang menumpang di tepi bawah gambar.
+class _FlyerCta extends StatelessWidget {
+  const _FlyerCta({
+    required this.label,
+    required this.width,
+    required this.onPressed,
+  });
+
+  final String label;
+  final double width;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return SizedBox(
+      width: width,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BpRadius.pillAll,
+          border: Border.all(color: Colors.white, width: 2),
+          boxShadow: BpShadows.floating(c),
+        ),
+        child: PillButton(
+          key: const ValueKey<String>('flyer-cta'),
+          label: label,
+          size: PillButtonSize.small,
+          expand: true,
+          onPressed: onPressed,
         ),
       ),
     );

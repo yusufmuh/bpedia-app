@@ -1,5 +1,6 @@
 import 'package:bpedia_app/app/app.dart';
 import 'package:bpedia_app/app/app_services.dart';
+import 'package:bpedia_app/data/rewards/rewards_gateway.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -7,6 +8,9 @@ import '../features/catalog/shop_test_support.dart';
 import '../support/shot.dart';
 
 const Size _long = Size(390, 2600);
+
+/// Sabtu 28 Nov 2026 09.41 WIB, jam pada prototipe Figma.
+final DateTime _figmaNow = DateTime.utc(2026, 11, 28, 2, 41, 1);
 
 Future<void> _open(
   WidgetTester tester,
@@ -30,7 +34,7 @@ void main() {
     final s = dark ? 'gelap' : 'terang';
 
     testWidgets('beranda tamu $s', (tester) async {
-      final services = shopServices(dark: dark);
+      final services = shopServices(dark: dark, now: _figmaNow);
       await _open(tester, services, '/');
       await saveShot(tester, 'f1_beranda_tamu_$s');
     });
@@ -39,7 +43,15 @@ void main() {
       final services = shopServices(
         dark: dark,
         loggedIn: true,
-        rewards: FakeShopRewards(missionCodes: <String>{plainCode}),
+        now: _figmaNow,
+        rewards: FakeShopRewards(
+          missionCodes: <String>{plainCode},
+          badges: const <RewardsEntry>{
+            RewardsEntry.checkIn,
+            RewardsEntry.wheel,
+            RewardsEntry.hub,
+          },
+        ),
       );
       await tester.runAsync(() => placeUnpaidOrder(services, plainCode));
       await _open(tester, services, '/', size: _long, ratio: 1);
@@ -47,7 +59,7 @@ void main() {
     });
 
     testWidgets('beranda 360 $s', (tester) async {
-      final services = shopServices(dark: dark);
+      final services = shopServices(dark: dark, now: _figmaNow);
       await _open(tester, services, '/', size: shotSmallPhone);
       await saveShot(tester, 'f1_beranda_360_$s');
     });
@@ -132,14 +144,18 @@ void main() {
     });
 
     testWidgets('detail hot item $s', (tester) async {
-      final services = shopServices(dark: dark);
-      await _open(tester, services, '/produk/$hotCode');
+      final services = shopServices(
+        dark: dark,
+        now: _figmaNow,
+        rewards: FakeShopRewards(missionCodes: <String>{'P11B11B01000004'}),
+      );
+      await _open(tester, services, '/produk/P11B11B01000004');
       await saveShot(tester, 'f1_detail_hot_$s');
     });
 
     testWidgets('lembar jumlah $s', (tester) async {
-      final services = shopServices(dark: dark);
-      await _open(tester, services, '/produk/$plainCode');
+      final services = shopServices(dark: dark, now: _figmaNow);
+      await _open(tester, services, '/produk/P11B11B01000004');
       await tester.tap(find.byKey(const ValueKey<String>('detail-tambah')));
       await settle(tester);
       await settleImages(tester, rounds: 2);
@@ -147,7 +163,11 @@ void main() {
     });
 
     testWidgets('hot item $s', (tester) async {
-      final services = shopServices(dark: dark);
+      final services = shopServices(
+        dark: dark,
+        now: _figmaNow,
+        rewards: FakeShopRewards(missionCodes: <String>{'P11B11B01000004'}),
+      );
       await _open(tester, services, '/hot-item');
       await saveShot(tester, 'f1_hot_$s');
     });
@@ -181,9 +201,32 @@ void main() {
       await saveShot(tester, 'f1_event_bf_panjang_$s', pixelRatio: 1);
     });
 
+    for (final id in <String>[
+      'main-bareng-bipy',
+      'komunitas-whatsapp',
+      'produk-gratis',
+    ]) {
+      testWidgets('event $id $s', (tester) async {
+        final services = shopServices(dark: dark, now: _figmaNow);
+        await _open(tester, services, '/event/$id');
+        await saveShot(tester, 'f1_event_${id}_$s');
+      });
+
+      testWidgets('event $id panjang $s', (tester) async {
+        final services = shopServices(dark: dark, now: _figmaNow);
+        await _open(tester, services, '/event/$id', size: _long, ratio: 1);
+        await saveShot(tester, 'f1_event_${id}_panjang_$s', pixelRatio: 1);
+      });
+    }
+
     testWidgets('wishlist $s', (tester) async {
-      final services = shopServices(dark: dark);
-      for (final code in <String>[plainCode, hotCode, 'P39A06S01000007']) {
+      final services = shopServices(dark: dark, loggedIn: true);
+      for (final code in <String>[
+        plainCode,
+        hotCode,
+        'P39A06S01000007',
+        'P11B11B01000004',
+      ]) {
         services.wishlist.toggle(code);
       }
       await _open(tester, services, '/wishlist');

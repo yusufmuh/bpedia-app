@@ -1,3 +1,4 @@
+import 'package:bpedia_app/design/design.dart';
 import 'package:bpedia_app/features/product/add_to_cart_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +18,9 @@ void main() {
     expect(find.text('BPOM terverifikasi'), findsOneWidget);
     expect(find.text('Pengiriman'), findsOneWidget);
     expect(find.text('1/${product.images.length}'), findsOneWidget);
+    expect(find.text('Ongkir mulai 8rb'), findsOneWidget);
+    expect(find.text('Chat'), findsOneWidget);
+    expect(find.text('Wishlist'), findsOneWidget);
     expect(
       services.analyticsLog.records.any(
         (record) =>
@@ -42,8 +46,25 @@ void main() {
     await tester.tap(find.byKey(const ValueKey<String>('detail-tambah')));
     await settle(tester);
     expect(find.byType(AddToCartSheet), findsOneWidget);
+    final product = services.catalog.byCode(plainCode)!;
+    final subtotal = find.byKey(const ValueKey<String>('lembar-subtotal'));
+    expect(
+      find.descendant(
+        of: subtotal,
+        matching: find.text(formatRupiah(product.price)),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byTooltip('Tambah jumlah').first);
     await tester.pump();
+    expect(
+      find.descendant(
+        of: subtotal,
+        matching: find.text(formatRupiah(product.price * 2)),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Tambah ke keranjang'), findsWidgets);
     await tester.tap(find.byKey(const ValueKey<String>('lembar-tambah')));
     await settle(tester);
     expect(services.cart.quantityOf(plainCode), 2);
@@ -97,6 +118,32 @@ void main() {
     await tester.tap(find.text('Lihat katalog'));
     await settle(tester);
     expect(services.router.currentTab.name, 'catalog');
+  });
+
+  testWidgets('Hot Item: pita merah bersegmen, Hemat, thumbnail galeri', (
+    tester,
+  ) async {
+    final services = shopServices();
+    final product = services.catalog.byCode(hotCode)!;
+    await pumpShop(tester, services, '/produk/$hotCode');
+    expect(find.byKey(const ValueKey<String>('detail-hot')), findsOneWidget);
+    expect(find.text('Berakhir dalam'), findsOneWidget);
+    expect(find.text('14'), findsOneWidget);
+    expect(
+      find.text('Hemat ${formatRupiah(product.strikePrice! - product.price)}'),
+      findsOneWidget,
+    );
+    final count = product.images.length + 1;
+    expect(find.text('1/$count'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Foto 2'));
+    await settle(tester);
+    expect(find.text('2/$count'), findsOneWidget);
+  });
+
+  testWidgets('pita Hot Item hilang setelah kampanye berakhir', (tester) async {
+    final services = shopServices(now: DateTime.utc(2026, 11, 27, 3));
+    await pumpShop(tester, services, '/produk/$hotCode');
+    expect(find.byKey(const ValueKey<String>('detail-hot')), findsNothing);
   });
 
   testWidgets('teks 200% pada lebar 360 tanpa luapan', (tester) async {

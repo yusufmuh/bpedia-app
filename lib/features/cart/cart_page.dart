@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:kelopak_hub/kit.dart' show BipySprite, BipySprites;
 
 import '../../app/app_router.dart';
@@ -7,6 +8,8 @@ import '../../app/app_services.dart';
 import '../../app/shell.dart' show LoginButton;
 import '../../data/rewards/rewards_gateway.dart';
 import '../../design/design.dart';
+import '../checkout/widgets/checkout_sheets.dart' show bestUsableVoucher;
+import '../orders/order_format.dart';
 import 'widgets/cart_item_tile.dart';
 import 'widgets/cart_nudges.dart';
 import 'widgets/line_parts.dart';
@@ -65,7 +68,16 @@ class _CartView extends StatelessWidget {
     }
     return Scaffold(
       backgroundColor: c.canvas,
-      appBar: BpAppBar(title: title),
+      appBar: BpAppBar(
+        title: title,
+        actions: <Widget>[
+          IconButton(
+            tooltip: 'Wishlist',
+            icon: BrandIcon(BrandGlyph.wishlist, color: c.text),
+            onPressed: () => services.router.go(context, const WishlistRoute()),
+          ),
+        ],
+      ),
       body: body,
       bottomNavigationBar: bottom,
     );
@@ -92,13 +104,6 @@ class _CartContent extends StatelessWidget {
         : null;
     final rates = services.shipping.rates;
     final freeFrom = rates.isEmpty ? null : rates.first.freeFromSubtotal;
-    final saving = rewards.available && loggedIn && cart.hasSelection
-        ? rewards
-              .quote(
-                CheckoutRequest(lines: cart.linesForCheckout, shippingFee: 0),
-              )
-              .kelopakValue
-        : 0;
 
     return CustomScrollView(
       slivers: <Widget>[
@@ -115,6 +120,13 @@ class _CartContent extends StatelessWidget {
                 )
               : const _GuestStrip(),
         ),
+        if (hint != null)
+          SliverToBoxAdapter(
+            child: MissionStrip(
+              hint: hint,
+              onOpen: () => services.router.go(context, const MissionRoute()),
+            ),
+          ),
         if (!cart.isEmpty && freeFrom != null)
           SliverToBoxAdapter(
             child: FreeShippingStrip(
@@ -125,7 +137,7 @@ class _CartContent extends StatelessWidget {
           ),
         if (!cart.isEmpty) ...<Widget>[
           const SliverToBoxAdapter(child: SizedBox(height: BpSpace.sectionGap)),
-          SliverToBoxAdapter(child: _SelectAllBar(services: services)),
+          SliverToBoxAdapter(child: _StoreHeader(services: services)),
           SliverList.separated(
             itemCount: items.length,
             separatorBuilder: (context, index) => Divider(
@@ -152,35 +164,6 @@ class _CartContent extends StatelessWidget {
           SliverToBoxAdapter(
             child: _GiftSection(services: services, gifts: gifts),
           ),
-        if (saving > 0 || hint != null)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: BpSpace.sectionGap),
-              child: ColoredBox(
-                color: context.bp.surface,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: BpSpace.x3),
-                  child: Column(
-                    children: <Widget>[
-                      if (saving > 0)
-                        KelopakNudge(
-                          balance: rewards.kelopakBalance,
-                          saving: saving,
-                        ),
-                      if (saving > 0 && hint != null)
-                        const SizedBox(height: BpSpace.x2),
-                      if (hint != null)
-                        MissionNudge(
-                          hint: hint,
-                          onOpen: () =>
-                              services.router.go(context, const MissionRoute()),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
         const SliverToBoxAdapter(child: SizedBox(height: BpSpace.sectionGap)),
         SliverToBoxAdapter(
           child: RecommendationSection(
@@ -194,7 +177,7 @@ class _CartContent extends StatelessWidget {
   String? _addressLabel() {
     final address = services.addresses.primary;
     if (address == null) return null;
-    return '${address.label} · ${address.recipient}';
+    return '${address.label} · ${address.district}, ${address.city}';
   }
 
   void _setQty(BuildContext context, String code, int qty) {
@@ -236,8 +219,10 @@ void showUndoSnackBar(
     );
 }
 
-class _SelectAllBar extends StatelessWidget {
-  const _SelectAllBar({required this.services});
+/// Kepala grup toko: centang semua barang toko, "Bpedia Official", chip
+/// Original, dan "Hapus" untuk barang yang dicentang.
+class _StoreHeader extends StatelessWidget {
+  const _StoreHeader({required this.services});
 
   final AppServices services;
 
@@ -258,32 +243,52 @@ class _SelectAllBar extends StatelessWidget {
             value: cart.allSelected ? true : (selected == 0 ? false : null),
             tristate: true,
             onChanged: (_) => cart.selectAll(!cart.allSelected),
-            semanticLabel: 'Pilih semua',
+            semanticLabel: 'Pilih semua produk Bpedia Official',
           ),
+          BrandIcon(BrandGlyph.bag, size: BpSize.iconDense, color: c.text),
+          const SizedBox(width: BpSpace.x2),
           Expanded(
-            child: GestureDetector(
-              onTap: () => cart.selectAll(!cart.allSelected),
-              child: Text(
-                'Pilih semua (${cart.lineCount})',
-                style: BpText.subtitle.copyWith(color: c.text),
-              ),
+            child: Wrap(
+              spacing: BpSpace.x2,
+              runSpacing: 2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Bpedia Official',
+                  style: BpText.subtitle.copyWith(color: c.text),
+                ),
+                StatusChip(
+                  label: 'Original',
+                  tone: StatusTone.brand,
+                  icon: Icon(
+                    LucideIcons.badgeCheck,
+                    size: 12,
+                    color: c.brandStrong,
+                  ),
+                ),
+              ],
             ),
           ),
           if (selected > 0)
-            PillButton(
-              label: 'Hapus ($selected)',
-              variant: PillButtonVariant.text,
-              size: PillButtonSize.small,
-              onPressed: () {
-                final removed = cart.removeSelected();
-                if (removed.isEmpty) return;
-                services.haptics.light();
-                showUndoSnackBar(
-                  context,
-                  message: '${removed.length} produk dihapus dari keranjang',
-                  onUndo: () => cart.restoreAll(removed),
-                );
-              },
+            Semantics(
+              label: 'Hapus $selected produk yang dicentang',
+              button: true,
+              excludeSemantics: true,
+              child: PillButton(
+                label: 'Hapus',
+                variant: PillButtonVariant.text,
+                size: PillButtonSize.small,
+                onPressed: () {
+                  final removed = cart.removeSelected();
+                  if (removed.isEmpty) return;
+                  services.haptics.light();
+                  showUndoSnackBar(
+                    context,
+                    message: '${removed.length} produk dihapus dari keranjang',
+                    onUndo: () => cart.restoreAll(removed),
+                  );
+                },
+              ),
             ),
         ],
       ),
@@ -445,6 +450,77 @@ class _GuestStrip extends StatelessWidget {
   }
 }
 
+/// Ringkasan harga keranjang dari kutipan yang sama dengan checkout: voucher
+/// terbaik yang sah + Kelopak (sakelar checkout menyala bawaan).
+final class _CartPricing {
+  const _CartPricing({
+    required this.subtotal,
+    required this.strikeSaving,
+    required this.voucherAmount,
+    required this.voucherTitle,
+    required this.kelopakUsed,
+    required this.kelopakValue,
+  });
+
+  factory _CartPricing.of(AppServices services) {
+    final cart = services.cart;
+    final rewards = services.rewards;
+    var strikeSaving = 0;
+    for (final item in cart.selectedItems) {
+      final strike = item.product.strikePrice;
+      if (strike != null && strike > item.product.price) {
+        strikeSaving += (strike - item.product.price) * item.qty;
+      }
+    }
+    final subtotal = cart.selectedSubtotal;
+    if (!rewards.available || !services.auth.isLoggedIn || !cart.hasSelection) {
+      return _CartPricing(
+        subtotal: subtotal,
+        strikeSaving: strikeSaving,
+        voucherAmount: 0,
+        voucherTitle: null,
+        kelopakUsed: 0,
+        kelopakValue: 0,
+      );
+    }
+    final voucher = bestUsableVoucher(rewards.vouchersFor(subtotal));
+    final quote = rewards.quote(
+      CheckoutRequest(
+        lines: cart.linesForCheckout,
+        shippingFee: 0,
+        voucherId: voucher?.id,
+      ),
+    );
+    return _CartPricing(
+      subtotal: subtotal,
+      strikeSaving: strikeSaving,
+      voucherAmount: quote.voucherAmount,
+      voucherTitle: quote.voucherAmount > 0 ? voucher?.title : null,
+      kelopakUsed: quote.kelopakUsed,
+      kelopakValue: quote.kelopakValue,
+    );
+  }
+
+  final int subtotal;
+  final int strikeSaving;
+  final int voucherAmount;
+  final String? voucherTitle;
+  final int kelopakUsed;
+  final int kelopakValue;
+
+  int get checkoutSaving => voucherAmount + kelopakValue;
+
+  /// Total barang setelah voucher dan Kelopak, sebelum ongkir.
+  int get total => subtotal - checkoutSaving;
+
+  /// Harga awal yang dicoret: harga normal sebelum diskon produk dan
+  /// potongan checkout. Null bila tidak ada potongan sama sekali.
+  int? get strikeTotal {
+    final original = subtotal + strikeSaving;
+    return original > total ? original : null;
+  }
+}
+
 class _CartBottomBar extends StatelessWidget {
   const _CartBottomBar({required this.services, required this.hasGifts});
 
@@ -455,34 +531,213 @@ class _CartBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.bp;
     final cart = services.cart;
-    var strikeSaving = 0;
-    for (final item in cart.selectedItems) {
-      final strike = item.product.strikePrice;
-      if (strike != null && strike > item.product.price) {
-        strikeSaving += (strike - item.product.price) * item.qty;
-      }
-    }
+    final pricing = _CartPricing.of(services);
     final blocked = !cart.hasSelection;
-    return StickyBottomBar.total(
-      total: cart.selectedSubtotal,
-      caption: strikeSaving > 0 ? 'Hemat ${formatRupiah(strikeSaving)}' : null,
-      actionLabel: 'Checkout (${cart.selectedLineCount})',
-      onAction: blocked
-          ? null
-          : () => services.router.go(context, const CheckoutRoute()),
-      header: blocked && hasGifts
-          ? Container(
-              color: c.warningTint,
-              padding: const EdgeInsets.symmetric(
-                horizontal: BpSpace.screen,
-                vertical: BpSpace.x2,
+    final selected = cart.selectedLineCount;
+    final Widget? header;
+    if (blocked && hasGifts) {
+      header = Container(
+        color: c.warningTint,
+        padding: const EdgeInsets.symmetric(
+          horizontal: BpSpace.screen,
+          vertical: BpSpace.x2,
+        ),
+        child: Text(
+          'Pilih minimal 1 produk berbayar supaya hadiahmu ikut dikirim.',
+          style: BpText.caption.copyWith(color: c.warning),
+        ),
+      );
+    } else if (pricing.checkoutSaving > 0) {
+      header = CartSavingsCard(
+        voucherAmount: pricing.voucherAmount,
+        kelopakUsed: pricing.kelopakUsed,
+        kelopakValue: pricing.kelopakValue,
+        onTap: () => _showPriceDetail(context, pricing),
+      );
+    } else {
+      header = null;
+    }
+    final strike = pricing.strikeTotal;
+    return StickyBottomBar(
+      header: header,
+      padding: const EdgeInsets.fromLTRB(
+        BpSpace.x1,
+        BpSpace.x2,
+        BpSpace.screen,
+        BpSpace.x2,
+      ),
+      child: Row(
+        children: <Widget>[
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              SizedBox(
+                width: 40,
+                height: 32,
+                child: Checkbox(
+                  value: cart.allSelected
+                      ? true
+                      : (selected == 0 ? false : null),
+                  tristate: true,
+                  onChanged: (_) => cart.selectAll(!cart.allSelected),
+                  semanticLabel: 'Pilih semua',
+                ),
               ),
-              child: Text(
-                'Pilih minimal 1 produk berbayar supaya hadiahmu ikut dikirim.',
-                style: BpText.caption.copyWith(color: c.warning),
+              ExcludeSemantics(
+                child: SizedBox(
+                  width: 48,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Semua',
+                      style: BpText.label.copyWith(color: c.textMuted),
+                    ),
+                  ),
+                ),
               ),
-            )
-          : null,
+            ],
+          ),
+          Container(
+            width: 1,
+            height: 32,
+            margin: const EdgeInsets.only(right: BpSpace.x3),
+            color: c.line,
+          ),
+          Expanded(
+            child: BpTappable(
+              onTap: blocked ? null : () => _showPriceDetail(context, pricing),
+              pressScale: false,
+              alignment: Alignment.centerLeft,
+              focusRadius: BpRadius.tileAll,
+              semanticLabel:
+                  'Total ${formatRupiah(pricing.total)}'
+                  '${strike == null ? '' : ', harga awal ${formatRupiah(strike)}'}'
+                  '. Lihat rincian',
+              builder: (context, states) => Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Total',
+                        style: BpText.caption.copyWith(color: c.textMuted),
+                      ),
+                      if (strike != null) ...<Widget>[
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            formatRupiah(strike),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: BpText.caption.copyWith(
+                              color: c.textFaint,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: c.textFaint,
+                              fontFeatures: BpText.tabular,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (!blocked)
+                        Icon(
+                          LucideIcons.chevronUp,
+                          size: 16,
+                          color: c.textMuted,
+                        ),
+                    ],
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      formatRupiah(pricing.total),
+                      maxLines: 1,
+                      style: BpText.titleL.copyWith(
+                        fontSize: 18,
+                        height: 24 / 18,
+                        color: c.brandStrong,
+                        fontFeatures: BpText.tabular,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: BpSpace.x2),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.sizeOf(context).width * 0.45,
+            ),
+            child: PillButton(
+              label: 'Checkout ($selected)',
+              onPressed: blocked
+                  ? null
+                  : () => services.router.go(context, const CheckoutRoute()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showPriceDetail(BuildContext context, _CartPricing pricing) {
+    return showBpSheet<void>(
+      context: context,
+      builder: (sheetContext) {
+        final c = sheetContext.bp;
+        final title = pricing.voucherTitle;
+        return BpSheet(
+          title: 'Rincian harga',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              InfoRow(
+                label: 'Subtotal produk (${services.cart.selectedLineCount})',
+                value: formatRupiah(pricing.subtotal),
+                padding: EdgeInsets.zero,
+              ),
+              if (pricing.strikeSaving > 0)
+                InfoRow(
+                  label: 'Sudah termasuk diskon produk',
+                  value: formatRupiah(pricing.strikeSaving),
+                  valueColor: c.success,
+                  padding: EdgeInsets.zero,
+                ),
+              if (pricing.voucherAmount > 0)
+                InfoRow(
+                  label: title == null ? 'Voucher' : 'Voucher · $title',
+                  value: '-${formatRupiah(pricing.voucherAmount)}',
+                  valueColor: c.success,
+                  padding: EdgeInsets.zero,
+                ),
+              if (pricing.kelopakValue > 0)
+                InfoRow(
+                  label:
+                      'Kelopak dipakai · '
+                      '${kelopakAmountLabel(pricing.kelopakUsed)}',
+                  value: '-${formatRupiah(pricing.kelopakValue)}',
+                  valueColor: c.success,
+                  padding: EdgeInsets.zero,
+                ),
+              Divider(height: BpSpace.x4, color: c.line),
+              InfoRow(
+                label: 'Total sebelum ongkir',
+                value: formatRupiah(pricing.total),
+                emphasized: true,
+                padding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: BpSpace.x2),
+              Text(
+                'Ongkir dihitung di checkout. Kelopak hanya memotong harga '
+                'barang, bukan ongkir.',
+                style: BpText.caption.copyWith(color: c.textMuted),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -20,8 +20,10 @@ import 'package:kelopak_hub/kelopak_hub.dart' as hub;
 import '../app/app_router.dart';
 import '../app/app_scope.dart';
 import '../app/app_services.dart';
+import '../app/shell.dart' show CartButton;
 import '../config/demo_campaign.dart';
 import '../data/rewards/rewards_gateway.dart';
+import '../features/catalog/shop_common.dart' show InboxButton;
 import '../platform/browser.dart';
 import '../services/sound/sound_service.dart';
 import 'bpedia_kelopak_host.dart';
@@ -100,7 +102,14 @@ void registerKelopakRoutes(AppRouter router) {
   router
     ..registerTab(
       AppTab.rewards,
-      (context) => const KelopakMusic(child: hub.RewardsHubPage()),
+      (context) => const KelopakMusic(
+        child: hub.RewardsHubPage(
+          actions: <Widget>[
+            InboxButton(color: Color(0xFFFFFFFF)),
+            CartButton(color: Color(0xFFFFFFFF)),
+          ],
+        ),
+      ),
     )
     ..register<CheckInRoute>(
       (context, route) => const KelopakMusic(child: hub.KelopakCheckInScreen()),

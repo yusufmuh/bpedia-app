@@ -1,8 +1,12 @@
 import 'package:bpedia_app/app/app_router.dart';
+import 'package:bpedia_app/app/app_services.dart';
+import 'package:bpedia_app/design/design.dart';
 import 'package:bpedia_app/features/demo/demo_page.dart';
+import 'package:bpedia_app/features/demo/demo_rewards_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../integration/i1_harness.dart' show i1Services, loadKelopak;
 import '../account/f3_harness.dart';
 
 Finder _key(String key) => find.byKey(ValueKey<String>(key));
@@ -26,9 +30,70 @@ void main() {
     // Geseran tersimpan di dokumen app.
     expect(services.demoClock.toJson(), <String, Object?>{'offsetDays': 3});
 
-    await tester.tap(find.text('Kembali ke hari ini'));
+    await tester.tap(find.text('-1 hari'));
+    await tester.pumpAndSettle();
+    expect(services.demoClock.offsetDays, 2);
+    expect(find.text('Jumat, 27 Nov 2026'), findsWidgets);
+
+    await tester.tap(find.text('Waktu nyata'));
     await tester.pumpAndSettle();
     expect(services.demoClock.offsetDays, 0);
+    // Di tanggal nyata tidak bisa mundur lagi.
+    expect(tester.widget<PillButton>(_key('demo-day-back')).onPressed, isNull);
+  });
+
+  test('stepBackOneDay melewati batas satu kali geser', () {
+    final services = AppServices.forTest();
+    addTearDown(services.dispose);
+    final clock = services.demoClock;
+    clock
+      ..advanceDays(30)
+      ..advanceDays(30)
+      ..advanceDays(5);
+    stepBackOneDay(clock);
+    expect(clock.offsetDays, 64);
+    clock.reset();
+    stepBackOneDay(clock);
+    expect(clock.offsetDays, 0);
+  });
+
+  testWidgets('status Roda Sabtu dan Check-in mengikuti tanggal demo', (
+    tester,
+  ) async {
+    final services = f3Services(loggedIn: true, rewards: FakeRewards());
+    await openF3(tester, services, '/demo');
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: _key('demo-status-wheel'),
+        matching: find.text('Roda Sabtu buka Sabtu, 28 Nov 2026'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Check-in hari ini belum diklaim'), findsOneWidget);
+
+    await tester.tap(find.text('Ke Sabtu berikutnya'));
+    await tester.pumpAndSettle();
+    expect(find.text('Roda Sabtu terbuka hari ini'), findsOneWidget);
+  });
+
+  testWidgets('gateway Kelopak asli: alat demo tampil, bukan catatan kosong', (
+    tester,
+  ) async {
+    final services = i1Services(withAddress: false);
+    final gateway = await loadKelopak(services);
+    expect(services.rewards, isA<DemoRewardsTools>());
+    await openF3(tester, services, '/demo');
+    await pumpFor(tester);
+
+    expect(find.textContaining('belum tersambung'), findsNothing);
+    await scrollTo(tester, _key('demo-grant-100'));
+    final before = gateway.kelopakBalance;
+    await tester.tap(_key('demo-grant-100'));
+    await pumpFor(tester);
+    expect(gateway.kelopakBalance, before + 100);
+    await scrollTo(tester, _key('demo-action-refill-wheel-quota'));
+    expect(_key('demo-action-refill-wheel-quota'), findsOneWidget);
   });
 
   testWidgets('isi saldo dan aksi gateway lewat DemoRewardsTools', (

@@ -314,6 +314,36 @@ void main() {
       final accepted = await s.orders.place(draftOf(s));
       expect(accepted.order!.id, 'BP-261125-0001');
     });
+
+    test('nomor yang sudah tercatat di gateway dilewati, urutan berlanjut', () async {
+      final s = build();
+      gateway.takenOrderIds.addAll(<String>['BP-261125-0001', 'BP-261125-0002']);
+      s.cart.add(codeB);
+      final placed = await s.orders.place(draftOf(s));
+      expect(placed.ok, isTrue, reason: placed.message);
+      expect(placed.order!.id, 'BP-261125-0003');
+      expect(gateway.calls, <String>[
+        'commit:BP-261125-0001',
+        'commit:BP-261125-0002',
+        'commit:BP-261125-0003',
+      ]);
+
+      s.cart.add(codeB);
+      expect((await s.orders.place(draftOf(s))).order!.id, 'BP-261125-0004');
+    });
+
+    test('nomor terus-menerus bentrok: berhenti dan ditolak', () async {
+      final s = build();
+      gateway.takenOrderIds.addAll(<String>[
+        for (var seq = 1; seq <= OrderRepository.maxNumberRetries + 1; seq++)
+          'BP-261125-${seq.toString().padLeft(4, '0')}',
+      ]);
+      s.cart.add(codeB);
+      final rejected = await s.orders.place(draftOf(s));
+      expect(rejected.problem, OrderProblem.rewardsRejected);
+      expect(rejected.message, 'Pesanan ini sudah tercatat.');
+      expect(gateway.calls, hasLength(OrderRepository.maxNumberRetries + 1));
+    });
   });
 
   group('transisi', () {

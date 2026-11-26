@@ -5,12 +5,15 @@ library;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:kelopak_hub/kelopak_hub.dart' show wibDateLabel;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../app/app_router.dart';
 import '../../app/app_scope.dart';
 import '../../app/app_services.dart';
 import '../../config/app_config.dart';
+import '../../data/demo/demo_clock_repository.dart';
+import '../../data/rewards/rewards_gateway.dart';
 import '../../data/storage/app_document.dart';
 import '../../data/wib_dates.dart';
 import '../../design/design.dart';
@@ -144,20 +147,36 @@ class _ClockSection extends StatelessWidget {
                 runSpacing: BpSpace.x2,
                 children: <Widget>[
                   PillButton(
+                    key: const ValueKey<String>('demo-day-back'),
+                    label: '-1 hari',
+                    variant: PillButtonVariant.neutral,
+                    size: PillButtonSize.small,
+                    onPressed: offset == 0
+                        ? null
+                        : () {
+                            stepBackOneDay(clock);
+                            services.haptics.selection();
+                            showAppSnack(
+                              context,
+                              'Hari ini menjadi ${clock.todayLabel}.',
+                            );
+                          },
+                  ),
+                  PillButton(
                     label: '+1 hari',
-                    variant: PillButtonVariant.tonal,
+                    variant: PillButtonVariant.neutral,
                     size: PillButtonSize.small,
                     onPressed: () => advance(1),
                   ),
                   PillButton(
                     label: '+7 hari',
-                    variant: PillButtonVariant.tonal,
+                    variant: PillButtonVariant.neutral,
                     size: PillButtonSize.small,
                     onPressed: () => advance(7),
                   ),
                   PillButton(
                     label: 'Ke Sabtu berikutnya',
-                    variant: PillButtonVariant.tonal,
+                    variant: PillButtonVariant.neutral,
                     size: PillButtonSize.small,
                     onPressed: () {
                       clock.jumpToNextSaturday();
@@ -169,9 +188,10 @@ class _ClockSection extends StatelessWidget {
                     },
                   ),
                   PillButton(
-                    label: 'Kembali ke hari ini',
+                    label: 'Waktu nyata',
                     variant: PillButtonVariant.neutral,
                     size: PillButtonSize.small,
+                    icon: const Icon(LucideIcons.rotateCcw),
                     onPressed: offset == 0
                         ? null
                         : () {
@@ -181,10 +201,106 @@ class _ClockSection extends StatelessWidget {
                   ),
                 ],
               ),
+              _GameStatusRows(services: services),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+/// Mundur satu hari kalender demo. Kalender demo tidak bisa lebih awal dari
+/// tanggal nyata, jadi tidak berbuat apa pun saat geseran 0.
+void stepBackOneDay(DemoClockRepository clock) {
+  final target = clock.offsetDays - 1;
+  if (target < 0) return;
+  clock.reset();
+  var left = target;
+  while (left > 0) {
+    final step = left > DemoClockRepository.maxAdvanceDays
+        ? DemoClockRepository.maxAdvanceDays
+        : left;
+    clock.advanceDays(step);
+    left -= step;
+  }
+}
+
+/// Status game pada tanggal demo: Roda Sabtu dan Check-in, berikon 3D.
+class _GameStatusRows extends StatelessWidget {
+  const _GameStatusRows({required this.services});
+
+  final AppServices services;
+
+  @override
+  Widget build(BuildContext context) {
+    final rewards = services.rewards;
+    return ListenableBuilder(
+      listenable: Listenable.merge(<Listenable>[rewards, services.auth]),
+      builder: (context, _) {
+        if (!rewards.available) return const SizedBox.shrink();
+        final loggedIn = services.auth.isLoggedIn;
+        final clock = services.clock;
+        final saturday = dateOfWibDay(clock.today).weekday == DateTime.saturday;
+        final wheel = !saturday
+            ? 'Roda Sabtu buka ${wibDateLabel(clock.nextSaturday())}'
+            : !loggedIn
+            ? 'Roda Sabtu terbuka hari ini, masuk untuk memutar'
+            : rewards.hasBadge(RewardsEntry.wheel)
+            ? 'Roda Sabtu terbuka hari ini'
+            : 'Roda Sabtu sudah diputar hari ini';
+        final checkIn = !loggedIn
+            ? 'Masuk untuk klaim check-in'
+            : rewards.hasBadge(RewardsEntry.checkIn)
+            ? 'Check-in hari ini belum diklaim'
+            : 'Check-in hari ini sudah diklaim';
+        return Padding(
+          padding: const EdgeInsets.only(top: BpSpace.x3),
+          child: Column(
+            children: <Widget>[
+              _StatusRow(
+                key: const ValueKey<String>('demo-status-wheel'),
+                art: 'assets/icons3d/roda.webp',
+                label: wheel,
+              ),
+              const SizedBox(height: BpSpace.x2),
+              _StatusRow(
+                key: const ValueKey<String>('demo-status-checkin'),
+                art: 'assets/icons3d/checkin.webp',
+                label: checkIn,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _StatusRow extends StatelessWidget {
+  const _StatusRow({super.key, required this.art, required this.label});
+
+  final String art;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return Row(
+      children: <Widget>[
+        AssetPicture(
+          art,
+          width: 28,
+          height: 28,
+          fit: BoxFit.contain,
+          cacheWidth: 84,
+          showSkeleton: false,
+        ),
+        const SizedBox(width: BpSpace.x3),
+        Expanded(
+          child: Text(label, style: BpText.bodyS.copyWith(color: c.text)),
+        ),
+      ],
     );
   }
 }
@@ -316,7 +432,7 @@ class _RewardsSectionState extends State<_RewardsSection> {
                     PillButton(
                       key: ValueKey<String>('demo-grant-$amount'),
                       label: '+${formatThousands(amount)} Kelopak',
-                      variant: PillButtonVariant.tonal,
+                      variant: PillButtonVariant.neutral,
                       size: PillButtonSize.small,
                       busy: _running == 'grant-$amount',
                       onPressed: loggedIn

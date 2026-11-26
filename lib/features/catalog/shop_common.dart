@@ -11,6 +11,7 @@ import '../../app/app_services.dart';
 import '../../data/catalog/catalog_repository.dart';
 import '../../data/wib_dates.dart';
 import '../../design/design.dart';
+import 'cart_flight.dart';
 
 const List<String> _monthsShort = <String>[
   'Jan',
@@ -87,13 +88,30 @@ List<String> popularBrands(AppServices services, {int limit = 10}) {
   return brands.take(limit).toList(growable: false);
 }
 
+/// "Ongkir mulai 8rb": tarif kilogram pertama termurah dari kurir demo.
+String shippingFromLabel(AppServices services) {
+  final rates = services.shipping.rates;
+  if (rates.isEmpty) return 'Ongkir sesuai kurir';
+  var cheapest = rates.first.firstKgFee;
+  for (final rate in rates) {
+    if (rate.firstKgFee < cheapest) cheapest = rate.firstKgFee;
+  }
+  return cheapest % 1000 == 0
+      ? 'Ongkir mulai ${cheapest ~/ 1000}rb'
+      : 'Ongkir mulai ${formatRupiah(cheapest)}';
+}
+
 /// Apakah [product] termasuk produk Misi Belanja tahap aktif.
 bool isMissionProduct(AppServices services, Product product) =>
     services.rewards.available &&
     services.rewards.missionProductCodes.contains(product.code);
 
 /// Data tampilan kartu dari produk katalog.
-ProductCardData productCardData(Product product, {bool mission = false}) {
+ProductCardData productCardData(
+  Product product, {
+  bool mission = false,
+  String? ribbon,
+}) {
   final percent = product.discountPercent;
   return ProductCardData(
     id: product.code,
@@ -104,11 +122,9 @@ ProductCardData productCardData(Product product, {bool mission = false}) {
     discountPercent: product.hasDiscount ? percent : null,
     rating: product.rating,
     brand: product.brand,
-    ribbon: mission
-        ? 'Produk misi'
-        : product.isHot
-        ? 'Hot Item'
-        : null,
+    ribbon:
+        ribbon ??
+        (mission ? 'Produk misi' : (product.isHot ? 'Hot Item' : null)),
     inStock: product.inStock,
   );
 }
@@ -126,6 +142,7 @@ void addProductToCart(BuildContext context, Product product, {int qty = 1}) {
   final messenger = ScaffoldMessenger.maybeOf(context);
   if (change.changed) {
     services.haptics.light();
+    flyToCart(context, product.primaryImage);
   } else {
     services.haptics.medium();
   }
@@ -149,6 +166,23 @@ void addProductToCart(BuildContext context, Product product, {int qty = 1}) {
             : null,
       ),
     );
+}
+
+/// "Beli sekarang": memasukkan satu [product] sebagai satu-satunya pilihan
+/// keranjang lalu membuka checkout.
+void buyProductNow(BuildContext context, Product product) {
+  final services = AppScope.of(context);
+  final change = services.cart.buyNow(product.code);
+  if (change.qty == 0) {
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(
+        content: Text(change.limit?.message ?? 'Produk belum bisa dibeli.'),
+      ),
+    );
+    return;
+  }
+  services.haptics.light();
+  services.router.go(context, const CheckoutRoute());
 }
 
 /// Menambah atau menghapus [product] dari wishlist dengan pesan singkat.
@@ -180,11 +214,15 @@ class ShopProductCard extends StatelessWidget {
   const ShopProductCard({
     required this.product,
     this.action = ProductCardAction.quickAdd,
+    this.ribbon,
     super.key,
   });
 
   final Product product;
   final ProductCardAction action;
+
+  /// Pita pengganti ("Hadiah Roda"); bawaan mengikuti misi atau Hot Item.
+  final String? ribbon;
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +237,7 @@ class ShopProductCard extends StatelessWidget {
         data: productCardData(
           product,
           mission: isMissionProduct(services, product),
+          ribbon: ribbon,
         ),
         action: action,
         wishlisted: services.wishlist.contains(product.code),
@@ -208,6 +247,54 @@ class ShopProductCard extends StatelessWidget {
             ? null
             : () => addProductToCart(context, product),
       ),
+    );
+  }
+}
+
+/// Lencana kepercayaan satu baris (PERBAIKAN G4, produk 1): "100% Original"
+/// · "BPOM terverifikasi" · ongkir termurah. Pada huruf besar membungkus.
+class TrustBadgeRow extends StatelessWidget {
+  const TrustBadgeRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final services = AppScope.of(context);
+    final c = context.bp;
+    Widget cell(BrandGlyph glyph, String label) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        BrandIcon(glyph, size: 16, style: BrandIconStyle.color),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          maxLines: 1,
+          style: BpText.label.copyWith(
+            fontSize: 11,
+            color: c.textMuted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+    final cells = <Widget>[
+      cell(BrandGlyph.original, '100% Original'),
+      cell(BrandGlyph.best, 'BPOM terverifikasi'),
+      cell(BrandGlyph.ongkir, shippingFromLabel(services)),
+    ];
+    final large = MediaQuery.textScalerOf(context).scale(10) > 11.5;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: BpSpace.screen),
+      child: large
+          ? Wrap(spacing: BpSpace.x3, runSpacing: BpSpace.x1, children: cells)
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                for (final item in cells)
+                  Flexible(
+                    child: FittedBox(fit: BoxFit.scaleDown, child: item),
+                  ),
+              ],
+            ),
     );
   }
 }

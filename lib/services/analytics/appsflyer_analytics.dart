@@ -56,7 +56,10 @@ class AppsFlyerAnalytics implements Analytics {
           onDeepLink?.call(value, deferred: link?.isDeferred ?? false);
         },
       );
-      await _sdk.init(devKey: devKey, appId: iosAppId.isEmpty ? null : iosAppId);
+      await _sdk.init(
+        devKey: devKey,
+        appId: iosAppId.isEmpty ? null : iosAppId,
+      );
       await _sdk.setCurrencyCode('IDR');
       // Demo tidak mengumpulkan ID iklan.
       await _sdk.setDisableAdvertisingIdentifiers(true);

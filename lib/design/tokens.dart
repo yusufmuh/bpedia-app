@@ -343,9 +343,11 @@ abstract final class BpSize {
   static const double buttonSmall = 40;
   static const double bottomNav = 60;
 
-  /// Tombol Hadiah di tengah bottom nav dan tinggi tonjolannya.
-  static const double rewardButton = 56;
-  static const double rewardLift = 18;
+  /// Tombol Hadiah di tengah bottom nav (termasuk cincin) dan tinggi
+  /// tonjolannya di atas bilah; dijaga kecil agar tidak menutupi konten.
+  static const double rewardButton = 50;
+  static const double rewardLift = 12;
+  static const double rewardRing = 4;
 }
 
 /// Bayangan (SPEC-V3 §2.3). Tema gelap tidak memakai bayangan; pemisahnya
@@ -367,7 +369,7 @@ abstract final class BpShadows {
 
   /// Tombol Hadiah yang menonjol di bottom nav.
   static const List<BoxShadow> candy = <BoxShadow>[
-    BoxShadow(color: Color(0x47B3164B), offset: Offset(0, 6), blurRadius: 12),
+    BoxShadow(color: Color(0x2E000000), offset: Offset(0, 2), blurRadius: 8),
   ];
 }
 

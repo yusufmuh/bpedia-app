@@ -61,9 +61,48 @@ class AboutPage extends StatelessWidget {
                   style: BpText.caption.copyWith(color: c.textMuted),
                 ),
                 const SizedBox(height: BpSpace.x4),
+                Text(
+                  'Cantik bukan untuk diseragamkan.\nCantik untuk dipahami.',
+                  key: const ValueKey<String>('about-slogan'),
+                  textAlign: TextAlign.center,
+                  style: BpText.title.copyWith(
+                    color: c.brandStrong,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: BpSpace.x4),
                 const _TrustRow(),
               ],
             ),
+          ),
+          Section(
+            header: const SectionHeader(title: 'Cerita Bpedia'),
+            inset: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Beautypedia (Bpedia) adalah teman belanja dan pengetahuan '
+                  'kecantikan. Bpedia membantu kamu mengenali kebutuhan kulit, '
+                  'memilih produk dengan yakin, dan merawat diri tanpa tekanan.',
+                  style: BpText.bodyS.copyWith(color: c.textMuted),
+                ),
+                const SizedBox(height: BpSpace.x2),
+                Text(
+                  'Versi 3 menambahkan Zona Hadiah: Check-in Harian, Roda '
+                  'Sabtu, dan Misi Belanja. Hadiahnya Kelopak (1 Kelopak = '
+                  'Rp100) yang otomatis memotong harga belanja, serta produk '
+                  'gratis yang ikut pesanan berikutnya.',
+                  style: BpText.bodyS.copyWith(color: c.textMuted),
+                ),
+              ],
+            ),
+          ),
+          const Section(
+            header: SectionHeader(title: 'Kenalan dengan Bipy'),
+            inset: true,
+            child: _MeetBipy(),
           ),
           Section(
             header: const SectionHeader(
@@ -164,14 +203,14 @@ class AboutPage extends StatelessWidget {
                   runSpacing: BpSpace.x2,
                   children: <Widget>[
                     PillButton(
-                      label: 'Syarat & Ketentuan',
+                      label: 'Syarat dan ketentuan',
                       variant: PillButtonVariant.neutral,
                       size: PillButtonSize.small,
                       onPressed: () =>
                           services.router.go(context, const TermsRoute()),
                     ),
                     PillButton(
-                      label: 'Kebijakan Privasi',
+                      label: 'Kebijakan privasi',
                       variant: PillButtonVariant.neutral,
                       size: PillButtonSize.small,
                       onPressed: () =>
@@ -299,6 +338,110 @@ class _StoreButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Kartu "Kenalan dengan Bipy": maskot dan lima pose berlabel (K5).
+class _MeetBipy extends StatelessWidget {
+  const _MeetBipy();
+
+  static const List<(String, String)> _poses = <(String, String)>[
+    ('assets/bipy/bipy_wajah_wink.webp', 'Wink'),
+    ('assets/bipy/bipy_wajah_senyum.webp', 'Senyum'),
+    ('assets/bipy/bipy_ngintip.webp', 'Ngintip'),
+    ('assets/bipy/bipy_tas_depan.webp', 'Dalam tas'),
+    ('assets/bipy/bipy_menyapa.webp', 'Menyapa'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(BpSpace.card),
+          decoration: BoxDecoration(
+            color: c.brandTint,
+            borderRadius: BpRadius.cardAll,
+          ),
+          child: Row(
+            children: <Widget>[
+              const AssetPicture(
+                'assets/bipy/bipy_berdiri.webp',
+                width: 76,
+                height: 104,
+                fit: BoxFit.contain,
+                cacheWidth: 228,
+                showSkeleton: false,
+                semanticLabel: 'Bipy berdiri',
+              ),
+              const SizedBox(width: BpSpace.x3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Bipy, maskot Bpedia',
+                      style: BpText.subtitle.copyWith(color: c.text),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Gadis mungil bertudung tulip pink yang menemanimu '
+                      'belanja, check-in, dan memutar Roda Sabtu.',
+                      style: BpText.caption.copyWith(color: c.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: BpSpace.x2),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            for (var i = 0; i < _poses.length; i++) ...<Widget>[
+              if (i > 0) const SizedBox(width: BpSpace.x2),
+              Expanded(
+                child: MergeSemantics(
+                  child: Column(
+                    children: <Widget>[
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: c.surfaceMuted,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: AssetPicture(
+                            _poses[i].$1,
+                            fit: BoxFit.contain,
+                            cacheWidth: 180,
+                            showSkeleton: false,
+                            semanticLabel: 'Bipy ${_poses[i].$2}',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: BpSpace.x1),
+                      ExcludeSemantics(
+                        child: Text(
+                          _poses[i].$2,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: BpText.caption.copyWith(color: c.textMuted),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ],
     );
   }
 }

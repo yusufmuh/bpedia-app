@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../data/auth/auth_validators.dart';
 import '../../design/design.dart';
 
 /// Menampilkan pesan singkat di bawah layar, menggantikan pesan sebelumnya.
@@ -174,24 +175,50 @@ class MenuEntry {
 
 /// Kelompok menu dalam satu seksi `surface`, dipisah garis tipis.
 class MenuGroup extends StatelessWidget {
-  const MenuGroup({super.key, required this.entries, this.title});
+  const MenuGroup({super.key, required this.entries, this.title, this.leading});
 
   final String? title;
   final List<MenuEntry> entries;
+
+  /// Baris khusus sebelum [entries], mis. sakelar "Mode gelap".
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
     final c = context.bp;
     final heading = title;
+    final rows = <Widget>[
+      ?leading,
+      for (final entry in entries) _MenuTile(entry: entry),
+    ];
     return Section(
       padding: EdgeInsets.only(
         top: heading == null ? BpSpace.x1 : 0,
         bottom: BpSpace.x1,
       ),
-      header: heading == null ? null : SectionHeader(title: heading),
+      header: heading == null
+          ? null
+          : Padding(
+              padding: const EdgeInsets.fromLTRB(
+                BpSpace.screen,
+                BpSpace.x4,
+                BpSpace.screen,
+                BpSpace.x1,
+              ),
+              child: Semantics(
+                header: true,
+                child: Text(
+                  heading,
+                  style: BpText.bodyS.copyWith(
+                    color: c.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
       child: Column(
         children: <Widget>[
-          for (var i = 0; i < entries.length; i++) ...<Widget>[
+          for (var i = 0; i < rows.length; i++) ...<Widget>[
             if (i > 0)
               Divider(
                 height: 1,
@@ -199,7 +226,7 @@ class MenuGroup extends StatelessWidget {
                 indent: BpSpace.screen + 36 + BpSpace.x3,
                 color: c.line,
               ),
-            _MenuTile(entry: entries[i]),
+            rows[i],
           ],
         ],
       ),
@@ -349,6 +376,7 @@ class LabeledField extends StatelessWidget {
     this.focusNode,
     this.enabled = true,
     this.fieldKey,
+    this.showCounter = false,
   });
 
   final String label;
@@ -376,6 +404,9 @@ class LabeledField extends StatelessWidget {
   /// Kunci untuk `TextField` (dipakai tes).
   final Key? fieldKey;
 
+  /// Menampilkan penghitung "n/[maxLength]" di bawah kolom.
+  final bool showCounter;
+
   @override
   Widget build(BuildContext context) {
     final c = context.bp;
@@ -383,51 +414,62 @@ class LabeledField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text.rich(
-          TextSpan(
-            text: label,
-            children: <InlineSpan>[
-              if (optional)
-                TextSpan(
-                  text: ' (opsional)',
-                  style: BpText.caption.copyWith(color: c.textMuted),
-                ),
-            ],
+        ExcludeSemantics(
+          child: Text.rich(
+            TextSpan(
+              text: label,
+              children: <InlineSpan>[
+                if (optional)
+                  TextSpan(
+                    text: ' (opsional)',
+                    style: BpText.caption.copyWith(color: c.textMuted),
+                  ),
+              ],
+            ),
+            style: BpText.subtitle.copyWith(color: c.text),
           ),
-          style: BpText.subtitle.copyWith(color: c.text),
         ),
         const SizedBox(height: 6),
-        TextField(
-          key: fieldKey,
-          controller: controller,
-          focusNode: focusNode,
-          enabled: enabled,
-          obscureText: obscureText,
-          enableSuggestions: !obscureText,
-          autocorrect: !obscureText,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          autofillHints: autofillHints,
-          inputFormatters: inputFormatters,
-          maxLines: obscureText ? 1 : maxLines,
-          minLines: 1,
-          maxLength: maxLength,
-          onChanged: onChanged,
-          onSubmitted: onSubmitted,
-          style: BpText.body.copyWith(color: c.text),
-          decoration: InputDecoration(
-            hintText: hint,
-            errorText: errorText,
-            helperText: helperText,
-            counterText: '',
-            prefixIcon: icon == null ? null : Icon(icon, size: 20),
-            suffixIcon: suffix,
-          ),
+        Semantics(
+          label: optional ? '$label, opsional' : label,
+          textField: true,
+          child: _field(c, icon),
         ),
       ],
     );
   }
+
+  Widget _field(BpColors c, IconData? icon) => TextField(
+    key: fieldKey,
+    controller: controller,
+    focusNode: focusNode,
+    enabled: enabled,
+    obscureText: obscureText,
+    enableSuggestions: !obscureText,
+    autocorrect: !obscureText,
+    keyboardType: keyboardType,
+    textInputAction: textInputAction,
+    autofillHints: autofillHints,
+    inputFormatters: inputFormatters,
+    maxLines: obscureText ? 1 : maxLines,
+    minLines: 1,
+    maxLength: maxLength,
+    onChanged: onChanged,
+    onSubmitted: onSubmitted,
+    style: BpText.body.copyWith(color: c.text),
+    decoration: InputDecoration(
+      hintText: hint,
+      errorText: errorText,
+      helperText: helperText,
+      counterText: showCounter ? null : '',
+      prefixIcon: icon == null ? null : Icon(icon, size: 20),
+      suffixIcon: suffix,
+    ),
+  );
 }
+
+/// Petunjuk aturan kata sandi yang sama di Masuk, Daftar, dan Ubah sandi.
+const String passwordRuleHint = 'Minimal $minPasswordLength karakter';
 
 /// Kolom kata sandi dengan tombol mata (tampilkan/sembunyikan).
 class PasswordField extends StatefulWidget {
@@ -435,7 +477,7 @@ class PasswordField extends StatefulWidget {
     super.key,
     required this.label,
     required this.controller,
-    this.hint = 'Minimal 6 karakter',
+    this.hint = passwordRuleHint,
     this.errorText,
     this.textInputAction,
     this.onSubmitted,
@@ -489,24 +531,30 @@ class _PasswordFieldState extends State<PasswordField> {
   }
 }
 
-/// Avatar bulat berisi inisial.
+/// Avatar bulat berisi inisial putih di atas `brand`; [cameraBadge]
+/// menambah lencana kamera kecil di kanan bawah.
 class InitialsAvatar extends StatelessWidget {
-  const InitialsAvatar({super.key, required this.initials, this.size = 56});
+  const InitialsAvatar({
+    super.key,
+    required this.initials,
+    this.size = 56,
+    this.cameraBadge = false,
+  });
 
   final String initials;
   final double size;
+  final bool cameraBadge;
 
   @override
   Widget build(BuildContext context) {
     final c = context.bp;
-    return Container(
+    final circle = Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: c.brandTint,
-        border: Border.all(color: c.surface, width: 3),
+        color: c.brand,
         boxShadow: BpShadows.floating(c),
       ),
       child: ExcludeSemantics(
@@ -517,13 +565,54 @@ class InitialsAvatar extends StatelessWidget {
             child: Text(
               initials.isEmpty ? 'B' : initials,
               style: BpText.titleL.copyWith(
-                color: c.brandStrong,
+                color: c.onBrand,
                 fontSize: size * 0.36,
                 height: 1,
               ),
             ),
           ),
         ),
+      ),
+    );
+    if (!cameraBadge) return circle;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          circle,
+          Positioned(
+            right: -2,
+            bottom: -2,
+            child: CameraBadge(size: size * 0.4),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Lencana kamera bulat (avatar yang bisa diganti).
+class CameraBadge extends StatelessWidget {
+  const CameraBadge({super.key, this.size = 24});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return ExcludeSemantics(
+      child: Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: c.surface,
+          border: Border.all(color: c.line),
+        ),
+        child: Icon(LucideIcons.camera, size: size * 0.55, color: c.textMuted),
       ),
     );
   }

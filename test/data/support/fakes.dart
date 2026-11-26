@@ -61,6 +61,10 @@ class FakeRewardsGateway extends RewardsGateway {
   /// Jawaban [commit] berikutnya.
   bool commitOk = true;
 
+  /// Nomor pesanan yang sudah dipakai di catatan hadiah: [commit] menolaknya
+  /// dengan `duplicateOrder`.
+  final Set<String> takenOrderIds = <String>{};
+
   /// Kabar misi yang dikembalikan [complete].
   String? missionMessage;
 
@@ -146,6 +150,13 @@ class FakeRewardsGateway extends RewardsGateway {
   @override
   Future<CommitResult> commit(String orderId, CheckoutQuote quote) async {
     calls.add('commit:$orderId');
+    if (takenOrderIds.contains(orderId)) {
+      return const CommitResult(
+        ok: false,
+        message: 'Pesanan ini sudah tercatat.',
+        duplicateOrder: true,
+      );
+    }
     if (!commitOk || quote.kelopakUsed > balance) {
       return const CommitResult(ok: false, message: 'Kutipan sudah basi.');
     }

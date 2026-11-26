@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:kelopak_hub/kelopak_hub.dart' show shortDateLabel;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../app/app_router.dart';
@@ -12,6 +13,7 @@ import '../../data/orders/order_repository.dart';
 import '../../data/payment/payment_catalog.dart';
 import '../../data/rewards/rewards_gateway.dart';
 import '../../data/shipping/shipping_repository.dart';
+import '../../data/wib_dates.dart';
 import '../../design/design.dart';
 import '../../services/analytics/analytics.dart';
 import '../../services/sound/sound_service.dart';
@@ -33,6 +35,9 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   String? _courierId;
   String? _voucherId;
+
+  /// Sebelum pembeli memilih sendiri, voucher sah terbesar dipakai otomatis.
+  bool _voucherChosen = false;
   bool _useKelopak = true;
   String _paymentId = PaymentCatalog.defaultMethodId;
   bool _placing = false;
@@ -89,19 +94,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
           services.haptics.selection();
           setState(() => _useKelopak = value);
         },
-        onPickPayment: () => _pickPayment(),
+        onPayment: (id) => setState(() => _paymentId = id),
+        onPickPayment: _pickPayment,
       );
-      bottom = StickyBottomBar.total(
-        total: model.quote.total,
-        label: 'Total pembayaran',
-        caption: model.savings > 0
-            ? 'Hemat ${formatRupiah(model.savings)}'
-            : null,
-        actionLabel: model.quote.total == 0
-            ? 'Buat pesanan · Lunas dengan Kelopak'
-            : 'Buat pesanan',
+      bottom = _CheckoutBar(
+        model: model,
         busy: _placing,
-        onAction: () => _place(services, model),
+        onPlace: () => _place(services, model),
       );
     }
     return Scaffold(
@@ -129,8 +128,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ? rewards.vouchersFor(subtotal)
         : const <VoucherOption>[];
     VoucherOption? voucher;
-    for (final option in vouchers) {
-      if (option.id == _voucherId && option.usable) voucher = option;
+    if (_voucherChosen) {
+      for (final option in vouchers) {
+        if (option.id == _voucherId && option.usable) voucher = option;
+      }
+    } else {
+      voucher = bestUsableVoucher(vouchers);
     }
     final quote = rewards.quote(
       CheckoutRequest(
@@ -193,11 +196,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
       selectedId: model.voucher?.id,
     );
     if (!mounted || choice == null) return;
-    setState(() => _voucherId = choice.voucherId);
+    setState(() {
+      _voucherChosen = true;
+      _voucherId = choice.voucherId;
+    });
   }
 
-  Future<void> _pickPayment() async {
-    final id = await showPaymentMethodSheet(context, selectedId: _paymentId);
+  Future<void> _pickPayment(PaymentKind kind) async {
+    final id = await showPaymentMethodSheet(
+      context,
+      selectedId: _paymentId,
+      kind: kind,
+    );
     if (!mounted || id == null) return;
     setState(() => _paymentId = id);
   }
@@ -289,6 +299,7 @@ class _CheckoutBody extends StatelessWidget {
     required this.onCourier,
     required this.onPickVoucher,
     required this.onKelopak,
+    required this.onPayment,
     required this.onPickPayment,
   });
 
@@ -297,22 +308,40 @@ class _CheckoutBody extends StatelessWidget {
   final ValueChanged<String> onCourier;
   final VoidCallback onPickVoucher;
   final ValueChanged<bool> onKelopak;
-  final VoidCallback onPickPayment;
+  final ValueChanged<String> onPayment;
+  final ValueChanged<PaymentKind> onPickPayment;
 
   @override
   Widget build(BuildContext context) {
     final c = context.bp;
     final quote = model.quote;
     final paidByKelopak = quote.total == 0;
+    final missionCodes = services.rewards.available
+        ? services.rewards.missionProductCodes
+        : const <String>{};
+    final voucher = model.voucher;
     return ListView(
-      padding: const EdgeInsets.only(top: BpSpace.sectionGap),
+      padding: const EdgeInsets.only(bottom: BpSpace.x2),
       children: <Widget>[
         _AddressSection(address: model.address, services: services),
         Section(
-          header: SectionHeader(title: 'Pesanan (${model.itemCount} barang)'),
+          header: SectionHeader(
+            title: 'Pesanan (${model.itemCount} barang)',
+            leading: _SectionIcon(
+              child: BrandIcon(
+                BrandGlyph.bag,
+                size: BpSize.iconDense,
+                color: c.brandStrong,
+              ),
+            ),
+          ),
           child: Column(
             children: <Widget>[
-              for (final item in model.items) _OrderLine(item: item),
+              for (final item in model.items)
+                _OrderLine(
+                  item: item,
+                  mission: missionCodes.contains(item.product.code),
+                ),
             ],
           ),
         ),
@@ -342,13 +371,24 @@ class _CheckoutBody extends StatelessWidget {
             ),
           ),
         Section(
-          header: const SectionHeader(title: 'Pengiriman'),
+          header: const SectionHeader(
+            title: 'Pengiriman',
+            leading: _SectionIcon(
+              child: BrandIcon(
+                BrandGlyph.ongkir,
+                size: BpSize.iconDense,
+                style: BrandIconStyle.color,
+              ),
+            ),
+          ),
           child: Column(
             children: <Widget>[
               for (final option in model.shippingOptions)
                 ChoiceTile(
                   title: option.name,
-                  subtitle: '${option.etaLabel} ${ShippingRepository.demoTag}',
+                  subtitle:
+                      '${etaDateRangeLabel(option.etaLabel, services.clock.instant)} '
+                      '${ShippingRepository.demoTag}',
                   selected: option.id == model.shipping.id,
                   onTap: () => onCourier(option.id),
                   trailing: _FeeLabel(option: option),
@@ -359,23 +399,24 @@ class _CheckoutBody extends StatelessWidget {
         Section(
           padding: EdgeInsets.zero,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               if (model.rewardsAvailable)
                 InfoRow(
-                  label: 'Voucher',
+                  label: voucher != null ? 'Voucher · 1 dipakai' : 'Voucher',
                   leading: const BrandIcon(
                     BrandGlyph.voucher,
                     style: BrandIconStyle.color,
                   ),
-                  value: model.voucher != null
-                      ? '-${formatRupiah(model.voucher!.amount)}'
+                  value: voucher != null
+                      ? '-${formatRupiah(voucher.amount)}'
                       : (model.usableVoucherCount > 0
                             ? '${model.usableVoucherCount} bisa dipakai'
                             : (model.vouchers.isEmpty
                                   ? 'Belum ada voucher'
                                   : 'Belum memenuhi syarat')),
-                  valueColor: model.voucher != null ? c.success : null,
-                  helper: model.voucher?.title,
+                  valueColor: voucher != null ? c.success : null,
+                  helper: voucher?.title,
                   onTap: onPickVoucher,
                 ),
               if (model.rewardsAvailable) ...<Widget>[
@@ -393,6 +434,35 @@ class _CheckoutBody extends StatelessWidget {
                     showSkeleton: false,
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    BpSpace.screen,
+                    0,
+                    BpSpace.screen,
+                    BpSpace.x3,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Icon(
+                          LucideIcons.info,
+                          size: 14,
+                          color: c.textMuted,
+                        ),
+                      ),
+                      const SizedBox(width: BpSpace.x2),
+                      Expanded(
+                        child: Text(
+                          '1 Kelopak = Rp100. Memotong harga barang, tidak '
+                          'memotong ongkir.',
+                          style: BpText.caption.copyWith(color: c.textMuted),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ],
           ),
@@ -401,27 +471,57 @@ class _CheckoutBody extends StatelessWidget {
           Section(inset: true, child: _PaidNote(kelopak: quote.kelopakUsed))
         else
           Section(
+            header: SectionHeader(
+              title: 'Metode pembayaran',
+              subtitle: 'Simulasi, tanpa uang sungguhan',
+              leading: _SectionIcon(
+                child: Icon(
+                  LucideIcons.wallet,
+                  size: BpSize.iconDense,
+                  color: c.brandStrong,
+                ),
+              ),
+            ),
             padding: const EdgeInsets.only(bottom: BpSpace.x2),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                InfoRow(
-                  label: 'Metode pembayaran',
-                  value: model.payment.name,
-                  leading: Icon(LucideIcons.wallet, color: c.text),
-                  onTap: onPickPayment,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: BpSpace.screen,
+                for (final (index, entry)
+                    in PaymentCatalog.grouped.entries.indexed) ...<Widget>[
+                  if (index > 0)
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      indent: 52,
+                      endIndent: BpSpace.screen,
+                      color: c.line,
+                    ),
+                  PaymentKindTile(
+                    kind: entry.key,
+                    methods: entry.value,
+                    selected: model.payment.kind == entry.key,
+                    chosen: model.payment.kind == entry.key
+                        ? model.payment
+                        : null,
+                    onTap: entry.value.length == 1
+                        ? () => onPayment(entry.value.single.id)
+                        : () => onPickPayment(entry.key),
                   ),
-                  child: Text(
-                    model.payment.isCod
-                        ? 'Bayar tunai ke kurir saat paket tiba. Pesanan langsung dikemas.'
-                        : PaymentCatalog.demoNote,
-                    style: BpText.caption.copyWith(color: c.textMuted),
+                ],
+                if (model.payment.isCod)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      BpSpace.screen,
+                      BpSpace.x1,
+                      BpSpace.screen,
+                      0,
+                    ),
+                    child: Text(
+                      'Bayar tunai ke kurir saat paket tiba. Pesanan langsung '
+                      'dikemas.',
+                      style: BpText.caption.copyWith(color: c.textMuted),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -432,23 +532,25 @@ class _CheckoutBody extends StatelessWidget {
             itemCount: model.itemCount,
             shippingFee: quote.shippingFee,
             voucherAmount: quote.voucherAmount,
-            voucherTitle: model.voucher?.title,
+            voucherTitle: voucher?.title,
             kelopakUsed: quote.kelopakUsed,
             kelopakValue: quote.kelopakValue,
+            giftCount: quote.gifts.length,
             total: quote.total,
           ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             BpSpace.screen,
-            0,
+            BpSpace.x2,
             BpSpace.screen,
-            BpSpace.x6,
+            BpSpace.x4,
           ),
           child: Text(
             'Dengan membuat pesanan, kamu menyetujui Syarat dan Ketentuan '
             'Bpedia. Ini aplikasi demo: tidak ada barang maupun uang '
             'sungguhan.',
+            textAlign: TextAlign.center,
             style: BpText.caption.copyWith(color: c.textMuted),
           ),
         ),
@@ -463,6 +565,133 @@ class _CheckoutBody extends StatelessWidget {
     }
     return 'Saldo ${kelopakAmountLabel(balance)} · potong '
         '${formatRupiah(model.kelopakPreview)}';
+  }
+}
+
+/// "Tiba 27 - 28 Nov" dari label kurir "Tiba 2 sampai 3 hari" terhadap jam
+/// app (WIB). Label lain dikembalikan apa adanya.
+String etaDateRangeLabel(String etaLabel, DateTime now) {
+  final match = RegExp(r'(\d+)\s*sampai\s*(\d+)\s*hari').firstMatch(etaLabel);
+  if (match == null) return etaLabel;
+  final today = wibDayOfInstant(now);
+  final from = shortDateLabel(today + int.parse(match.group(1)!));
+  final to = shortDateLabel(today + int.parse(match.group(2)!));
+  final fromParts = from.split(' ');
+  final toParts = to.split(' ');
+  if (fromParts.length == 2 &&
+      toParts.length == 2 &&
+      fromParts[1] == toParts[1]) {
+    return 'Tiba ${fromParts[0]} - $to';
+  }
+  return 'Tiba $from - $to';
+}
+
+/// Ikon kepala seksi 20 dp.
+class _SectionIcon extends StatelessWidget {
+  const _SectionIcon({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(right: BpSpace.x2),
+    child: child,
+  );
+}
+
+/// Satu jenis pembayaran sebagai baris radio berikon: QRIS, transfer bank,
+/// gerai, dompet digital, COD. Jenis dengan beberapa pilihan (bank, gerai)
+/// membuka lembar pilihan saat diketuk.
+class PaymentKindTile extends StatelessWidget {
+  const PaymentKindTile({
+    super.key,
+    required this.kind,
+    required this.methods,
+    required this.selected,
+    required this.onTap,
+    this.chosen,
+  });
+
+  final PaymentKind kind;
+  final List<PaymentMethod> methods;
+  final bool selected;
+
+  /// Metode terpilih dari jenis ini (mis. BCA untuk transfer bank).
+  final PaymentMethod? chosen;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    final pick = chosen;
+    final icon = paymentKindIcon(kind);
+    final (String title, String? subtitle) = switch (kind) {
+      PaymentKind.qris => (
+        'QRIS',
+        'Bayar dari aplikasi bank atau dompet digital',
+      ),
+      PaymentKind.virtualAccount => (
+        'Transfer bank (virtual account)',
+        pick != null ? pick.name : '${methods.length} bank tersedia',
+      ),
+      PaymentKind.retail => (
+        'Bayar di gerai',
+        pick != null ? pick.name : 'Minimarket terdekat',
+      ),
+      PaymentKind.ewallet => ('Dompet digital', null),
+      PaymentKind.cod => ('Bayar di tempat (COD)', null),
+    };
+    return Semantics(
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      child: BpTappable(
+        onTap: onTap,
+        selected: selected,
+        pressScale: false,
+        alignment: Alignment.centerLeft,
+        focusRadius: BpRadius.tileAll,
+        builder: (context, states) => Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: BpSpace.screen,
+            vertical: 10,
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                icon,
+                size: BpSize.iconDense,
+                color: selected ? c.brandStrong : c.text,
+              ),
+              const SizedBox(width: BpSpace.x4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(title, style: BpText.body.copyWith(color: c.text)),
+                    if (subtitle != null)
+                      Text(
+                        subtitle,
+                        style: BpText.caption.copyWith(color: c.textMuted),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: BpSpace.x2),
+              if (methods.length > 1 && !selected)
+                Padding(
+                  padding: const EdgeInsets.only(right: BpSpace.x2),
+                  child: Icon(
+                    LucideIcons.chevronRight,
+                    size: 18,
+                    color: c.textMuted,
+                  ),
+                ),
+              RadioDot(selected: selected),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -509,63 +738,150 @@ class _AddressSection extends StatelessWidget {
       );
     }
     return Section(
-      header: SectionHeader(
-        title: 'Alamat pengiriman',
-        actionLabel: 'Ubah',
-        onAction: () =>
-            services.router.go(context, const AddressesRoute(selecting: true)),
-      ),
-      inset: true,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Icon(LucideIcons.mapPin, size: 20, color: c.brandStrong),
-          ),
-          const SizedBox(width: BpSpace.x3),
-          Expanded(
-            child: Column(
+            padding: const EdgeInsets.fromLTRB(
+              BpSpace.screen,
+              BpSpace.x3,
+              BpSpace.x2,
+              BpSpace.x3,
+            ),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Wrap(
-                  spacing: BpSpace.x2,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      value.recipient,
-                      style: BpText.subtitle.copyWith(color: c.text),
-                    ),
-                    Text(
-                      value.phoneLabel,
-                      style: BpText.bodyS.copyWith(color: c.textMuted),
-                    ),
-                    StatusChip(label: value.label),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value.fullAddress,
-                  style: BpText.bodyS.copyWith(color: c.text),
-                ),
-                if (value.note.isNotEmpty)
-                  Text(
-                    'Catatan: ${value.note}',
-                    style: BpText.caption.copyWith(color: c.textMuted),
+                Container(
+                  width: 36,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: c.brandTint,
+                    shape: BoxShape.circle,
                   ),
+                  child: Icon(
+                    LucideIcons.mapPin,
+                    size: 20,
+                    color: c.brandStrong,
+                  ),
+                ),
+                const SizedBox(width: BpSpace.x3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Wrap(
+                        spacing: BpSpace.x2,
+                        runSpacing: 2,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Alamat pengiriman',
+                            style: BpText.bodyS.copyWith(color: c.textMuted),
+                          ),
+                          if (value.isPrimary)
+                            const StatusChip(
+                              label: 'Utama',
+                              tone: StatusTone.brand,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${value.label} · ${value.recipient} · '
+                        '${value.phoneLabel}',
+                        style: BpText.subtitle.copyWith(color: c.text),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        value.fullAddress,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: BpText.bodyS.copyWith(color: c.textMuted),
+                      ),
+                      if (value.note.isNotEmpty)
+                        Text(
+                          'Catatan: ${value.note}',
+                          style: BpText.caption.copyWith(color: c.textMuted),
+                        ),
+                    ],
+                  ),
+                ),
+                PillButton(
+                  label: 'Ubah',
+                  variant: PillButtonVariant.text,
+                  size: PillButtonSize.small,
+                  onPressed: () => services.router.go(
+                    context,
+                    const AddressesRoute(selecting: true),
+                  ),
+                ),
               ],
             ),
           ),
+          const _AirmailStripe(),
         ],
       ),
     );
   }
 }
 
+/// Garis putus pink-emas di bawah alamat (gaya amplop kiriman).
+class _AirmailStripe extends StatelessWidget {
+  const _AirmailStripe();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return ExcludeSemantics(
+      child: SizedBox(
+        height: 3,
+        width: double.infinity,
+        child: CustomPaint(
+          painter: _AirmailPainter(first: c.brand, second: c.gold),
+        ),
+      ),
+    );
+  }
+}
+
+class _AirmailPainter extends CustomPainter {
+  const _AirmailPainter({required this.first, required this.second});
+
+  final Color first;
+  final Color second;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const dash = 18.0;
+    const gap = 6.0;
+    final paints = <Paint>[Paint()..color = first, Paint()..color = second];
+    var x = 0.0;
+    var index = 0;
+    while (x < size.width) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(x, 0, dash, size.height),
+          Radius.circular(size.height / 2),
+        ),
+        paints[index % 2],
+      );
+      x += dash + gap;
+      index++;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_AirmailPainter oldDelegate) =>
+      oldDelegate.first != first || oldDelegate.second != second;
+}
+
 class _OrderLine extends StatelessWidget {
-  const _OrderLine({required this.item});
+  const _OrderLine({required this.item, required this.mission});
 
   final CartItem item;
+  final bool mission;
 
   @override
   Widget build(BuildContext context) {
@@ -597,10 +913,19 @@ class _OrderLine extends StatelessWidget {
                     alignment: WrapAlignment.spaceBetween,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     spacing: BpSpace.x2,
+                    runSpacing: 2,
                     children: <Widget>[
-                      Text(
-                        '${item.qty} x ${formatRupiah(product.price)}',
-                        style: BpText.caption.copyWith(color: c.textMuted),
+                      Wrap(
+                        spacing: BpSpace.x2,
+                        runSpacing: 2,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            '${item.qty} x ${formatRupiah(product.price)}',
+                            style: BpText.caption.copyWith(color: c.textMuted),
+                          ),
+                          if (mission) const MissionChip(),
+                        ],
                       ),
                       Text(
                         formatRupiah(item.lineTotal),
@@ -616,6 +941,101 @@ class _OrderLine extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Bilah lekat checkout. Total Rp0 memakai susunan dua baris supaya label
+/// "Buat pesanan · Lunas dengan Kelopak" muat satu baris di lebar 390.
+class _CheckoutBar extends StatelessWidget {
+  const _CheckoutBar({
+    required this.model,
+    required this.busy,
+    required this.onPlace,
+  });
+
+  final _CheckoutModel model;
+  final bool busy;
+  final VoidCallback onPlace;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    final quote = model.quote;
+    final used = quote.kelopakUsed;
+    final caption = model.savings > 0
+        ? 'Hemat ${formatRupiah(model.savings)}'
+              '${used > 0 ? ' · ${kelopakAmountLabel(used)}' : ''}'
+        : null;
+    if (quote.total != 0) {
+      return StickyBottomBar.total(
+        total: quote.total,
+        label: 'Total pembayaran',
+        caption: caption,
+        actionLabel: 'Buat pesanan',
+        busy: busy,
+        onAction: onPlace,
+      );
+    }
+    return StickyBottomBar(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Semantics(
+            container: true,
+            liveRegion: true,
+            label:
+                'Total pembayaran ${formatRupiah(0)}'
+                '${caption == null ? '' : ', $caption'}',
+            excludeSemantics: true,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Total pembayaran',
+                        style: BpText.caption.copyWith(color: c.textMuted),
+                      ),
+                      Text(
+                        formatRupiah(0),
+                        style: BpText.titleL.copyWith(
+                          fontSize: 18,
+                          height: 24 / 18,
+                          color: c.text,
+                          fontFeatures: BpText.tabular,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (caption != null)
+                  Flexible(
+                    child: Text(
+                      caption,
+                      textAlign: TextAlign.end,
+                      style: BpText.label.copyWith(
+                        color: c.success,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: BpSpace.x2),
+          PillButton(
+            key: const ValueKey<String>('checkout-buat-pesanan'),
+            label: 'Buat pesanan · Lunas dengan Kelopak',
+            expand: true,
+            busy: busy,
+            onPressed: onPlace,
+          ),
+        ],
       ),
     );
   }

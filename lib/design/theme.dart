@@ -419,15 +419,21 @@ abstract final class BpTheme {
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) return c.textFaint;
-          return states.contains(WidgetState.selected) ? c.onBrand : c.surface;
+          return states.contains(WidgetState.selected)
+              ? const Color(0xFFFFFFFF)
+              : c.textFaint;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) return disabledFill;
-          return states.contains(WidgetState.selected) ? c.brand : c.textFaint;
+          return states.contains(WidgetState.selected)
+              ? c.brand
+              : c.surfaceMuted;
         }),
-        trackOutlineColor: const WidgetStatePropertyAll<Color>(
-          Colors.transparent,
-        ),
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return Colors.transparent;
+          return states.contains(WidgetState.disabled) ? c.line : c.textFaint;
+        }),
+        trackOutlineWidth: const WidgetStatePropertyAll<double>(2),
         overlayColor: overlay(c.brand),
       ),
       checkboxTheme: CheckboxThemeData(

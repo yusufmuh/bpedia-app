@@ -30,9 +30,27 @@ class AccountPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: c.canvas,
       appBar: BpAppBar(
-        title: 'Akun',
+        titleWidget: Semantics(
+          header: true,
+          child: Text(
+            'Akun',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: BpText.titleL.copyWith(color: c.text),
+          ),
+        ),
         showBack: false,
         actions: <Widget>[
+          ListenableBuilder(
+            listenable: services.settings,
+            builder: (context, _) => IconButton(
+              tooltip: context.bp.isDark ? 'Mode terang' : 'Mode gelap',
+              icon: Icon(
+                context.bp.isDark ? LucideIcons.sun : LucideIcons.moon,
+              ),
+              onPressed: () => setDarkMode(services, !context.bp.isDark),
+            ),
+          ),
           ListenableBuilder(
             listenable: Listenable.merge(<Listenable>[
               services.inbox,
@@ -91,74 +109,35 @@ class _AccountBody extends StatelessWidget {
         else
           const _GuestHeader(),
         _OrderSummary(services: services),
+        if (rewards.available) _RewardShortcuts(services: services),
         MenuGroup(
-          title: 'Hadiah dan belanja',
+          title: 'Akun saya',
           entries: <MenuEntry>[
-            if (rewards.available) ...<MenuEntry>[
-              MenuEntry(
-                label: 'Zona Hadiah',
-                helper: 'Check-in, Roda Sabtu, Misi',
-                icon: const BrandIcon(BrandGlyph.reward, size: 20),
-                showDot: rewards.hasBadge(RewardsEntry.hub),
-                onTap: () => go(const RewardsRoute()),
-              ),
-              MenuEntry(
-                label: 'Riwayat Kelopak',
-                icon: const Icon(LucideIcons.history),
-                value: loggedIn ? '${rewards.kelopakBalance} Kelopak' : null,
-                onTap: () => go(const LedgerRoute()),
-              ),
-              MenuEntry(
-                label: 'Voucher saya',
-                icon: const BrandIcon(BrandGlyph.voucher, size: 20),
-                value: loggedIn
-                    ? _countLabel(rewards.voucherCount, 'voucher')
-                    : null,
-                onTap: () => go(const VouchersRoute()),
-              ),
-              MenuEntry(
-                label: 'Hadiahku',
-                helper: 'Produk gratis untukmu',
-                icon: const Icon(LucideIcons.gift),
-                value: loggedIn && rewards.pendingGifts.isNotEmpty
-                    ? '${rewards.pendingGifts.length} menunggu'
-                    : null,
-                onTap: () => go(const MyGiftsRoute()),
-              ),
-            ],
+            MenuEntry(
+              label: 'Alamat',
+              icon: const Icon(LucideIcons.mapPin),
+              helper: loggedIn ? _primaryAddressLabel(services) : null,
+              value: loggedIn && services.addresses.isEmpty
+                  ? 'Belum ada'
+                  : null,
+              onTap: () => go(const AddressesRoute()),
+            ),
             MenuEntry(
               label: 'Wishlist',
               icon: const BrandIcon(BrandGlyph.wishlist, size: 20),
               value: _countLabel(services.wishlist.count, 'produk'),
               onTap: () => go(const WishlistRoute()),
             ),
-          ],
-        ),
-        MenuGroup(
-          title: 'Akun saya',
-          entries: <MenuEntry>[
-            if (loggedIn)
+            if (rewards.available)
               MenuEntry(
-                label: 'Profil',
-                icon: const BrandIcon(BrandGlyph.akun, size: 20),
-                value: auth.profile?.name,
-                onTap: () => go(const ProfileRoute()),
-              ),
-            MenuEntry(
-              label: 'Alamat',
-              icon: const Icon(LucideIcons.mapPin),
-              value: loggedIn
-                  ? (services.addresses.isEmpty
-                        ? 'Belum ada'
-                        : '${services.addresses.addresses.length} alamat')
-                  : null,
-              onTap: () => go(const AddressesRoute()),
-            ),
-            if (loggedIn)
-              MenuEntry(
-                label: 'Ubah kata sandi',
-                icon: const Icon(LucideIcons.lock),
-                onTap: () => go(const ChangePasswordRoute()),
+                label: 'Voucher saya',
+                icon: const BrandIcon(BrandGlyph.voucher, size: 20),
+                value: loggedIn
+                    ? (rewards.voucherCount == 0
+                          ? 'Belum ada'
+                          : '${rewards.voucherCount} siap dipakai')
+                    : null,
+                onTap: () => go(const VouchersRoute()),
               ),
             MenuEntry(
               label: 'Notifikasi',
@@ -166,11 +145,30 @@ class _AccountBody extends StatelessWidget {
               badgeCount: loggedIn ? services.inbox.unreadCount : 0,
               onTap: () => go(const InboxRoute()),
             ),
+            if (loggedIn)
+              MenuEntry(
+                label: 'Ubah kata sandi',
+                icon: const Icon(LucideIcons.lock),
+                onTap: () => go(const ChangePasswordRoute()),
+              ),
+          ],
+        ),
+        MenuGroup(
+          title: 'Tampilan dan aplikasi',
+          leading: BpSwitchTile(
+            title: 'Mode gelap',
+            subtitle: _darkModeLabel(services.settings.themeMode, c.isDark),
+            leading: IconBubble(
+              icon: Icon(c.isDark ? LucideIcons.moon : LucideIcons.sun),
+            ),
+            value: c.isDark,
+            onChanged: (value) => setDarkMode(services, value),
+          ),
+          entries: <MenuEntry>[
             MenuEntry(
               label: 'Pengaturan',
               helper: 'Tema, suara, getar, pengingat',
               icon: const Icon(LucideIcons.settings),
-              value: themeModeLabel(services.settings.themeMode),
               onTap: () => go(const SettingsRoute()),
             ),
           ],
@@ -179,8 +177,8 @@ class _AccountBody extends StatelessWidget {
           title: 'Bantuan dan info',
           entries: <MenuEntry>[
             MenuEntry(
-              label: 'Bantuan Bpedia Care',
-              helper: 'Chat lewat WhatsApp',
+              label: 'Bantuan',
+              helper: 'WhatsApp CS, ${AppConfig.careHours}',
               icon: const BrandIcon(BrandGlyph.chat, size: 20),
               onTap: () => go(const HelpRoute()),
             ),
@@ -196,12 +194,12 @@ class _AccountBody extends StatelessWidget {
               onTap: () => go(const AboutRoute()),
             ),
             MenuEntry(
-              label: 'Syarat & Ketentuan',
+              label: 'Syarat dan ketentuan',
               icon: const Icon(LucideIcons.fileText),
               onTap: () => go(const TermsRoute()),
             ),
             MenuEntry(
-              label: 'Kebijakan Privasi',
+              label: 'Kebijakan privasi',
               icon: const Icon(LucideIcons.shieldCheck),
               onTap: () => go(const PrivacyRoute()),
             ),
@@ -211,29 +209,20 @@ class _AccountBody extends StatelessWidget {
           entries: <MenuEntry>[
             MenuEntry(
               label: 'Mode Demo',
-              helper: 'Geser hari, isi saldo, log analitik',
+              helper: 'Atur waktu WIB, saldo, dan hasil roda',
               icon: const Icon(LucideIcons.flaskConical),
               tag: const StatusChip(label: 'Demo', tone: StatusTone.gold),
               onTap: () => go(const DemoRoute()),
             ),
+            if (loggedIn)
+              MenuEntry(
+                label: 'Keluar',
+                icon: const Icon(LucideIcons.logOut),
+                labelColor: c.danger,
+                onTap: () => _signOut(context),
+              ),
           ],
         ),
-        if (loggedIn)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              BpSpace.screen,
-              BpSpace.x2,
-              BpSpace.screen,
-              0,
-            ),
-            child: PillButton(
-              label: 'Keluar',
-              variant: PillButtonVariant.neutral,
-              icon: Icon(LucideIcons.logOut, color: c.danger),
-              expand: true,
-              onPressed: () => _signOut(context),
-            ),
-          ),
         const _VersionFooter(),
       ],
     );
@@ -258,7 +247,24 @@ class _AccountBody extends StatelessWidget {
 
   static String _countLabel(int count, String noun) =>
       count == 0 ? 'Belum ada' : '$count $noun';
+
+  static String? _primaryAddressLabel(AppServices services) {
+    final primary = services.addresses.primary;
+    if (primary == null) return null;
+    return '${primary.label} · ${primary.district}';
+  }
 }
+
+/// Keterangan baris "Mode gelap": status nyala/mati, plus "ikuti sistem"
+/// bila tema mengikuti perangkat.
+String _darkModeLabel(ThemeMode mode, bool dark) {
+  final state = dark ? 'Menyala' : 'Mati';
+  return mode == ThemeMode.system ? '$state, ikuti sistem' : state;
+}
+
+/// Menyalakan atau mematikan mode gelap dari tab Akun.
+void setDarkMode(AppServices services, bool dark) =>
+    services.settings.setThemeMode(dark ? ThemeMode.dark : ThemeMode.light);
 
 /// Nama tampil [ThemeMode].
 String themeModeLabel(ThemeMode mode) => switch (mode) {
@@ -267,15 +273,8 @@ String themeModeLabel(ThemeMode mode) => switch (mode) {
   ThemeMode.system => 'Ikuti sistem',
 };
 
-/// Latar kepala Akun: pendar `brandTint` lembut di atas `surface`.
-BoxDecoration _headerDecoration(BpColors c) => BoxDecoration(
-  gradient: LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: <Color>[c.brandTint, c.surface],
-    stops: const <double>[0, 0.85],
-  ),
-);
+/// Latar kepala Akun: `surface` polos, pink hanya aksen (K3).
+BoxDecoration _headerDecoration(BpColors c) => BoxDecoration(color: c.surface);
 
 class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader({required this.services});
@@ -291,6 +290,7 @@ class _ProfileHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: BpSpace.sectionGap),
       child: DecoratedBox(
+        key: const ValueKey<String>('account-header'),
         decoration: _headerDecoration(c),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
@@ -310,7 +310,11 @@ class _ProfileHeader extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 builder: (context, states) => Row(
                   children: <Widget>[
-                    InitialsAvatar(initials: profile.initials, size: 60),
+                    InitialsAvatar(
+                      initials: profile.initials,
+                      size: 60,
+                      cameraBadge: true,
+                    ),
                     const SizedBox(width: BpSpace.x3),
                     Expanded(
                       child: Column(
@@ -405,7 +409,7 @@ class _WalletPanel extends StatelessWidget {
         art: 'assets/icons3d/hadiah.webp',
         value: '$gifts',
         unit: 'Hadiah',
-        caption: gifts == 0 ? 'Main dan menang' : 'ikut pesanan',
+        caption: gifts == 0 ? 'Main dan menang' : 'menunggu',
         highlight: gifts > 0,
         onTap: () => router.go(context, const MyGiftsRoute()),
       ),
@@ -720,6 +724,137 @@ class _VersionFooter extends StatelessWidget {
             style: BpText.caption.copyWith(color: c.textMuted),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Pintasan Zona Hadiah: lima ubin ikon 3D (K2, K12).
+class _RewardShortcuts extends StatelessWidget {
+  const _RewardShortcuts({required this.services});
+
+  final AppServices services;
+
+  @override
+  Widget build(BuildContext context) {
+    final router = services.router;
+    final rewards = services.rewards;
+    final tiles = <(String, String, AppRoute, bool)>[
+      (
+        'checkin',
+        'Check-in',
+        const CheckInRoute(),
+        rewards.hasBadge(RewardsEntry.checkIn),
+      ),
+      ('roda', 'Roda Sabtu', const WheelRoute(), false),
+      ('misi', 'Misi Belanja', const MissionRoute(), false),
+      ('hadiah', 'Hadiahku', const MyGiftsRoute(), false),
+      ('kelopak', 'Riwayat Kelopak', const LedgerRoute(), false),
+    ];
+    return Section(
+      header: SectionHeader(
+        title: 'Zona Hadiah',
+        actionLabel: 'Buka',
+        onAction: () => router.go(context, const RewardsRoute()),
+      ),
+      padding: const EdgeInsets.only(top: BpSpace.x1, bottom: BpSpace.x3),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: BpSpace.x2),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            for (final (icon, label, route, dot) in tiles)
+              Expanded(
+                child: _RewardTile(
+                  icon: icon,
+                  label: label,
+                  showDot: dot,
+                  onTap: () => router.go(context, route),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RewardTile extends StatelessWidget {
+  const _RewardTile({
+    required this.icon,
+    required this.label,
+    required this.showDot,
+    required this.onTap,
+  });
+
+  final String icon;
+  final String label;
+  final bool showDot;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return BpTappable(
+      onTap: onTap,
+      semanticLabel: showDot ? '$label, belum diklaim' : label,
+      focusRadius: BpRadius.cardAll,
+      builder: (context, states) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: BpSpace.x1),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              width: 52,
+              height: 52,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: <Widget>[
+                  Container(
+                    width: 52,
+                    height: 52,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: c.surfaceMuted,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: AssetPicture(
+                      'assets/icons3d/$icon.webp',
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.contain,
+                      cacheWidth: 108,
+                      showSkeleton: false,
+                    ),
+                  ),
+                  if (showDot)
+                    Positioned(
+                      top: -2,
+                      right: -2,
+                      child: Container(
+                        key: const ValueKey<String>('reward-tile-dot'),
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: c.danger,
+                          border: Border.all(color: c.surface, width: 1),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: BpText.caption.copyWith(color: c.text),
+            ),
+          ],
+        ),
       ),
     );
   }

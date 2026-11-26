@@ -34,9 +34,13 @@ class FakeShopRewards extends NoRewardsGateway {
   FakeShopRewards({
     this.missionCodes = const <String>{},
     this.claimable = true,
+    this.badges = const <RewardsEntry>{RewardsEntry.checkIn, RewardsEntry.hub},
   });
 
   final Set<String> missionCodes;
+
+  /// Pintu hadiah yang bertitik merah.
+  final Set<RewardsEntry> badges;
   bool claimable;
   final List<String> claims = <String>[];
 
@@ -50,8 +54,7 @@ class FakeShopRewards extends NoRewardsGateway {
   int get voucherCount => 2;
 
   @override
-  bool hasBadge(RewardsEntry entry) =>
-      entry == RewardsEntry.checkIn || entry == RewardsEntry.hub;
+  bool hasBadge(RewardsEntry entry) => badges.contains(entry);
 
   @override
   Set<String> get missionProductCodes => missionCodes;

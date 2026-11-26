@@ -43,20 +43,36 @@ void main() {
     });
   });
 
+  test('hitung mundur >= 24 jam memakai hari', () {
+    expect(
+      hotCountdownText(
+        const Duration(days: 1, hours: 14, minutes: 18, seconds: 59),
+      ),
+      '1 hari 14:18:59',
+    );
+    expect(hotCountdownText(const Duration(hours: 3, minutes: 2)), '03:02:00');
+  });
+
   testWidgets('daftar Hot Item: hitung mundur, kuota, filter tema, cari', (
     tester,
   ) async {
     final services = shopServices();
     await pumpShop(tester, services, '/hot-item');
-    expect(find.text('5 produk harga spesial'), findsOneWidget);
-    expect(find.text('14:00:00'), findsWidgets);
+    expect(find.text('Berakhir dalam'), findsOneWidget);
+    expect(find.text('14:00:00'), findsOneWidget);
     await tester.pump(const Duration(seconds: 1));
     expect(find.byType(HotQuotaBar), findsWidgets);
-    await tester.ensureVisible(find.text('Tuesday Body Treatment'));
+    expect(find.text('Wednesday Bye-Bye Acne'), findsOneWidget);
+    expect(find.text('s.d. Rabu, 25 Nov'), findsOneWidget);
+    final chip = find.byKey(
+      const ValueKey<String>('hot-tema-Tuesday Body Treatment'),
+    );
+    await tester.ensureVisible(chip);
     await tester.pump();
-    await tester.tap(find.text('Tuesday Body Treatment'));
+    await tester.tap(chip);
     await tester.pump();
-    expect(find.text('2 produk harga spesial'), findsOneWidget);
+    expect(find.byType(HotItemCard), findsNWidgets(2));
+    expect(find.text('Wednesday Bye-Bye Acne'), findsNothing);
     await tester.ensureVisible(find.textContaining('Semua ('));
     await tester.pump();
     await tester.tap(find.textContaining('Semua ('));
@@ -69,26 +85,55 @@ void main() {
     expect(find.text('Hot Item tidak ditemukan'), findsOneWidget);
     await tester.tap(find.text('Tampilkan semua Hot Item'));
     await tester.pump();
-    expect(find.text('5 produk harga spesial'), findsOneWidget);
+    expect(find.text('Hot Item tidak ditemukan'), findsNothing);
+    expect(find.text('Wednesday Bye-Bye Acne'), findsOneWidget);
   });
 
-  testWidgets('+ Keranjang di kartu Hot Item menambah satu', (tester) async {
-    final services = shopServices();
-    await pumpShop(tester, services, '/hot-item');
-    await tester.tap(find.text('+ Keranjang').first);
-    await tester.pump();
-    expect(services.cart.count, 1);
-  });
-
-  testWidgets('di luar periode tampil tanggal, bukan hitung mundur', (
+  testWidgets('Beli di kartu Hot Item membuka checkout dengan satu produk', (
     tester,
   ) async {
-    final services = shopServices(now: DateTime.utc(2026, 12, 3, 3));
+    final services = shopServices(loggedIn: true);
     await pumpShop(tester, services, '/hot-item');
-    expect(find.text('14:00:00'), findsNothing);
-    expect(find.text('25 Nov'), findsWidgets);
-    expect(find.text('Berakhir dalam '), findsNothing);
+    await tester.tap(find.text('Beli').first);
+    await settle(tester);
+    expect(services.cart.count, 1);
+    expect(services.router.navigatorKey.currentState!.canPop(), isTrue);
   });
+
+  testWidgets('kampanye lewat diringkas berlabel Berakhir tanpa tombol', (
+    tester,
+  ) async {
+    final services = shopServices(now: DateTime.utc(2026, 11, 26, 3));
+    await pumpShop(tester, services, '/hot-item');
+    final ended = find.byKey(
+      const ValueKey<String>('hot-berakhir-Wednesday Bye-Bye Acne'),
+    );
+    await tester.scrollUntilVisible(
+      ended,
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(
+      find.descendant(of: ended, matching: find.text('Berakhir')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: ended, matching: find.text('Beli')),
+      findsNothing,
+    );
+    expect(find.text('Beli'), findsWidgets);
+  });
+
+  testWidgets(
+    'di luar periode tampil ringkasan berakhir, bukan hitung mundur',
+    (tester) async {
+      final services = shopServices(now: DateTime.utc(2026, 12, 3, 3));
+      await pumpShop(tester, services, '/hot-item');
+      expect(find.text('14:00:00'), findsNothing);
+      expect(find.text('Berakhir dalam'), findsNothing);
+      expect(find.text('Beli'), findsNothing);
+    },
+  );
 
   testWidgets('teks 200% pada lebar 360 tanpa luapan', (tester) async {
     final services = shopServices();

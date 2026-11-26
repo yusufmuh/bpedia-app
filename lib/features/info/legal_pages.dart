@@ -153,8 +153,8 @@ class TermsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const ArticlePage(
-    title: 'Syarat & Ketentuan',
-    heading: 'Syarat & Ketentuan Bpedia Demo',
+    title: 'Syarat dan ketentuan',
+    heading: 'Syarat dan ketentuan Bpedia Demo',
     updated: legalUpdated,
     intro:
         'Ini ketentuan untuk aplikasi demo. Ketentuan resmi Bpedia berlaku di '
@@ -169,8 +169,8 @@ class PrivacyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const ArticlePage(
-    title: 'Kebijakan Privasi',
-    heading: 'Kebijakan Privasi Bpedia Demo',
+    title: 'Kebijakan privasi',
+    heading: 'Kebijakan privasi Bpedia Demo',
     updated: legalUpdated,
     intro:
         'Ringkasan cara aplikasi demo memperlakukan datamu. Kebijakan resmi '

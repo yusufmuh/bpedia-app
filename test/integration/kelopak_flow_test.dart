@@ -168,12 +168,12 @@ void main() {
 
       services.cart.add(sunscreen, qty: 3);
       await openLocation(tester, services, '/checkout');
-      await scrollTo(tester, find.text('1 bisa dipakai'));
-      await tester.tap(find.text('1 bisa dipakai'));
-      await settle(tester);
-      await tester.tap(find.text('Pakai'));
-      await settle(tester);
-      expect(find.text('-Rp10.000'), findsWidgets);
+      await scrollTo(tester, find.text('Voucher · 1 dipakai'));
+      expect(
+        find.text('-Rp10.000'),
+        findsWidgets,
+        reason: 'voucher misi sah terbesar dipakai otomatis',
+      );
       await tester.tap(find.text('Buat pesanan'));
       await settle(tester);
 

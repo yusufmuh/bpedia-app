@@ -22,8 +22,9 @@ final class ArticleSection {
   final List<String> bullets;
 }
 
-/// Halaman artikel panjang (S&K, Kebijakan Privasi).
-class ArticlePage extends StatelessWidget {
+/// Halaman artikel panjang (S&K, Kebijakan Privasi) dengan daftar isi
+/// "Isi dokumen" yang menggulir ke tiap bagian.
+class ArticlePage extends StatefulWidget {
   const ArticlePage({
     super.key,
     required this.title,
@@ -45,12 +46,37 @@ class ArticlePage extends StatelessWidget {
   final List<ArticleSection> sections;
 
   @override
+  State<ArticlePage> createState() => _ArticlePageState();
+}
+
+class _ArticlePageState extends State<ArticlePage> {
+  late final List<GlobalKey> _keys = List<GlobalKey>.generate(
+    widget.sections.length,
+    (i) => GlobalKey(debugLabel: 'article-section-${i + 1}'),
+  );
+
+  Future<void> _jumpTo(int index) async {
+    final target = _keys[index].currentContext;
+    if (target == null) return;
+    await Scrollable.ensureVisible(
+      target,
+      duration: BpMotion.reduced(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final c = context.bp;
+    final sections = widget.sections;
     return Scaffold(
       backgroundColor: c.surface,
-      appBar: BpAppBar(title: title),
+      appBar: BpAppBar(title: widget.title),
       body: ListView(
+        // Semua bagian dibangun supaya daftar isi bisa menggulir ke sana.
+        cacheExtent: 100000,
         padding: const EdgeInsets.fromLTRB(
           BpSpace.screen,
           BpSpace.x4,
@@ -60,26 +86,112 @@ class ArticlePage extends StatelessWidget {
         children: <Widget>[
           Semantics(
             header: true,
-            child: Text(heading, style: BpText.titleL.copyWith(color: c.text)),
+            child: Text(
+              widget.heading,
+              style: BpText.titleL.copyWith(color: c.text),
+            ),
           ),
           const SizedBox(height: BpSpace.x1),
-          Text(updated, style: BpText.caption.copyWith(color: c.textMuted)),
+          Text(
+            widget.updated,
+            style: BpText.caption.copyWith(color: c.textMuted),
+          ),
           const SizedBox(height: BpSpace.x4),
           NoteBox(
             tone: StatusTone.gold,
             icon: LucideIcons.flaskConical,
-            message: intro,
+            title: 'Dokumen demo',
+            message: widget.intro,
           ),
+          const SizedBox(height: BpSpace.x5),
+          _TableOfContents(sections: sections, onSelected: _jumpTo),
           for (var i = 0; i < sections.length; i++)
-            _ArticleBlock(number: i + 1, section: sections[i]),
+            _ArticleBlock(key: _keys[i], number: i + 1, section: sections[i]),
         ],
       ),
     );
   }
 }
 
+/// Kartu "Isi dokumen": daftar bagian bernomor yang bisa diketuk.
+class _TableOfContents extends StatelessWidget {
+  const _TableOfContents({required this.sections, required this.onSelected});
+
+  final List<ArticleSection> sections;
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Semantics(
+          header: true,
+          child: Text(
+            'Isi dokumen',
+            style: BpText.title.copyWith(color: c.text),
+          ),
+        ),
+        const SizedBox(height: BpSpace.x2),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BpRadius.cardAll,
+            border: Border.all(color: c.line),
+          ),
+          child: Column(
+            children: <Widget>[
+              for (var i = 0; i < sections.length; i++) ...<Widget>[
+                if (i > 0) Divider(height: 1, thickness: 1, color: c.line),
+                BpTappable(
+                  key: ValueKey<String>('toc-${i + 1}'),
+                  onTap: () => onSelected(i),
+                  semanticLabel: 'Bagian ${i + 1}, ${sections[i].title}',
+                  focusRadius: BpRadius.cardAll,
+                  pressScale: false,
+                  builder: (context, states) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: BpSpace.x3,
+                      vertical: BpSpace.x3,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 28,
+                          child: Text(
+                            '${i + 1}',
+                            style: BpText.bodyS.copyWith(
+                              color: c.brandStrong,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            sections[i].title,
+                            style: BpText.body.copyWith(color: c.text),
+                          ),
+                        ),
+                        Icon(
+                          LucideIcons.chevronDown,
+                          size: 18,
+                          color: c.textMuted,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ArticleBlock extends StatelessWidget {
-  const _ArticleBlock({required this.number, required this.section});
+  const _ArticleBlock({super.key, required this.number, required this.section});
 
   final int number;
   final ArticleSection section;
@@ -88,15 +200,37 @@ class _ArticleBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.bp;
     return Padding(
-      padding: const EdgeInsets.only(top: BpSpace.x5),
+      padding: const EdgeInsets.only(top: BpSpace.x6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Semantics(
             header: true,
-            child: Text(
-              '$number. ${section.title}',
-              style: BpText.title.copyWith(color: c.text),
+            label: '$number. ${section.title}',
+            excludeSemantics: true,
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 22,
+                  height: 22,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: c.brandTint,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '$number',
+                    style: BpText.label.copyWith(color: c.brandStrong),
+                  ),
+                ),
+                const SizedBox(width: BpSpace.x2),
+                Expanded(
+                  child: Text(
+                    section.title,
+                    style: BpText.title.copyWith(color: c.text),
+                  ),
+                ),
+              ],
             ),
           ),
           for (final paragraph in section.paragraphs)
@@ -139,12 +273,13 @@ class _ArticleBlock extends StatelessWidget {
   }
 }
 
-/// Satu tanya-jawab.
+/// Satu tanya-jawab. [topic] mengelompokkan jawaban (mis. `HelpTopic`).
 final class FaqItem {
-  const FaqItem(this.question, this.answer);
+  const FaqItem(this.question, this.answer, {this.topic});
 
   final String question;
   final String answer;
+  final Object? topic;
 }
 
 /// Daftar tanya-jawab yang bisa dibuka satu per satu.

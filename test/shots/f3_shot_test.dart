@@ -59,9 +59,31 @@ final List<_Screen> _screens = <_Screen>[
       await tester.pump(const Duration(milliseconds: 400));
     },
   ),
-  const _Screen('daftar_lengkap', '/daftar?mode=lengkap', tall: 1320),
+  const _Screen(
+    'daftar_lengkap',
+    '/daftar?mode=lengkap',
+    rewards: true,
+    tall: 1500,
+  ),
   const _Screen('daftar_cepat', '/daftar'),
-  const _Screen('lupa_sandi', '/lupa-sandi'),
+  const _Screen('lupa_sandi', '/lupa-sandi', tall: 1000),
+  _Screen(
+    'lupa_sandi_terkirim',
+    '/lupa-sandi',
+    tall: 1000,
+    act: (tester) async {
+      await tester.enterText(
+        find.byKey(const ValueKey<String>('forgot-email')),
+        'nadia@contoh.id',
+      );
+      await tester.tap(find.text('Kirim tautan'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 900));
+      // Pose Bipy baru perlu waktu dekode lebih lama dari putaran bawaan.
+      await settleImages(tester);
+      await tester.pump(const Duration(milliseconds: 900));
+    },
+  ),
   _Screen(
     'ubah_sandi',
     '/akun/sandi',
@@ -72,7 +94,7 @@ final List<_Screen> _screens = <_Screen>[
       await tester.pump(const Duration(milliseconds: 400));
     },
   ),
-  const _Screen('profil', '/akun/profil', loggedIn: true),
+  const _Screen('profil', '/akun/profil', loggedIn: true, tall: 1400),
   _Screen(
     'alamat',
     '/akun/alamat',
@@ -81,6 +103,21 @@ final List<_Screen> _screens = <_Screen>[
       services.addresses
         ..add(sampleAddress)
         ..add(officeAddress);
+    },
+  ),
+  _Screen(
+    'alamat_hapus',
+    '/akun/alamat',
+    loggedIn: true,
+    seed: (services) async {
+      services.addresses
+        ..add(sampleAddress)
+        ..add(officeAddress);
+    },
+    act: (tester) async {
+      await tester.tap(find.text('Hapus'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
     },
   ),
   const _Screen('alamat_kosong', '/akun/alamat', loggedIn: true),
@@ -92,10 +129,29 @@ final List<_Screen> _screens = <_Screen>[
     loggedIn: true,
     seed: (services) async => seedInbox(services),
   ),
+  _Screen(
+    'notifikasi_filter',
+    '/notifikasi',
+    loggedIn: true,
+    seed: (services) async => seedInbox(services),
+    act: (tester) async {
+      await tester.tap(find.text('Hadiah'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+    },
+  ),
   const _Screen('notifikasi_kosong', '/notifikasi', loggedIn: true),
-  const _Screen('bantuan', '/bantuan', tall: 1400),
-  const _Screen('tentang', '/tentang', tall: 1400),
-  const _Screen('snk', '/snk'),
+  _Screen(
+    'bantuan',
+    '/bantuan',
+    loggedIn: true,
+    seed: (services) async {
+      await placeUnpaidOrder(services);
+    },
+    tall: 1900,
+  ),
+  const _Screen('tentang', '/tentang', tall: 1900),
+  const _Screen('snk', '/snk', tall: 1500),
   const _Screen('privasi', '/privasi'),
   _Screen(
     'demo',

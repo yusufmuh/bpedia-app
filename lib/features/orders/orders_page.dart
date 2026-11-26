@@ -9,8 +9,56 @@ import '../../app/shell.dart' show CartButton;
 import '../../data/orders/order_repository.dart';
 import '../../design/design.dart';
 import '../cart/widgets/line_parts.dart';
+import '../catalog/shop_common.dart' show InboxButton;
 import '../cart/widgets/recommendations.dart';
 import 'widgets/order_card.dart';
+import 'widgets/unpaid_order_banner.dart';
+
+/// Tab status dengan lencana jumlah merah 16 dp.
+class _StatusTab extends StatelessWidget {
+  const _StatusTab({required this.label, required this.count});
+
+  final String label;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return Tab(
+      child: Semantics(
+        label: count > 0 ? '$label, $count pesanan' : label,
+        excludeSemantics: true,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(label),
+            if (count > 0) ...<Widget>[
+              const SizedBox(width: 6),
+              Container(
+                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: c.danger,
+                  borderRadius: BpRadius.pillAll,
+                ),
+                child: Text(
+                  '$count',
+                  style: BpText.label.copyWith(
+                    fontSize: 10,
+                    height: 1.2,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 /// Tab Transaksi (`/pesanan?status=`): tab status gulir dengan jumlah, kartu
 /// pesanan, keadaan kosong per tab, dan ajakan masuk untuk tamu.
@@ -87,7 +135,16 @@ class _OrdersPageState extends State<OrdersPage>
           appBar: BpAppBar(
             title: 'Transaksi',
             showBack: false,
-            actions: const <Widget>[CartButton()],
+            actions: <Widget>[
+              IconButton(
+                tooltip: 'Cari',
+                icon: BrandIcon(BrandGlyph.search, color: c.text),
+                onPressed: () =>
+                    services.router.go(context, const SearchRoute()),
+              ),
+              const CartButton(),
+              const InboxButton(),
+            ],
             bottom: loggedIn
                 ? TabBar(
                     controller: _tabs,
@@ -95,7 +152,10 @@ class _OrdersPageState extends State<OrdersPage>
                     tabAlignment: TabAlignment.start,
                     tabs: <Widget>[
                       for (final status in OrdersPage.tabs)
-                        Tab(text: _tabLabel(services, status)),
+                        _StatusTab(
+                          label: status?.label ?? 'Semua',
+                          count: _tabCount(services, status),
+                        ),
                     ],
                   )
                 : null,
@@ -116,11 +176,10 @@ class _OrdersPageState extends State<OrdersPage>
     );
   }
 
-  static String _tabLabel(AppServices services, OrderStatus? status) {
-    if (status == null) return 'Semua';
-    final count = services.orders.countOf(status);
-    final active = status.isActive;
-    return active && count > 0 ? '${status.label} ($count)' : status.label;
+  /// Jumlah pesanan aktif untuk lencana tab; 0 = tanpa lencana.
+  static int _tabCount(AppServices services, OrderStatus? status) {
+    if (status == null || !status.isActive) return 0;
+    return services.orders.countOf(status);
   }
 }
 
@@ -157,17 +216,24 @@ class _OrderList extends StatelessWidget {
         ],
       );
     }
+    final banner = status == null || status == OrderStatus.awaitingPayment
+        ? 1
+        : 0;
     return ListView.builder(
-      padding: const EdgeInsets.only(top: BpSpace.sectionGap),
-      itemCount: orders.length + 1,
+      padding: const EdgeInsets.only(top: BpSpace.x3),
+      itemCount: orders.length + banner + 1,
       itemBuilder: (context, index) {
-        if (index == orders.length) {
+        if (banner == 1 && index == 0) {
+          return const UnpaidOrderBanner.summary();
+        }
+        final at = index - banner;
+        if (at == orders.length) {
           return const RecommendationSection(
             title: 'Belanja lagi, yuk',
             exclude: <String>[],
           );
         }
-        final order = orders[index];
+        final order = orders[at];
         return OrderCard(order: order, busy: services.orders.isBusy(order.id));
       },
     );

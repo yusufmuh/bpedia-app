@@ -45,6 +45,23 @@ void main() {
     );
   });
 
+  testWidgets('rel kategori tetap tampil dan ubin terpilih bisa dilepas', (
+    tester,
+  ) async {
+    final services = shopServices();
+    await pumpShop(tester, services, '/katalog?kategori=skincare');
+    expect(
+      find.byKey(const ValueKey<String>('katalog-kategori')),
+      findsOneWidget,
+    );
+    await tester.tap(find.bySemanticsLabel('Kategori Makeup'));
+    await settle(tester);
+    expect(_route(services).category, 'makeup');
+    await tester.tap(find.bySemanticsLabel('Kategori Makeup, terpilih'));
+    await settle(tester);
+    expect(_route(services).category, isNull);
+  });
+
   testWidgets('chip urutan mengubah parameter rute', (tester) async {
     final services = shopServices();
     await pumpShop(tester, services, '/katalog');
@@ -73,7 +90,13 @@ void main() {
     await settle(tester);
     expect(_route(services).brands, isEmpty);
     expect(_route(services).category, 'skincare');
-    await tester.tap(find.text('Hapus semua'));
+    expect(
+      find.bySemanticsLabel('Kategori Skincare, terpilih'),
+      findsOneWidget,
+    );
+    await tester.tap(
+      find.byKey(const ValueKey<String>('katalog-hapus-filter')),
+    );
     await settle(tester);
     expect(_route(services).category, isNull);
   });
@@ -117,6 +140,45 @@ void main() {
     expect(route.brands, <String>['Wardah']);
     expect(route.minPrice, 25000);
     expect(route.maxPrice, 50000);
+  });
+
+  testWidgets('lembar Filter: 4 brand terbanyak berjumlah, Lihat semua', (
+    tester,
+  ) async {
+    final services = shopServices();
+    await pumpShop(tester, services, '/katalog?kategori=skincare');
+    await tester.tap(find.byKey(const ValueKey<String>('katalog-filter')));
+    await settle(tester);
+    final counts = <String, int>{};
+    for (final product in services.catalog.search(
+      CatalogQuery(categoryId: 'skincare'),
+    )) {
+      counts[product.brand] = (counts[product.brand] ?? 0) + 1;
+    }
+    final top = counts.entries.toList()
+      ..sort((a, b) {
+        final byCount = b.value.compareTo(a.value);
+        return byCount != 0 ? byCount : a.key.compareTo(b.key);
+      });
+    final sheet = find.byType(CatalogFilterSheet);
+    expect(
+      find.descendant(of: sheet, matching: find.text(top.first.key)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text('${top.first.value}')),
+      findsWidgets,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text(top[4].key)),
+      findsNothing,
+    );
+    await tester.tap(find.byKey(const ValueKey<String>('filter-brand-semua')));
+    await tester.pump();
+    expect(
+      find.descendant(of: sheet, matching: find.text(top[4].key)),
+      findsOneWidget,
+    );
   });
 
   testWidgets('rentang harga terbalik menonaktifkan Terapkan', (tester) async {
@@ -174,6 +236,16 @@ void main() {
     await tester.pump();
     expect(services.cart.quantityOf(plainCode), 1);
     expect(find.text('Masuk keranjang, Babes.'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(
+      find.byKey(const ValueKey<String>('terbang-keranjang')),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(
+      find.byKey(const ValueKey<String>('terbang-keranjang')),
+      findsNothing,
+    );
     await tester.tap(card);
     await settle(tester);
     expect(find.text('Info produk'), findsNothing);

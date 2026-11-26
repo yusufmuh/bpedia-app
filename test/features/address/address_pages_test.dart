@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:bpedia_app/app/app_router.dart';
+import 'package:bpedia_app/design/design.dart';
+import 'package:bpedia_app/features/address/address_book_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../account/f3_harness.dart';
 
@@ -80,10 +83,72 @@ void main() {
 
     await tester.tap(find.byTooltip('Hapus alamat'));
     await tester.pumpAndSettle();
-    expect(find.text('Hapus alamat ini?'), findsOneWidget);
+    expect(find.text('Hapus alamat Rumah?'), findsOneWidget);
+    expect(
+      find.textContaining('Ayu Lestari, Jl. Melati Raya No. 12'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Hapus'));
     await pumpFor(tester);
     expect(services.addresses.isEmpty, isTrue);
+  });
+
+  testWidgets('daftar: banner, hitungan, nomor tersamar, hapus di kartu', (
+    tester,
+  ) async {
+    final services = f3Services(loggedIn: true);
+    services.addresses
+      ..add(sampleAddress)
+      ..add(officeAddress);
+    await openF3(tester, services, '/akun/alamat');
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('Alamat utama otomatis dipakai saat checkout'),
+      findsOneWidget,
+    );
+    expect(find.text('2 alamat tersimpan'), findsOneWidget);
+    expect(find.text('Ayu Lestari · 0812 **** 7890'), findsOneWidget);
+    expect(find.textContaining('3456'), findsNothing);
+    expect(find.byIcon(LucideIcons.house), findsOneWidget);
+    expect(find.byIcon(LucideIcons.building2), findsOneWidget);
+    // Hanya kartu non-utama yang punya tombol Hapus.
+    expect(find.widgetWithText(PillButton, 'Hapus'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(PillButton, 'Hapus'));
+    await tester.pumpAndSettle();
+    expect(find.text('Hapus alamat Kantor?'), findsOneWidget);
+    await tester.tap(find.text('Batal'));
+    await tester.pumpAndSettle();
+    expect(services.addresses.addresses, hasLength(2));
+
+    await tester.tap(find.widgetWithText(PillButton, 'Hapus'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Hapus').last);
+    await tester.pumpAndSettle();
+    expect(services.addresses.addresses, hasLength(1));
+    expect(services.addresses.primary!.label, 'Rumah');
+    expect(find.text('1 alamat tersimpan'), findsOneWidget);
+  });
+
+  test('maskPhoneLabel menyamarkan bagian tengah', () {
+    expect(maskPhoneLabel('0812-3456-4417'), '0812 **** 4417');
+    expect(maskPhoneLabel('123'), '123');
+  });
+
+  testWidgets('formulir: contoh isian dan penghitung alamat lengkap', (
+    tester,
+  ) async {
+    final services = f3Services(loggedIn: true);
+    await openF3(tester, services, '/akun/alamat/baru');
+    await tester.pumpAndSettle();
+    expect(find.text('Contoh: Kebayoran Baru'), findsOneWidget);
+    expect(find.text('Contoh: Jakarta Selatan'), findsOneWidget);
+    expect(find.text('Contoh: DKI Jakarta'), findsOneWidget);
+    expect(find.text('0/200'), findsOneWidget);
+    await tester.enterText(_field('address-street'), 'Jl. Melati');
+    await tester.pump();
+    expect(find.text('10/200'), findsOneWidget);
   });
 
   testWidgets('alamat yang tidak ada menampilkan keadaan kosong', (

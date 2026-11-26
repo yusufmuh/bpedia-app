@@ -1,16 +1,16 @@
 /// Blok-blok Beranda (SPEC §4.1 butir 2-11).
 library;
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:kelopak_hub/kit.dart' show BipySprite, BipySprites;
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../app/app_router.dart';
 import '../../app/app_scope.dart';
+import '../../data/catalog/catalog_repository.dart';
 import '../../data/rewards/rewards_gateway.dart';
-import '../../data/wib_dates.dart';
 import '../../design/design.dart';
-import '../catalog/catalog_page.dart' show CategoryTile;
 import '../catalog/shop_common.dart';
 import '../hot/hot_deal_view.dart';
 
@@ -65,62 +65,71 @@ class _GuestStripState extends State<_GuestStrip> {
     final c = context.bp;
     return Container(
       key: const ValueKey<String>('beranda-strip-tamu'),
+      constraints: const BoxConstraints(minHeight: 56),
       margin: const EdgeInsets.symmetric(horizontal: BpSpace.screen),
-      padding: const EdgeInsets.fromLTRB(
-        BpSpace.x2,
-        BpSpace.x1,
-        BpSpace.x3,
-        BpSpace.x1,
-      ),
+      padding: const EdgeInsets.fromLTRB(BpSpace.x3, 4, BpSpace.x2, 4),
       decoration: BoxDecoration(
         color: c.brandTint,
         borderRadius: BpRadius.cardAll,
+        border: Border.all(color: c.brandLine),
       ),
       child: Row(
         children: <Widget>[
           SizedBox(
-            width: 44,
-            height: 60,
+            width: 28,
+            height: 40,
             child: OverflowBox(
-              maxWidth: 80,
+              maxWidth: 56,
               alignment: Alignment.bottomCenter,
               child: BipySprite(
                 _waved ? BipySprites.idle : BipySprites.wave,
-                height: 60,
+                height: 40,
                 onCompleted: () => setState(() => _waved = true),
               ),
             ),
           ),
           const SizedBox(width: BpSpace.x2),
-          Expanded(
-            child: Text.rich(
-              TextSpan(
-                children: <InlineSpan>[
-                  TextSpan(
-                    text: 'Hai, Babes! ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: c.brandStrong,
-                    ),
-                  ),
-                  const TextSpan(
-                    text: 'Masuk untuk belanja dan kumpulkan Kelopak.',
-                  ),
-                ],
-              ),
-              style: BpText.bodyS.copyWith(color: c.text),
-            ),
-          ),
+          const Expanded(child: _OneLine(text: 'Masuk dan kumpulkan Kelopak')),
           const SizedBox(width: BpSpace.x2),
           PillButton(
             key: const ValueKey<String>('beranda-masuk'),
             label: 'Masuk',
             size: PillButtonSize.small,
-            variant: PillButtonVariant.outline,
             onPressed: () => services.router.go(context, const LoginRoute()),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Teks satu baris yang mengecil bila sempit pada skala huruf normal; pada
+/// huruf besar boleh dua baris supaya tetap terbaca.
+class _OneLine extends StatelessWidget {
+  const _OneLine({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    final style = BpText.bodyS.copyWith(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: c.text,
+    );
+    if (MediaQuery.textScalerOf(context).scale(10) > 11.5) {
+      return Text(
+        text,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      );
+    }
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Text(text, maxLines: 1, style: style),
     );
   }
 }
@@ -168,7 +177,6 @@ class HomeShortcut {
   const HomeShortcut({
     required this.label,
     required this.icon,
-    required this.tint,
     required this.route,
     this.entry,
   });
@@ -177,7 +185,6 @@ class HomeShortcut {
 
   /// Nama ikon 3D di `assets/icons3d/`.
   final String icon;
-  final Color Function(BpColors colors) tint;
   final AppRoute route;
 
   /// Pintu hadiah untuk titik merah.
@@ -186,68 +193,50 @@ class HomeShortcut {
 
 /// Sepuluh pintasan SPEC §4.1 butir 4, urut tampil.
 final List<HomeShortcut> homeShortcuts = <HomeShortcut>[
-  HomeShortcut(
+  const HomeShortcut(
     label: 'Check-in',
     icon: 'checkin',
-    tint: (c) => c.brandTint,
-    route: const CheckInRoute(),
+    route: CheckInRoute(),
     entry: RewardsEntry.checkIn,
   ),
-  HomeShortcut(
+  const HomeShortcut(
     label: 'Roda Sabtu',
     icon: 'roda',
-    tint: (c) => c.goldTint,
-    route: const WheelRoute(),
+    route: WheelRoute(),
     entry: RewardsEntry.wheel,
   ),
-  HomeShortcut(
+  const HomeShortcut(
     label: 'Misi Belanja',
     icon: 'misi',
-    tint: (c) => c.successTint,
-    route: const MissionRoute(),
+    route: MissionRoute(),
     entry: RewardsEntry.mission,
   ),
-  HomeShortcut(
-    label: 'Voucher',
-    icon: 'voucher',
-    tint: (c) => c.warningTint,
-    route: const VouchersRoute(),
-  ),
-  HomeShortcut(
-    label: 'Hot Item',
-    icon: 'hot',
-    tint: (c) => c.dangerTint,
-    route: const HotItemsRoute(),
-  ),
-  HomeShortcut(
+  const HomeShortcut(label: 'Voucher', icon: 'voucher', route: VouchersRoute()),
+  const HomeShortcut(label: 'Hot Item', icon: 'hot', route: HotItemsRoute()),
+  const HomeShortcut(
     label: 'Event Promo',
     icon: 'event',
-    tint: (c) => c.infoTint,
-    route: const EventHubRoute(),
+    route: EventHubRoute(),
   ),
-  HomeShortcut(
+  const HomeShortcut(
     label: 'Komunitas',
     icon: 'komunitas',
-    tint: (c) => c.successTint,
-    route: const EventRoute('komunitas-whatsapp'),
+    route: EventRoute('komunitas-whatsapp'),
   ),
-  HomeShortcut(
+  const HomeShortcut(
     label: 'Skincare',
     icon: 'skincare',
-    tint: (c) => c.brandTint,
-    route: const CatalogRoute(category: 'skincare'),
+    route: CatalogRoute(category: 'skincare'),
   ),
-  HomeShortcut(
+  const HomeShortcut(
     label: 'Makeup',
     icon: 'makeup',
-    tint: (c) => c.goldTint,
-    route: const CatalogRoute(category: 'makeup'),
+    route: CatalogRoute(category: 'makeup'),
   ),
-  HomeShortcut(
+  const HomeShortcut(
     label: 'Semua kategori',
     icon: 'kategori',
-    tint: (c) => c.infoTint,
-    route: const CatalogRoute(),
+    route: CatalogRoute(),
   ),
 ];
 
@@ -266,9 +255,12 @@ class HomeShortcutGrid extends StatelessWidget {
         Widget tile(HomeShortcut item) {
           final entry = item.entry;
           final rewards = services.rewards;
+          final claimable =
+              entry != null && rewards.available && rewards.hasBadge(entry);
           return _ShortcutTile(
             item: item,
-            dot: entry != null && rewards.available && rewards.hasBadge(entry),
+            dot: claimable && entry != RewardsEntry.wheel,
+            freeTag: claimable && entry == RewardsEntry.wheel,
             onTap: () => services.router.go(context, item.route),
           );
         }
@@ -308,10 +300,41 @@ class HomeShortcutGrid extends StatelessWidget {
                     for (final item in row) Expanded(child: tile(item)),
                   ],
                 ),
+              const SizedBox(height: BpSpace.x2),
+              const _GridIndicator(),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+/// Garis indikator di bawah grid pintasan.
+class _GridIndicator extends StatelessWidget {
+  const _GridIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return ExcludeSemantics(
+      child: Container(
+        width: 28,
+        height: 3,
+        alignment: Alignment.centerLeft,
+        decoration: BoxDecoration(
+          color: c.line,
+          borderRadius: BpRadius.pillAll,
+        ),
+        child: Container(
+          width: 16,
+          height: 3,
+          decoration: BoxDecoration(
+            color: c.brand,
+            borderRadius: BpRadius.pillAll,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -321,11 +344,15 @@ class _ShortcutTile extends StatelessWidget {
     required this.item,
     required this.dot,
     required this.onTap,
+    this.freeTag = false,
   });
 
   final HomeShortcut item;
   final bool dot;
   final VoidCallback onTap;
+
+  /// Lencana pita "Gratis" saat putaran Roda Sabtu gratis tersedia.
+  final bool freeTag;
 
   @override
   Widget build(BuildContext context) {
@@ -333,10 +360,12 @@ class _ShortcutTile extends StatelessWidget {
     return BpTappable(
       key: ValueKey<String>('pintasan-${item.icon}'),
       onTap: onTap,
-      semanticLabel: dot ? '${item.label}, bisa diklaim' : item.label,
+      semanticLabel: dot || freeTag
+          ? '${item.label}, bisa diklaim'
+          : item.label,
       focusRadius: BpRadius.tileAll,
       builder: (context, states) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 3),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -344,23 +373,52 @@ class _ShortcutTile extends StatelessWidget {
               clipBehavior: Clip.none,
               children: <Widget>[
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
-                    color: item.tint(c),
+                    color: c.surfaceMuted,
                     borderRadius: const BorderRadius.all(Radius.circular(16)),
                   ),
                   alignment: Alignment.center,
                   child: AssetPicture(
                     'assets/icons3d/${item.icon}.webp',
-                    width: 42,
-                    height: 42,
+                    width: 46,
+                    height: 46,
                     fit: BoxFit.contain,
                     showSkeleton: false,
                   ),
                 ),
                 if (dot)
                   const Positioned(top: -2, right: -2, child: DotBadge()),
+                if (freeTag)
+                  Positioned(
+                    top: -8,
+                    left: -6,
+                    right: -6,
+                    child: Center(
+                      child: Container(
+                        key: ValueKey<String>('pintasan-${item.icon}-gratis'),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: c.sale,
+                          borderRadius: BpRadius.badgeAll,
+                        ),
+                        child: Text(
+                          'Gratis',
+                          textScaler: TextScaler.noScaling,
+                          style: BpText.label.copyWith(
+                            fontSize: 9,
+                            height: 1.3,
+                            fontWeight: FontWeight.w700,
+                            color: c.onSale,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
             const SizedBox(height: 6),
@@ -381,157 +439,82 @@ class _ShortcutTile extends StatelessWidget {
   }
 }
 
-// --------------------------------------------------------- pengingat bayar
-
-/// Pengingat pesanan Menunggu pembayaran (SPEC §4.1 butir 6).
-class HomeUnpaidReminder extends StatelessWidget {
-  const HomeUnpaidReminder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final services = AppScope.of(context);
-    final c = context.bp;
-    return ListenableBuilder(
-      listenable: Listenable.merge(<Listenable>[
-        services.orders,
-        services.auth,
-      ]),
-      builder: (context, _) {
-        if (!services.auth.isLoggedIn) return const SizedBox.shrink();
-        final unpaid = services.orders.unpaid;
-        if (unpaid.isEmpty) return const SizedBox.shrink();
-        final order = unpaid.first;
-        final payBy = order.payByMs;
-        final more = unpaid.length - 1;
-        return Padding(
-          padding: const EdgeInsets.only(bottom: BpSpace.sectionGap),
-          child: Container(
-            key: const ValueKey<String>('beranda-bayar'),
-            color: c.warningTint,
-            padding: const EdgeInsets.fromLTRB(
-              BpSpace.screen,
-              BpSpace.x2,
-              BpSpace.x3,
-              BpSpace.x2,
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(LucideIcons.clock, color: c.warning),
-                const SizedBox(width: BpSpace.x3),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Selesaikan pembayaran pesanan #${order.id}',
-                        style: BpText.bodyS.copyWith(
-                          color: c.text,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        <String>[
-                          if (payBy != null)
-                            'Bayar sebelum ${wibDateTimeLabel(DateTime.fromMillisecondsSinceEpoch(payBy, isUtc: true))}',
-                          if (more > 0) '$more pesanan lain menunggu',
-                        ].join(' · '),
-                        style: BpText.caption.copyWith(color: c.warning),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: BpSpace.x2),
-                PillButton(
-                  label: 'Bayar',
-                  size: PillButtonSize.small,
-                  onPressed: () =>
-                      services.router.go(context, PaymentRoute(order.id)),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
 // ---------------------------------------------------------------- Hot Item
 
-/// Seksi Hot Item [K8]: seni judul, hitung mundur periode yang paling cepat
-/// berakhir, rel kartu gambar highlight asli.
+/// Seksi Hot Item [K8]: seni judul + hitung mundur sebaris, lalu hanya
+/// kampanye yang sedang berjalan. Dua kartu atau kurang tampil berdampingan
+/// selebar layar; lebih dari dua menjadi rel. Tersembunyi bila tidak ada
+/// kampanye berjalan.
 class HomeHotSection extends StatelessWidget {
   const HomeHotSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     final services = AppScope.of(context);
-    final items = services.catalog.hotItems;
+    final today = services.clock.today;
+    final items = <Product>[
+      for (final product in services.catalog.hotItems)
+        if (hotPhaseOf(product.hot!, today) == HotPhase.running) product,
+    ];
     if (items.isEmpty) return const SizedBox.shrink();
-    final soonest = soonestRunning(items, services.clock.today);
+    final soonest = soonestRunning(items, today);
     final width = MediaQuery.sizeOf(context).width;
-    final cardWidth = ((width - BpSpace.screen * 2 - BpSpace.grid) / 2.25)
-        .clamp(136.0, 200.0);
+    final half = (width - BpSpace.screen * 2 - BpSpace.grid) / 2;
+    final Widget cards;
+    if (items.length <= 2) {
+      cards = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: BpSpace.screen),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Expanded(child: HotItemCard(product: items.first)),
+              const SizedBox(width: BpSpace.grid),
+              Expanded(
+                child: items.length > 1
+                    ? HotItemCard(product: items[1])
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      cards = ProductRail(
+        itemCount: items.length,
+        itemWidth: math.max(160, half * 0.9),
+        itemBuilder: (context, index) => HotItemCard(product: items[index]),
+      );
+    }
     return Section(
       header: SectionHeader(
         title: 'Hot Item',
-        titleWidget: Wrap(
-          spacing: BpSpace.x2,
-          runSpacing: BpSpace.x1,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: <Widget>[
-            const HotItemTitle(),
-            if (soonest != null) HotCountdown(deal: soonest),
-          ],
+        titleWidget: LayoutBuilder(
+          builder: (context, constraints) => Row(
+            children: <Widget>[
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: constraints.maxWidth * 0.58,
+                ),
+                child: const HotItemTitle(size: 18),
+              ),
+              if (soonest != null) ...<Widget>[
+                const SizedBox(width: 6),
+                Flexible(child: HotCountdown(deal: soonest, dense: true)),
+              ],
+            ],
+          ),
         ),
         onAction: () => services.router.go(context, const HotItemsRoute()),
       ),
-      child: ProductRail(
-        itemCount: items.length,
-        itemWidth: cardWidth,
-        itemBuilder: (context, index) => HotItemCard(product: items[index]),
-      ),
+      child: cards,
     );
   }
 }
 
-// ------------------------------------------------------- kategori dan brand
+// ------------------------------------------------------------------ brand
 
-/// Seksi Kategori: enam ubin ikon brand.
-class HomeCategorySection extends StatelessWidget {
-  const HomeCategorySection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final services = AppScope.of(context);
-    return Section(
-      header: SectionHeader(
-        title: 'Kategori',
-        onAction: () => services.router.go(context, const CatalogRoute()),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: BpSpace.x2),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            for (final category in services.catalog.categories)
-              CategoryTile(
-                label: category.name,
-                icon: category.icon,
-                onTap: () => services.router.go(
-                  context,
-                  CatalogRoute(category: category.id),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Seksi Brand pilihan: chip brand bergulir.
+/// Seksi Brand pilihan: chip brand bergulir; "Semua brand" membuka Katalog.
 class HomeBrandSection extends StatelessWidget {
   const HomeBrandSection({super.key});
 
@@ -540,7 +523,11 @@ class HomeBrandSection extends StatelessWidget {
     final services = AppScope.of(context);
     final brands = popularBrands(services, limit: 14);
     return Section(
-      header: const SectionHeader(title: 'Brand pilihan'),
+      header: SectionHeader(
+        title: 'Brand pilihan',
+        actionLabel: 'Semua brand',
+        onAction: () => services.router.go(context, const CatalogRoute()),
+      ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: BpSpace.screen),
@@ -563,113 +550,83 @@ class HomeBrandSection extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------- kepercayaan
+// ------------------------------------------------------------ rekomendasi
 
-/// Baris kepercayaan (SPEC §4.1 butir 11).
-class HomeTrustRow extends StatelessWidget {
-  const HomeTrustRow({super.key});
+/// Baris tab teks rekomendasi: "Untukmu" (semua) lalu kategori katalog.
+class HomeRecommendTabs extends StatelessWidget {
+  const HomeRecommendTabs({
+    required this.selected,
+    required this.onSelected,
+    super.key,
+  });
+
+  /// ID kategori terpilih; null = Untukmu.
+  final String? selected;
+  final ValueChanged<String?> onSelected;
 
   @override
   Widget build(BuildContext context) {
     final services = AppScope.of(context);
     final c = context.bp;
-    Widget cell(BrandGlyph glyph, String label) => Expanded(
-      child: Column(
-        children: <Widget>[
-          BrandIcon(glyph, size: 28, style: BrandIconStyle.color),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: BpText.caption.copyWith(
-              color: c.text,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-    return Section(
-      gap: false,
-      padding: const EdgeInsets.fromLTRB(
-        BpSpace.x2,
-        BpSpace.x4,
-        BpSpace.x2,
-        BpSpace.x2,
-      ),
-      child: Column(
-        children: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    Widget tab(String? id, String label) {
+      final active = id == selected;
+      return BpTappable(
+        key: ValueKey<String>('rekomendasi-tab-${id ?? 'untukmu'}'),
+        onTap: () => onSelected(id),
+        semanticLabel: active ? '$label, terpilih' : label,
+        minWidth: 0,
+        builder: (context, states) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: BpSpace.x2),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              cell(BrandGlyph.original, '100% Original'),
-              cell(BrandGlyph.best, 'BPOM terverifikasi'),
-              cell(BrandGlyph.ongkir, 'Gratis ongkir*'),
+              Text(
+                label,
+                style: BpText.bodyS.copyWith(
+                  color: active ? c.brandStrong : c.textMuted,
+                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                height: 2,
+                width: active ? 28 : 0,
+                decoration: BoxDecoration(
+                  color: c.brand,
+                  borderRadius: BpRadius.pillAll,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: BpSpace.x2),
-          PillButton(
-            label: '*Syarat gratis ongkir ada di Bantuan',
-            variant: PillButtonVariant.text,
-            size: PillButtonSize.small,
-            onPressed: () => services.router.go(context, const HelpRoute()),
-          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: BpSpace.x2),
+      child: Row(
+        children: <Widget>[
+          tab(null, 'Untukmu'),
+          for (final category in services.catalog.categories)
+            tab(category.id, category.name),
         ],
       ),
     );
   }
 }
 
-// ------------------------------------------------------- Bipy mengambang
+// ---------------------------------------------------------- kepercayaan
 
-/// Bipy mengintip dari tas di pojok kanan bawah, pintu ke zona Hadiah.
-/// Hanya tampil bila hadiah tersedia.
-class HomeBipyButton extends StatelessWidget {
-  const HomeBipyButton({super.key});
+/// Baris kepercayaan Beranda tepat di bawah carousel (SPEC §4.1 butir 11).
+class HomeTrustRow extends StatelessWidget {
+  const HomeTrustRow({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final services = AppScope.of(context);
-    final c = context.bp;
-    return ListenableBuilder(
-      listenable: services.rewards,
-      builder: (context, _) {
-        final rewards = services.rewards;
-        if (!rewards.available) return const SizedBox.shrink();
-        final dot = rewards.hasBadge(RewardsEntry.hub);
-        return BpTappable(
-          key: const ValueKey<String>('beranda-bipy'),
-          onTap: () => services.router.go(context, const RewardsRoute()),
-          semanticLabel: dot
-              ? 'Zona Hadiah, ada yang bisa diklaim'
-              : 'Zona Hadiah',
-          tooltip: 'Main bareng Bipy',
-          builder: (context, states) => Stack(
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: c.surface,
-                  border: Border.all(color: c.brandLine, width: 2),
-                  boxShadow: BpShadows.floating(c),
-                ),
-                child: const ClipOval(
-                  child: OverflowBox(
-                    maxWidth: 90,
-                    maxHeight: 90,
-                    alignment: Alignment(0, 0.6),
-                    child: BipySprite(BipySprites.peek, height: 78),
-                  ),
-                ),
-              ),
-              if (dot) const Positioned(top: 2, right: 2, child: DotBadge()),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) => const Padding(
+    key: ValueKey<String>('beranda-kepercayaan'),
+    padding: EdgeInsets.symmetric(horizontal: BpSpace.screen),
+    child: TrustBadgeRow(),
+  );
 }

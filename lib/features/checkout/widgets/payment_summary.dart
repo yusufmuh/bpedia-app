@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../data/shipping/shipping_repository.dart';
 import '../../../design/design.dart';
@@ -49,7 +50,8 @@ class AnimatedRupiah extends StatelessWidget {
   }
 }
 
-/// Rincian: subtotal → voucher → Kelopak → ongkir → total (KEPUTUSAN §1).
+/// Rincian: subtotal → voucher → Kelopak → ongkir → hadiah Rp0 → total
+/// (KEPUTUSAN §1, K17), lalu pita hemat bila ada potongan.
 class PaymentSummary extends StatelessWidget {
   const PaymentSummary({
     super.key,
@@ -61,7 +63,9 @@ class PaymentSummary extends StatelessWidget {
     required this.kelopakValue,
     required this.total,
     this.voucherTitle,
+    this.giftCount = 0,
     this.totalLabel = 'Total pembayaran',
+    this.showSavingsNote = true,
   });
 
   final int goodsSubtotal;
@@ -72,7 +76,13 @@ class PaymentSummary extends StatelessWidget {
   final int kelopakUsed;
   final int kelopakValue;
   final int total;
+
+  /// Jumlah hadiah gratis yang ikut pesanan; tampil sebagai baris Rp0.
+  final int giftCount;
   final String totalLabel;
+
+  /// Pita hijau "Kamu hemat RpX" di bawah total bila ada potongan.
+  final bool showSavingsNote;
 
   @override
   Widget build(BuildContext context) {
@@ -114,11 +124,16 @@ class PaymentSummary extends StatelessWidget {
               : const SizedBox(width: double.infinity),
         ),
         _Line(
-          label: 'Ongkir ${ShippingRepository.demoTag}',
+          label: 'Ongkos kirim ${ShippingRepository.demoTag}',
           value: shippingFee == 0
               ? Text('Gratis', style: saving)
               : AnimatedRupiah(shippingFee, style: positive),
         ),
+        if (giftCount > 0)
+          _Line(
+            label: 'Hadiah gratis ($giftCount barang)',
+            value: Text('Rp0', style: positive),
+          ),
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: BpSpace.screen,
@@ -134,7 +149,61 @@ class PaymentSummary extends StatelessWidget {
             style: BpText.title.copyWith(color: c.brandStrong),
           ),
         ),
+        if (showSavingsNote && voucherAmount + kelopakValue > 0)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              BpSpace.screen,
+              BpSpace.x2,
+              BpSpace.screen,
+              0,
+            ),
+            child: SavingsNote(
+              text:
+                  'Kamu hemat ${formatRupiah(voucherAmount + kelopakValue)}.'
+                  '${kelopakUsed > 0 ? ' Kelopak hanya memotong harga barang, bukan ongkir.' : ''}',
+            ),
+          ),
       ],
+    );
+  }
+}
+
+/// Pita hijau berikon centang untuk catatan penghematan.
+class SavingsNote extends StatelessWidget {
+  const SavingsNote({super.key, required this.text, this.leading});
+
+  final String text;
+
+  /// Ikon pengganti centang (mis. Kelopak 3D).
+  final Widget? leading;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: BpSpace.x3,
+        vertical: BpSpace.x2,
+      ),
+      decoration: BoxDecoration(
+        color: c.successTint,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Row(
+        children: <Widget>[
+          leading ?? Icon(LucideIcons.circleCheck, size: 18, color: c.success),
+          const SizedBox(width: BpSpace.x2),
+          Expanded(
+            child: Text(
+              text,
+              style: BpText.bodyS.copyWith(
+                color: c.success,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -231,7 +300,7 @@ class ChoiceTile extends StatelessWidget {
           ),
           child: Row(
             children: <Widget>[
-              _RadioDot(selected: selected),
+              RadioDot(selected: selected),
               const SizedBox(width: BpSpace.x3),
               if (lead != null) ...<Widget>[
                 lead,
@@ -262,8 +331,9 @@ class ChoiceTile extends StatelessWidget {
   }
 }
 
-class _RadioDot extends StatelessWidget {
-  const _RadioDot({required this.selected});
+/// Lingkaran radio 20 dp.
+class RadioDot extends StatelessWidget {
+  const RadioDot({super.key, required this.selected});
 
   final bool selected;
 

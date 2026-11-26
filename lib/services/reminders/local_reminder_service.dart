@@ -26,11 +26,18 @@ final tz.Location _jakarta = tz.Location(
 /// diperlukan; sistem boleh menggeser waktu tampil beberapa menit.
 class LocalReminderService implements ReminderService {
   LocalReminderService({
-    this.androidIcon = '@mipmap/ic_launcher',
+    this.androidIcon = defaultAndroidIcon,
     FlutterLocalNotificationsPlugin? plugin,
     DateTime Function()? now,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
        _now = now ?? DateTime.now;
+
+  /// Ikon kecil notifikasi: siluet tulip putih bertransparansi
+  /// (`res/drawable/ic_stat_bpedia.xml`, dijaga `res/raw/keep.xml`).
+  static const String defaultAndroidIcon = '@drawable/ic_stat_bpedia';
+
+  /// Warna aksen ikon kecil notifikasi (merah muda brand).
+  static const Color accentColor = Color(0xFFD81F57);
 
   static const String _channelId = 'pengingat';
   static const String _channelName = 'Pengingat';
@@ -99,6 +106,7 @@ class LocalReminderService implements ReminderService {
             _channelId,
             _channelName,
             channelDescription: _channelDescription,
+            color: accentColor,
           ),
           iOS: DarwinNotificationDetails(),
         ),

@@ -77,6 +77,39 @@ class AddressBookPage extends StatelessWidget {
                           style: BpText.bodyS.copyWith(color: c.textMuted),
                         ),
                       ),
+                    if (!selecting)
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          BpSpace.screen,
+                          BpSpace.x3,
+                          BpSpace.screen,
+                          0,
+                        ),
+                        child: NoteBox(
+                          tone: StatusTone.info,
+                          message:
+                              'Alamat utama otomatis dipakai saat checkout. '
+                              'Kamu tetap bisa memilih alamat lain di sana.',
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        BpSpace.screen,
+                        BpSpace.x4,
+                        BpSpace.screen,
+                        0,
+                      ),
+                      child: Semantics(
+                        header: true,
+                        child: Text(
+                          '${addresses.length} alamat tersimpan',
+                          style: BpText.bodyS.copyWith(
+                            color: c.textMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
                     for (final address in addresses)
                       Padding(
                         padding: const EdgeInsets.fromLTRB(
@@ -98,6 +131,10 @@ class AddressBookPage extends StatelessWidget {
                             context,
                             AddressFormRoute(addressId: address.id),
                           ),
+                          onDelete: address.isPrimary || selecting
+                              ? null
+                              : () =>
+                                    deleteAddressWithConfirm(context, address),
                           onMakePrimary: address.isPrimary
                               ? null
                               : () {
@@ -108,6 +145,21 @@ class AddressBookPage extends StatelessWidget {
                                     'Alamat ${address.label} jadi alamat utama.',
                                   );
                                 },
+                        ),
+                      ),
+                    if (!selecting)
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          BpSpace.screen,
+                          BpSpace.x4,
+                          BpSpace.screen,
+                          0,
+                        ),
+                        child: NoteBox(
+                          icon: LucideIcons.mapPin,
+                          message:
+                              'Demo: alamat disimpan di perangkat ini saja. '
+                              'Pilih titik peta belum tersedia di demo.',
                         ),
                       ),
                   ],
@@ -126,6 +178,45 @@ class AddressBookPage extends StatelessWidget {
   }
 }
 
+/// Meminta konfirmasi lalu menghapus [address]. True bila terhapus.
+Future<bool> deleteAddressWithConfirm(
+  BuildContext context,
+  Address address,
+) async {
+  final services = AppScope.of(context);
+  final confirmed = await confirmAction(
+    context,
+    title: 'Hapus alamat ${address.label}?',
+    message:
+        '${address.recipient}, ${address.fullAddress} akan dihapus dari buku '
+        'alamat.',
+    confirmLabel: 'Hapus',
+    destructive: true,
+  );
+  if (!confirmed || !context.mounted) return false;
+  services.addresses.remove(address.id);
+  showAppSnack(context, 'Alamat ${address.label} dihapus.');
+  return true;
+}
+
+/// Nomor HP tersamar: "0812 **** 4417".
+String maskPhoneLabel(String phoneLabel) {
+  final digits = phoneLabel.replaceAll(RegExp(r'\D'), '');
+  if (digits.length < 8) return phoneLabel;
+  return '${digits.substring(0, 4)} **** ${digits.substring(digits.length - 4)}';
+}
+
+/// Ikon label alamat: rumah, kantor, kos, atau penanda peta.
+IconData addressLabelIcon(String label) {
+  final name = label.toLowerCase();
+  if (name.contains('rumah')) return LucideIcons.house;
+  if (name.contains('kantor')) return LucideIcons.building2;
+  if (name.contains('kos') || name.contains('apartemen')) {
+    return LucideIcons.bedDouble;
+  }
+  return LucideIcons.mapPin;
+}
+
 /// Kartu satu alamat.
 class AddressCard extends StatelessWidget {
   const AddressCard({
@@ -134,12 +225,16 @@ class AddressCard extends StatelessWidget {
     required this.onTap,
     required this.onEdit,
     this.onMakePrimary,
+    this.onDelete,
     this.selecting = false,
   });
 
   final Address address;
   final VoidCallback onTap;
   final VoidCallback onEdit;
+
+  /// Null bila alamat tidak boleh dihapus dari kartu (alamat utama).
+  final VoidCallback? onDelete;
 
   /// Null bila alamat sudah utama.
   final VoidCallback? onMakePrimary;
@@ -151,6 +246,7 @@ class AddressCard extends StatelessWidget {
     final primary = address.isPrimary;
     final note = address.note;
     final makePrimary = onMakePrimary;
+    final delete = onDelete;
     return Material(
       color: c.surface,
       shape: RoundedRectangleBorder(
@@ -179,7 +275,7 @@ class AddressCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Icon(
-                      LucideIcons.mapPin,
+                      addressLabelIcon(address.label),
                       size: BpSize.iconDense,
                       color: primary ? c.brand : c.textMuted,
                     ),
@@ -218,7 +314,8 @@ class AddressCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '${address.recipient} · ${address.phoneLabel}',
+                      '${address.recipient} · '
+                      '${maskPhoneLabel(address.phoneLabel)}',
                       style: BpText.bodyS.copyWith(
                         color: c.text,
                         fontWeight: FontWeight.w600,
@@ -246,6 +343,14 @@ class AddressCard extends StatelessWidget {
                   alignment: WrapAlignment.end,
                   spacing: BpSpace.x1,
                   children: <Widget>[
+                    if (delete != null)
+                      PillButton(
+                        label: 'Hapus',
+                        variant: PillButtonVariant.neutral,
+                        size: PillButtonSize.small,
+                        icon: Icon(LucideIcons.trash2, color: c.danger),
+                        onPressed: delete,
+                      ),
                     if (makePrimary != null)
                       PillButton(
                         label: 'Jadikan utama',

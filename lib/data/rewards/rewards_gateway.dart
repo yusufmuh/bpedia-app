@@ -47,6 +47,23 @@ abstract class RewardsGateway extends ChangeNotifier {
   /// Pesanan batal: kembalikan Kelopak, voucher, dan hadiah.
   Future<void> cancel(String orderId);
 
+  /// Seperti [cancel], lalu melaporkan apa yang benar-benar dikembalikan.
+  /// Null bila gateway tidak mengetahui rinciannya; pemanggil memakai isi
+  /// pesanannya sendiri.
+  Future<CancelRefund?> cancelAndReport(String orderId) async {
+    await cancel(orderId);
+    return null;
+  }
+
+  /// Apakah [orderId] sudah tercatat di catatan hadiah (berjalan, selesai,
+  /// atau batal). Nomor seperti itu tidak dipakai lagi untuk pesanan baru.
+  bool hasOrder(String orderId) => false;
+
+  /// Nomor pesanan yang masih bisa dibatalkan menurut catatan hadiah. Dipakai
+  /// untuk membatalkan pesanan yang tercatat di sini tetapi hilang dari
+  /// dokumen app (simpanan tertunda yang tidak sempat ditulis, seksi rusak).
+  List<String> get cancellableOrderIds => const <String>[];
+
   /// Pesanan dikirim: hadiah terlampir ikut dikirim.
   Future<void> ship(String orderId);
 
@@ -167,10 +184,46 @@ final class CheckoutQuote {
 
 /// Hasil aksi gateway yang bisa gagal.
 final class CommitResult {
-  const CommitResult({required this.ok, this.message});
+  const CommitResult({
+    required this.ok,
+    this.message,
+    this.duplicateOrder = false,
+  });
 
   final bool ok;
   final String? message;
+
+  /// True bila nomor pesanan sudah dipakai pesanan lain di catatan hadiah;
+  /// pembuat pesanan boleh mencoba nomor berikutnya.
+  final bool duplicateOrder;
+}
+
+/// Yang benar-benar dikembalikan saat pesanan batal.
+final class CancelRefund {
+  const CancelRefund({
+    required this.kelopak,
+    required this.voucher,
+    required this.gifts,
+  });
+
+  /// Tidak ada yang dikembalikan (pesanan tidak dikenal catatan hadiah).
+  static const CancelRefund nothing = CancelRefund(
+    kelopak: 0,
+    voucher: false,
+    gifts: 0,
+  );
+
+  /// Kelopak yang kembali ke saldo.
+  final int kelopak;
+
+  /// Apakah voucher kembali bisa dipakai.
+  final bool voucher;
+
+  /// Jumlah hadiah gratis yang kembali menunggu.
+  final int gifts;
+
+  /// Apakah tidak ada yang dikembalikan.
+  bool get isEmpty => kelopak == 0 && !voucher && gifts == 0;
 }
 
 /// Hasil penyelesaian pesanan.

@@ -4,12 +4,16 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../app/app_router.dart';
+import '../../config/app_config.dart';
 import '../../app/app_scope.dart';
 import '../../data/orders/order_repository.dart';
 import '../../design/design.dart';
 import '../../services/sound/sound_service.dart';
+import '../info/info_widgets.dart' show openExternal;
+import 'order_format.dart';
 
 void _toast(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
@@ -22,17 +26,58 @@ void _failed(BuildContext context, OrderResult result) {
   _toast(context, result.message ?? 'Aksi gagal. Coba lagi, Babes.');
 }
 
-/// Konfirmasi batal yang menyebut Kelopak, voucher, dan hadiah yang kembali,
-/// lalu membatalkan pesanan.
+/// Satu butir yang kembali saat pesanan dibatalkan.
+final class CancelRefundLine {
+  const CancelRefundLine(this.icon, this.text);
+
+  final IconData icon;
+  final String text;
+}
+
+/// Butir pengembalian yang berlaku untuk [order]: Kelopak, voucher, hadiah,
+/// dan dana (hanya bila sudah dibayar non-COD).
+List<CancelRefundLine> cancelRefundLines(Order order) {
+  final voucher = order.voucherTitle;
+  return <CancelRefundLine>[
+    if (order.kelopakUsed > 0)
+      CancelRefundLine(
+        LucideIcons.refreshCw,
+        '${kelopakAmountLabel(order.kelopakUsed)} kembali ke saldo',
+      ),
+    if (order.voucherAmount > 0)
+      CancelRefundLine(
+        LucideIcons.ticket,
+        voucher == null
+            ? 'Voucher ${formatRupiah(order.voucherAmount)} bisa dipakai lagi'
+            : '$voucher bisa dipakai lagi',
+      ),
+    if (order.gifts.isNotEmpty)
+      CancelRefundLine(
+        LucideIcons.gift,
+        order.gifts.length == 1
+            ? 'Hadiah gratis kembali menunggu di keranjang'
+            : '${order.gifts.length} hadiah gratis kembali menunggu di '
+                  'keranjang',
+      ),
+    if (order.paidAtMs != null && !order.isCod && order.total > 0)
+      CancelRefundLine(
+        LucideIcons.banknote,
+        'Dana ${formatRupiah(order.total)} dikembalikan (simulasi)',
+      ),
+  ];
+}
+
+/// Konfirmasi batal yang merinci per butir apa saja yang kembali (Kelopak,
+/// voucher, hadiah, dana), lalu membatalkan pesanan.
 Future<void> confirmCancelOrder(BuildContext context, Order order) async {
   final services = AppScope.of(context);
-  final summary = services.orders.cancelSummary(order);
+  final lines = cancelRefundLines(order);
   final confirmed = await showBpSheet<bool>(
     context: context,
     builder: (sheetContext) {
       final c = sheetContext.bp;
       return BpSheet(
-        title: 'Batalkan pesanan?',
+        title: 'Batalkan pesanan ini?',
         footer: Row(
           children: <Widget>[
             Expanded(
@@ -56,8 +101,61 @@ Future<void> confirmCancelOrder(BuildContext context, Order order) async {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(summary, style: BpText.body.copyWith(color: c.text)),
-            const SizedBox(height: BpSpace.x2),
+            Text(
+              lines.isEmpty
+                  ? 'Pesanan #${order.id} akan dibatalkan.'
+                  : 'Pesanan #${order.id} belum dikirim, jadi masih bisa '
+                        'dibatalkan. Yang kembali ke akunmu:',
+              style: BpText.body.copyWith(color: c.textMuted),
+            ),
+            if (lines.isNotEmpty) ...<Widget>[
+              const SizedBox(height: BpSpace.x3),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: BpSpace.x3,
+                  vertical: BpSpace.x2,
+                ),
+                decoration: BoxDecoration(
+                  color: c.surfaceMuted,
+                  borderRadius: BpRadius.cardAll,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    for (final line in lines)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 32,
+                              height: 32,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: c.successTint,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                line.icon,
+                                size: 18,
+                                color: c.success,
+                              ),
+                            ),
+                            const SizedBox(width: BpSpace.x3),
+                            Expanded(
+                              child: Text(
+                                line.text,
+                                style: BpText.body.copyWith(color: c.text),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: BpSpace.x3),
             Text(
               'Pembatalan tidak bisa diurungkan. Produk tidak masuk lagi ke '
               'keranjang secara otomatis.',
@@ -151,4 +249,17 @@ void buyAgain(BuildContext context, Order order) {
   }
   services.haptics.light();
   services.router.go(context, const CartRoute());
+}
+
+/// "Hubungi CS": WhatsApp Bpedia Care dengan nomor pesanan terisi.
+Future<void> contactCare(BuildContext context, Order order) {
+  final services = AppScope.of(context);
+  return openExternal(
+    context,
+    () => services.links.openWhatsAppCare(
+      'Halo Bpedia Care, saya butuh bantuan untuk pesanan #${order.id}.',
+    ),
+    fallback:
+        'WhatsApp belum bisa dibuka. Hubungi ${AppConfig.whatsAppDisplay}.',
+  );
 }

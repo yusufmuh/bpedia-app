@@ -390,6 +390,68 @@ void main() {
         closeTo((360 - 2 * BpSpace.gridMargin - BpSpace.grid) / 2, 0.5),
       );
     });
+
+    for (final scroll in <bool>[true, false]) {
+      testWidgets(
+        'tombol + Keranjang menempel ke dasar kartu dan sejajar sebaris '
+        '(${scroll ? 'gulir' : 'rel'})',
+        (tester) async {
+          const plain = ProductCardData(
+            id: 'P1',
+            name: 'Toner',
+            price: 25000,
+            imageAsset: 'assets/catalog/img/P11B11B01000004-1.webp',
+          );
+          Widget card(int index) => ProductCard(
+            data: index == 0 ? _product : plain,
+            action: ProductCardAction.addButton,
+            onAddToCart: () {},
+          );
+          await pumpDesign(
+            tester,
+            scroll
+                ? ProductGrid(itemCount: 2, itemBuilder: (_, i) => card(i))
+                : ProductRail(itemCount: 2, itemBuilder: (_, i) => card(i)),
+            scroll: scroll,
+          );
+          final buttons = find.bySemanticsLabel('Tambah ke keranjang');
+          expect(buttons, findsNWidgets(2));
+          final cards = find.byType(ProductCard);
+          for (var i = 0; i < 2; i++) {
+            final cardRect = tester.getRect(cards.at(i));
+            final buttonRect = tester.getRect(buttons.at(i));
+            expect(
+              cardRect.bottom - buttonRect.bottom,
+              lessThanOrEqualTo(BpSpace.cardDense + 1),
+              reason: 'kartu $i',
+            );
+          }
+          expect(
+            tester.getRect(buttons.at(0)).bottom,
+            moreOrLessEquals(tester.getRect(buttons.at(1)).bottom),
+          );
+        },
+      );
+    }
+
+    testWidgets('kartu + Keranjang di kolom tanpa batas tinggi tetap rapat', (
+      tester,
+    ) async {
+      await pumpDesign(
+        tester,
+        ProductCard(
+          data: _product,
+          action: ProductCardAction.addButton,
+          onAddToCart: () {},
+        ),
+      );
+      final card = tester.getRect(find.byType(ProductCard));
+      final button = tester.getRect(
+        find.bySemanticsLabel('Tambah ke keranjang'),
+      );
+      expect(card.bottom - button.bottom, lessThanOrEqualTo(BpSpace.cardDense));
+      expect(tester.takeException(), isNull);
+    });
   });
 
   group('BpBottomNav', () {
@@ -451,6 +513,69 @@ void main() {
       );
       handle.dispose();
     });
+
+    test('token tombol Hadiah mengikuti Figma: 50 dp, naik 12', () {
+      expect(BpSize.rewardButton, 50);
+      expect(BpSize.rewardLift, 12);
+    });
+
+    for (final dark in <bool>[false, true]) {
+      testWidgets('tombol Hadiah bercincin surface 4 dan label tebal '
+          '(${dark ? 'gelap' : 'terang'})', (tester) async {
+        await pumpDesign(
+          tester,
+          const SizedBox(height: 100),
+          dark: dark,
+          bottom: BpBottomNav(currentIndex: 0, onSelected: (_) {}),
+        );
+        final c = dark ? BpColors.dark : BpColors.light;
+        final ring = tester
+            .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+            .map((box) => box.decoration)
+            .whereType<BoxDecoration>()
+            .singleWhere((d) => d.gradient == BpFest.candy);
+        final border = ring.border! as Border;
+        expect(border.top.width, 4);
+        expect(border.top.color, c.surface);
+        final shadow = ring.boxShadow!.single;
+        expect(shadow.offset, const Offset(0, 2));
+        expect(shadow.blurRadius, 8);
+
+        final nav = tester.getRect(find.byType(BpBottomNav));
+        final circle = tester.getRect(
+          find
+              .ancestor(
+                of: find.byWidgetPredicate(
+                  (w) =>
+                      w is DecoratedBox &&
+                      w.decoration is BoxDecoration &&
+                      (w.decoration as BoxDecoration).gradient == BpFest.candy,
+                ),
+                matching: find.byType(SizedBox),
+              )
+              .first,
+        );
+        expect(circle.size, const Size.square(50));
+        expect(circle.top, moreOrLessEquals(nav.top - 12, epsilon: 0.5));
+
+        final idle = tester.widget<Text>(find.text('Hadiah')).style!;
+        expect(idle.fontWeight, FontWeight.w700);
+        expect(idle.color, c.text);
+
+        await pumpDesign(
+          tester,
+          const SizedBox(height: 100),
+          dark: dark,
+          bottom: BpBottomNav(
+            currentIndex: BpBottomNav.rewardIndex,
+            onSelected: (_) {},
+          ),
+        );
+        final active = tester.widget<Text>(find.text('Hadiah')).style!;
+        expect(active.fontWeight, FontWeight.w700);
+        expect(active.color, c.brandStrong);
+      });
+    }
   });
 
   group('Lencana', () {
@@ -609,6 +734,22 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       expect(value, isTrue);
     });
+
+    for (final dark in <bool>[false, true]) {
+      test('sakelar mengikuti kenop G5 (${dark ? 'gelap' : 'terang'})', () {
+        final c = dark ? BpColors.dark : BpColors.light;
+        final theme = (dark ? BpTheme.dark() : BpTheme.light()).switchTheme;
+        const off = <WidgetState>{};
+        const on = <WidgetState>{WidgetState.selected};
+        expect(theme.trackColor!.resolve(off), c.surfaceMuted);
+        expect(theme.trackOutlineColor!.resolve(off), c.textFaint);
+        expect(theme.trackOutlineWidth!.resolve(off), 2);
+        expect(theme.thumbColor!.resolve(off), c.textFaint);
+        expect(theme.trackColor!.resolve(on), c.brand);
+        expect(theme.trackOutlineColor!.resolve(on), Colors.transparent);
+        expect(theme.thumbColor!.resolve(on), const Color(0xFFFFFFFF));
+      });
+    }
 
     testWidgets('InfoRow dan SectionHeader: ketuk memanggil callback', (
       tester,

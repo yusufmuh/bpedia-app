@@ -24,6 +24,9 @@ class DemoClockRepository extends DocumentRepository {
   /// Hari WIB yang dipakai app.
   int get today => _clock.today;
 
+  /// Hari WIB nyata, tanpa geseran Mode Demo.
+  int get realToday => _clock.today - _clock.demoOffsetDays;
+
   /// Label hari ini: "Sabtu, 28 Nov 2026".
   String get todayLabel => wibDateLabel(_clock.today);
 
@@ -40,7 +43,9 @@ class DemoClockRepository extends DocumentRepository {
     changed();
   }
 
-  /// Kembali ke tanggal nyata.
+  /// Kembali ke tanggal nyata. Catatan Kelopak yang dibuat di tanggal
+  /// geseran tetap bertanggal itu (check-in terkunci sampai tanggal tersebut);
+  /// Mode Demo menawarkan aksi gateway untuk sekaligus mengatur ulangnya.
   void reset() {
     if (_clock.demoOffsetDays == 0) return;
     _clock.demoOffsetDays = 0;

@@ -1,5 +1,6 @@
-/// Tab Katalog (SPEC §4.3): kolom cari, kategori, bar alat menempel (Filter
-/// berlencana + chip urutan), chip filter aktif, dan grid dua kolom.
+/// Tab Katalog (SPEC §4.3, PERBAIKAN G4/K12): kolom cari, bar alat menempel
+/// (Filter berlencana + chip urutan), baris jumlah produk dengan chip filter
+/// aktif, rel ubin kategori, dan grid dua kolom.
 library;
 
 import 'package:flutter/material.dart';
@@ -78,13 +79,6 @@ class CatalogView extends StatelessWidget {
                 return CustomScrollView(
                   primary: true,
                   slivers: <Widget>[
-                    if (query.isEmpty)
-                      SliverToBoxAdapter(
-                        child: _CategoryStrip(
-                          onSelected: (id) =>
-                              _apply(context, query.copyWith(categoryId: id)),
-                        ),
-                      ),
                     PinnedHeaderSliver(
                       child: _Toolbar(
                         query: query,
@@ -129,7 +123,22 @@ class CatalogView extends StatelessWidget {
                         child: _ResultCount(
                           query: query,
                           count: results.length,
+                          onChanged: (next) => _apply(context, next),
                         ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _CategoryStrip(
+                          selected: query.categoryId,
+                          onSelected: (id) => _apply(
+                            context,
+                            id == query.categoryId
+                                ? query.copyWith(clearCategory: true)
+                                : query.copyWith(categoryId: id),
+                          ),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(
+                        child: SizedBox(height: BpSpace.x2),
                       ),
                       SliverProductGrid(
                         itemCount: results.length,
@@ -204,8 +213,9 @@ class _CatalogHeader extends StatelessWidget {
 }
 
 class _CategoryStrip extends StatelessWidget {
-  const _CategoryStrip({required this.onSelected});
+  const _CategoryStrip({required this.selected, required this.onSelected});
 
+  final String? selected;
   final ValueChanged<String> onSelected;
 
   @override
@@ -213,9 +223,9 @@ class _CategoryStrip extends StatelessWidget {
     final services = AppScope.of(context);
     final c = context.bp;
     return Container(
+      key: const ValueKey<String>('katalog-kategori'),
       color: c.surface,
-      margin: const EdgeInsets.only(bottom: 1),
-      padding: const EdgeInsets.symmetric(vertical: BpSpace.x3),
+      padding: const EdgeInsets.only(top: BpSpace.x3, bottom: BpSpace.x2),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: BpSpace.x2),
@@ -226,6 +236,7 @@ class _CategoryStrip extends StatelessWidget {
               CategoryTile(
                 label: category.name,
                 icon: category.icon,
+                selected: category.id == selected,
                 onTap: () => onSelected(category.id),
               ),
           ],
@@ -235,18 +246,21 @@ class _CategoryStrip extends StatelessWidget {
   }
 }
 
-/// Ubin kategori: ikon brand berwarna dalam lingkaran `brandTint` + label.
+/// Ubin kategori: ikon brand dalam ubin `surfaceMuted` radius 14 + label.
+/// Terpilih: bingkai `brand` + latar `brandTint`, label `brand` tebal.
 class CategoryTile extends StatelessWidget {
   const CategoryTile({
     required this.label,
     required this.icon,
     required this.onTap,
+    this.selected = false,
     super.key,
   });
 
   final String label;
   final String icon;
   final VoidCallback onTap;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -254,21 +268,26 @@ class CategoryTile extends StatelessWidget {
     final glyph = BrandGlyph.tryParse(icon) ?? BrandGlyph.bag;
     return BpTappable(
       onTap: onTap,
-      semanticLabel: 'Kategori $label',
+      semanticLabel: selected ? 'Kategori $label, terpilih' : 'Kategori $label',
       focusRadius: BpRadius.tileAll,
       builder: (context, states) => SizedBox(
-        width: 76,
+        width: 80,
         child: Column(
           children: <Widget>[
-            Container(
+            AnimatedContainer(
+              duration: BpMotion.micro,
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: c.brandTint,
-                shape: BoxShape.circle,
+                color: selected ? c.brandTint : c.surfaceMuted,
+                borderRadius: const BorderRadius.all(Radius.circular(14)),
+                border: Border.all(
+                  color: selected ? c.brand : Colors.transparent,
+                  width: 1.5,
+                ),
               ),
               alignment: Alignment.center,
-              child: BrandIcon(glyph, size: 28, style: BrandIconStyle.color),
+              child: BrandIcon(glyph, size: 26, style: BrandIconStyle.color),
             ),
             const SizedBox(height: 6),
             Text(
@@ -276,7 +295,10 @@ class CategoryTile extends StatelessWidget {
               maxLines: 2,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              style: BpText.caption.copyWith(color: c.text),
+              style: BpText.caption.copyWith(
+                color: selected ? c.brandStrong : c.text,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -300,33 +322,8 @@ class _Toolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final services = AppScope.of(context);
     final c = context.bp;
     final count = query.activeFilterCount;
-    final categoryId = query.categoryId;
-    final min = query.minPrice;
-    final max = query.maxPrice;
-    final active = <Widget>[
-      if (categoryId != null)
-        BpChip(
-          label: categoryNameOf(services, categoryId),
-          onDeleted: () => onChanged(query.copyWith(clearCategory: true)),
-        ),
-      for (final brand in query.brands.toList()..sort())
-        BpChip(
-          label: brand,
-          onDeleted: () => onChanged(
-            query.copyWith(
-              brands: query.brands.where((other) => other != brand),
-            ),
-          ),
-        ),
-      if (min != null || max != null)
-        BpChip(
-          label: priceRangeLabel(min, max),
-          onDeleted: () => onChanged(query.copyWith(clearPrice: true)),
-        ),
-    ];
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.surface,
@@ -369,30 +366,6 @@ class _Toolbar extends StatelessWidget {
               ],
             ),
           ),
-          if (active.isNotEmpty)
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(
-                BpSpace.screen,
-                0,
-                BpSpace.screen,
-                BpSpace.x1,
-              ),
-              child: Row(
-                children: <Widget>[
-                  for (final chip in active) ...<Widget>[
-                    chip,
-                    const SizedBox(width: BpSpace.x2),
-                  ],
-                  PillButton(
-                    label: 'Hapus semua',
-                    variant: PillButtonVariant.text,
-                    size: PillButtonSize.small,
-                    onPressed: () => onChanged(query.withoutFilters()),
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
     );
@@ -409,36 +382,108 @@ String priceRangeLabel(int? min, int? max) {
 }
 
 class _ResultCount extends StatelessWidget {
-  const _ResultCount({required this.query, required this.count});
+  const _ResultCount({
+    required this.query,
+    required this.count,
+    required this.onChanged,
+  });
 
   final CatalogQuery query;
   final int count;
+  final ValueChanged<CatalogQuery> onChanged;
 
   @override
   Widget build(BuildContext context) {
+    final services = AppScope.of(context);
     final c = context.bp;
     final text = query.text;
-    return Padding(
+    final categoryId = query.categoryId;
+    final min = query.minPrice;
+    final max = query.maxPrice;
+    final active = <Widget>[
+      if (categoryId != null)
+        BpChip(
+          label: categoryNameOf(services, categoryId),
+          selected: true,
+          onDeleted: () => onChanged(query.copyWith(clearCategory: true)),
+        ),
+      for (final brand in query.brands.toList()..sort())
+        BpChip(
+          label: brand,
+          selected: true,
+          onDeleted: () => onChanged(
+            query.copyWith(
+              brands: query.brands.where((other) => other != brand),
+            ),
+          ),
+        ),
+      if (min != null || max != null)
+        BpChip(
+          label: priceRangeLabel(min, max),
+          selected: true,
+          onDeleted: () => onChanged(query.copyWith(clearPrice: true)),
+        ),
+    ];
+    final muted = BpText.bodyS.copyWith(color: c.textMuted);
+    return Container(
+      color: c.surface,
       padding: const EdgeInsets.fromLTRB(
         BpSpace.screen,
-        BpSpace.x3,
-        BpSpace.screen,
+        BpSpace.x2,
+        BpSpace.x1,
         BpSpace.x2,
       ),
-      child: Semantics(
-        liveRegion: true,
-        child: Text.rich(
-          TextSpan(
-            children: <InlineSpan>[
-              TextSpan(
-                text: '$count produk',
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-              if (text.isNotEmpty) TextSpan(text: ' untuk "$text"'),
-            ],
+      child: Row(
+        children: <Widget>[
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              '$count produk',
+              style: muted.copyWith(color: c.text, fontWeight: FontWeight.w700),
+            ),
           ),
-          style: BpText.bodyS.copyWith(color: c.textMuted),
-        ),
+          if (text.isNotEmpty) ...<Widget>[
+            const SizedBox(width: BpSpace.x1),
+            Flexible(
+              flex: 0,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 120),
+                child: Text(
+                  'untuk "$text"',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: muted,
+                ),
+              ),
+            ),
+          ],
+          if (active.isNotEmpty) ...<Widget>[
+            const SizedBox(width: BpSpace.x1),
+            Text('di', style: muted),
+          ],
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(left: BpSpace.x2),
+              child: Row(
+                children: <Widget>[
+                  for (final chip in active) ...<Widget>[
+                    chip,
+                    const SizedBox(width: BpSpace.x2),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          if (active.isNotEmpty)
+            PillButton(
+              key: const ValueKey<String>('katalog-hapus-filter'),
+              label: 'Hapus filter',
+              variant: PillButtonVariant.text,
+              size: PillButtonSize.small,
+              onPressed: () => onChanged(query.withoutFilters()),
+            ),
+        ],
       ),
     );
   }

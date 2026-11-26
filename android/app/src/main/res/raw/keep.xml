@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ikon notifikasi pengingat (flutter_local_notifications) dirujuk lewat nama
-     dari Dart, jadi R8 tidak boleh membuangnya saat penyusutan resource. -->
+<!-- Ikon kecil notifikasi pengingat (flutter_local_notifications) dirujuk lewat
+     nama dari Dart, jadi R8 tidak boleh membuangnya saat penyusutan resource. -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@mipmap/ic_launcher" />
+    tools:keep="@drawable/ic_stat_bpedia" />

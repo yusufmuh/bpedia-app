@@ -39,6 +39,14 @@ HotDeal? soonestRunning(Iterable<Product> products, int today) {
   return best;
 }
 
+/// "1 hari 14:18:59" bila sisa >= 24 jam, selain itu "14:18:59".
+String hotCountdownText(Duration left) {
+  final safe = left.isNegative ? Duration.zero : left;
+  if (safe.inHours < 24) return countdownText(safe);
+  return '${safe.inDays} hari '
+      '${countdownText(Duration(seconds: safe.inSeconds % 86400))}';
+}
+
 /// Pil hitung mundur ke 24.00 WIB hari terakhir [deal]. Di luar periode
 /// menampilkan tanggal mulai atau periode, bukan hitung mundur.
 class HotCountdown extends StatefulWidget {
@@ -85,9 +93,7 @@ class _HotCountdownState extends State<HotCountdown> {
         final left = wibEndOfDay(
           deal.endDay,
         ).difference(services.clock.instant.toUtc());
-        text = left.inHours >= 24
-            ? 'Berakhir ${left.inDays} hari lagi'
-            : countdownText(left);
+        text = hotCountdownText(left);
         semantics =
             'Berakhir dalam ${left.inHours} jam ${left.inMinutes % 60} menit';
       case HotPhase.upcoming:
@@ -140,10 +146,13 @@ class _HotCountdownState extends State<HotCountdown> {
 }
 
 /// Bilah kuota Hot Item: isi = bagian terjual dari kuota potret katalog.
+/// [compact] menulis "Terjual 12/15" (rel Beranda); bawaan "Terjual 12" di
+/// kiri dan "Sisa 3" di kanan (halaman Hot Item).
 class HotQuotaBar extends StatelessWidget {
-  const HotQuotaBar({required this.deal, super.key});
+  const HotQuotaBar({required this.deal, this.compact = false, super.key});
 
   final HotDeal deal;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -152,16 +161,54 @@ class HotQuotaBar extends StatelessWidget {
     final sold = deal.sold.clamp(0, quota);
     final fraction = quota == 0 ? 1.0 : sold / quota;
     final left = quota - sold;
-    final label = left <= 0
-        ? 'Kuota habis'
-        : sold == 0
-        ? 'Kuota $quota'
-        : 'Terjual $sold, sisa $left';
+    final style = BpText.label.copyWith(
+      color: c.textMuted,
+      fontWeight: FontWeight.w600,
+      fontFeatures: BpText.tabular,
+    );
+    final Widget caption;
+    if (left <= 0) {
+      caption = Text(
+        'Kuota habis',
+        maxLines: 1,
+        style: style.copyWith(color: c.sale),
+      );
+    } else if (compact) {
+      caption = Text(
+        'Terjual $sold/$quota',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      );
+    } else {
+      caption = Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              'Terjual $sold',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: style,
+            ),
+          ),
+          Text(
+            'Sisa $left',
+            maxLines: 1,
+            style: style.copyWith(
+              color: left <= quota / 4 ? c.sale : c.textMuted,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      );
+    }
     return Semantics(
-      label: '$label dari kuota $quota',
+      label: left <= 0
+          ? 'Kuota habis dari kuota $quota'
+          : 'Terjual $sold, sisa $left dari kuota $quota',
       excludeSemantics: true,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ClipRRect(
@@ -181,13 +228,8 @@ class HotQuotaBar extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 3),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: BpText.label.copyWith(color: c.textMuted),
-          ),
+          const SizedBox(height: 4),
+          caption,
         ],
       ),
     );
@@ -195,18 +237,18 @@ class HotQuotaBar extends StatelessWidget {
 }
 
 /// Kartu Hot Item: gambar highlight asli 1:1, lencana diskon, nama, harga
-/// Hot Item, harga normal, hitung mundur, bilah kuota.
+/// Hot Item, harga normal, bilah kuota. Hitung mundur ada di judul seksi.
 class HotItemCard extends StatelessWidget {
   const HotItemCard({
     required this.product,
-    this.showAddButton = false,
+    this.showBuyButton = false,
     super.key,
   });
 
   final Product product;
 
-  /// Tombol "+ Keranjang" di bawah kartu (halaman Hot Item).
-  final bool showAddButton;
+  /// Tombol "Beli" di bawah kartu (halaman Hot Item).
+  final bool showBuyButton;
 
   @override
   Widget build(BuildContext context) {
@@ -243,6 +285,30 @@ class HotItemCard extends StatelessWidget {
                     fit: StackFit.expand,
                     children: <Widget>[
                       AssetPicture(deal.image),
+                      if (isMissionProduct(services, product))
+                        Positioned(
+                          left: 0,
+                          bottom: 0,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: c.sale,
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(BpRadius.badge),
+                              ),
+                            ),
+                            child: Text(
+                              'Produk misi',
+                              style: BpText.label.copyWith(
+                                color: c.onSale,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
                       if (deal.discountPercent > 0)
                         Positioned(
                           top: 0,
@@ -252,15 +318,6 @@ class HotItemCard extends StatelessWidget {
                             corner: true,
                           ),
                         ),
-                      Positioned(
-                        left: 6,
-                        bottom: 6,
-                        right: 6,
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: HotCountdown(deal: deal, dense: true),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -287,16 +344,16 @@ class HotItemCard extends StatelessWidget {
                         stacked: true,
                       ),
                       const SizedBox(height: 6),
-                      HotQuotaBar(deal: deal),
-                      if (showAddButton) ...<Widget>[
+                      HotQuotaBar(deal: deal, compact: !showBuyButton),
+                      if (showBuyButton) ...<Widget>[
                         const SizedBox(height: BpSpace.x2),
                         PillButton(
-                          label: product.inStock ? '+ Keranjang' : 'Stok habis',
-                          variant: PillButtonVariant.outline,
+                          key: ValueKey<String>('hot-beli-${product.code}'),
+                          label: product.inStock ? 'Beli' : 'Stok habis',
                           size: PillButtonSize.small,
                           expand: true,
                           onPressed: product.inStock
-                              ? () => addProductToCart(context, product)
+                              ? () => buyProductNow(context, product)
                               : null,
                         ),
                       ],

@@ -227,15 +227,10 @@ class CartRepository extends DocumentRepository {
       ),
   ];
 
-  /// Semua baris sebagai [PricedLine] (untuk dorongan misi di keranjang).
-  List<PricedLine> get pricedLines => <PricedLine>[
-    for (final item in items)
-      PricedLine(
-        productCode: item.product.code,
-        unitPrice: item.product.price,
-        quantity: item.qty,
-      ),
-  ];
+  /// Baris yang dihitung dorongan misi di keranjang: sama dengan
+  /// [linesForCheckout]. Misi menilai subtotal produk misi dalam satu pesanan
+  /// (KEPUTUSAN §3), jadi barang yang tidak dicentang tidak ikut dihitung.
+  List<PricedLine> get pricedLines => linesForCheckout;
 
   // ------------------------------------------------------------------- ubah
 
@@ -467,7 +462,9 @@ class CartRepository extends DocumentRepository {
   static CartLimit _limitOf(Product product) {
     if (!product.inStock) return CartLimit.outOfStock;
     final perOrder = product.hot?.maxPerOrder;
-    if (perOrder != null && perOrder <= product.stock && perOrder < cartMaxQty) {
+    if (perOrder != null &&
+        perOrder <= product.stock &&
+        perOrder < cartMaxQty) {
       return CartLimit.perOrder;
     }
     return CartLimit.stock;

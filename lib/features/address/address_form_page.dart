@@ -9,6 +9,7 @@ import '../../app/app_scope.dart';
 import '../../data/address/address_repository.dart';
 import '../../design/design.dart';
 import '../account/account_ui.dart';
+import 'address_book_page.dart';
 
 /// Label alamat yang bisa dipilih.
 const List<String> addressLabels = <String>[
@@ -138,17 +139,10 @@ class _AddressFormPageState extends State<AddressFormPage> {
     final services = AppScope.of(context);
     final id = widget.addressId;
     if (id == null) return;
-    final confirmed = await confirmAction(
-      context,
-      title: 'Hapus alamat ini?',
-      message: 'Alamat $_label akan dihapus dari buku alamat.',
-      confirmLabel: 'Hapus',
-      destructive: true,
-    );
-    if (!confirmed || !mounted) return;
-    services.addresses.remove(id);
-    showAppSnack(context, 'Alamat dihapus.');
-    services.router.back(context);
+    final address = services.addresses.byId(id);
+    if (address == null) return;
+    final deleted = await deleteAddressWithConfirm(context, address);
+    if (deleted && mounted) services.router.back(context);
   }
 
   @override
@@ -257,6 +251,8 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   controller: _street,
                   hint: 'Nama jalan, nomor rumah, RT/RW',
                   maxLines: 3,
+                  maxLength: 200,
+                  showCounter: true,
                   keyboardType: TextInputType.streetAddress,
                   textInputAction: TextInputAction.next,
                   errorText: _errors[AddressField.street],
@@ -267,6 +263,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   fieldKey: const ValueKey<String>('address-district'),
                   label: 'Kecamatan',
                   controller: _district,
+                  hint: 'Contoh: Kebayoran Baru',
                   textInputAction: TextInputAction.next,
                   errorText: _errors[AddressField.district],
                   onChanged: (_) => _revalidate(),
@@ -276,6 +273,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   fieldKey: const ValueKey<String>('address-city'),
                   label: 'Kota atau kabupaten',
                   controller: _city,
+                  hint: 'Contoh: Jakarta Selatan',
                   textInputAction: TextInputAction.next,
                   errorText: _errors[AddressField.city],
                   onChanged: (_) => _revalidate(),
@@ -285,6 +283,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   fieldKey: const ValueKey<String>('address-province'),
                   label: 'Provinsi',
                   controller: _province,
+                  hint: 'Contoh: DKI Jakarta',
                   textInputAction: TextInputAction.next,
                   errorText: _errors[AddressField.province],
                   onChanged: (_) => _revalidate(),

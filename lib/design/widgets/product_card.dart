@@ -271,7 +271,6 @@ class ProductCard extends StatelessWidget {
               if (showQuickAdd) _QuickAddButton(onPressed: add),
             ],
           ),
-          if (showAddButton) _AddButton(onPressed: add),
         ],
       ),
     );
@@ -286,25 +285,41 @@ class ProductCard extends StatelessWidget {
         borderRadius: const BorderRadius.all(
           Radius.circular(BpRadius.card - 1),
         ),
+        // Pada baris grid atau rel yang menyamakan tinggi kartu, sisa ruang
+        // jatuh di atas tombol + Keranjang sehingga tombol menempel ke dasar
+        // kartu dan sejajar antarkartu. Tanpa batas tinggi, kartu tetap rapat.
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Stack(
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                ExcludeSemantics(child: image),
-                if (wishlist != null)
-                  PositionedDirectional(
-                    end: 0,
-                    bottom: 0,
-                    child: _WishlistButton(
-                      active: wishlisted,
-                      onPressed: wishlist,
-                    ),
-                  ),
+                Stack(
+                  children: <Widget>[
+                    ExcludeSemantics(child: image),
+                    if (wishlist != null)
+                      PositionedDirectional(
+                        end: 0,
+                        bottom: 0,
+                        child: _WishlistButton(
+                          active: wishlisted,
+                          onPressed: wishlist,
+                        ),
+                      ),
+                  ],
+                ),
+                info,
               ],
             ),
-            info,
+            if (showAddButton)
+              Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: BpSpace.cardDense,
+                ),
+                child: _AddButton(onPressed: add),
+              ),
           ],
         ),
       ),

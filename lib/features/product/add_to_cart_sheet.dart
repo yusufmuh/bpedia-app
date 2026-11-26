@@ -58,7 +58,7 @@ class _AddToCartSheetState extends State<AddToCartSheet> {
       title: 'Tambah ke keranjang',
       footer: PillButton(
         key: const ValueKey<String>('lembar-tambah'),
-        label: 'Masukkan keranjang',
+        label: 'Tambah ke keranjang',
         expand: true,
         onPressed: room == 0 ? null : () => Navigator.of(context).pop(_qty),
       ),
@@ -79,14 +79,21 @@ class _AddToCartSheetState extends State<AddToCartSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    PriceText(
+                      product.price,
+                      strikePrice: product.strikePrice,
+                      discountPercent: product.hasDiscount
+                          ? product.discountPercent
+                          : null,
+                      stacked: true,
+                    ),
+                    const SizedBox(height: BpSpace.x1),
                     Text(
                       product.name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: BpText.bodyS.copyWith(color: c.text),
                     ),
-                    const SizedBox(height: BpSpace.x1),
-                    PriceText(product.price, strikePrice: product.strikePrice),
                   ],
                 ),
               ),
@@ -122,6 +129,32 @@ class _AddToCartSheetState extends State<AddToCartSheet> {
                     : (value) => setState(() => _qty = value),
               ),
             ],
+          ),
+          const SizedBox(height: BpSpace.x3),
+          Container(
+            key: const ValueKey<String>('lembar-subtotal'),
+            padding: const EdgeInsets.symmetric(
+              horizontal: BpSpace.x4,
+              vertical: BpSpace.x3,
+            ),
+            decoration: BoxDecoration(
+              color: c.surfaceMuted,
+              borderRadius: BpRadius.cardAll,
+            ),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'Subtotal',
+                    style: BpText.body.copyWith(color: c.textMuted),
+                  ),
+                ),
+                Text(
+                  formatRupiah(product.price * (room == 0 ? 0 : _qty)),
+                  style: BpText.price.copyWith(color: c.brandStrong),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: BpSpace.x2),
         ],

@@ -12,14 +12,65 @@ void main() {
   testWidgets('QRIS: total, batas bayar, QR contoh, nomor pesanan', (
     tester,
   ) async {
-    final services = f2Services();
+    final services = f2Services(rewards: FakeRewards());
     final order = await placeOrder(services);
     await pumpF2(tester, services, location: '/bayar/${order.id}');
     expect(find.text('Total pembayaran'), findsOneWidget);
-    expect(find.textContaining('Bayar sebelum'), findsOneWidget);
-    expect(find.textContaining('Sisa 24 jam 0 menit'), findsOneWidget);
+    expect(find.text('Selesaikan pembayaran dalam'), findsOneWidget);
+    expect(find.text('Batas Kamis, 26 Nov 2026, 10.00 WIB'), findsOneWidget);
     expect(find.byType(QrDemo), findsOneWidget);
-    expect(find.text(order.id), findsOneWidget);
+    expect(find.text('#${order.id}'), findsOneWidget);
+    expect(find.text('Salin'), findsOneWidget);
+    expect(find.text('Ganti'), findsOneWidget);
+    expect(find.text('Lihat rincian'), findsOneWidget);
+    // 128 Kelopak + 1 hadiah dari FakeRewards bawaan.
+    expect(
+      find.text(
+        '128 Kelopak memotong Rp12.800. Hadiah gratis ikut di paket ini.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('hitung mundur berjalan dari jam app setiap detik', (
+    tester,
+  ) async {
+    var now = AppServices.testNow;
+    final services = f2Services(
+      rewards: FakeRewards(),
+      clock: WibClock(now: () => now),
+    );
+    final order = await placeOrder(services);
+    await pumpF2(tester, services, location: '/bayar/${order.id}');
+    expect(find.text('24'), findsOneWidget);
+    expect(find.text('00'), findsNWidgets(2));
+    expect(find.text('Jam'), findsOneWidget);
+    expect(find.text('Menit'), findsOneWidget);
+    expect(find.text('Detik'), findsOneWidget);
+
+    now = now.add(const Duration(hours: 1, minutes: 2, seconds: 3));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('22'), findsOneWidget);
+    expect(find.text('57'), findsNWidgets(2));
+    expect(find.text('Batas Kamis, 26 Nov 2026, 10.00 WIB'), findsOneWidget);
+  });
+
+  testWidgets('Lihat rincian membuka detail; Ganti menawarkan checkout ulang', (
+    tester,
+  ) async {
+    final rewards = FakeRewards();
+    final services = f2Services(rewards: rewards);
+    final order = await placeOrder(services);
+    await pumpF2(tester, services, location: '/bayar/${order.id}');
+    await tester.tap(find.text('Ganti'));
+    await settle(tester);
+    expect(find.text('Ganti metode pembayaran'), findsOneWidget);
+    await tester.tap(find.text('Checkout ulang'));
+    await settle(tester);
+    expect(services.orders.byId(order.id)!.status, OrderStatus.cancelled);
+    expect(rewards.balance, 128);
+    expect(services.cart.lineCount, 2);
+    expect(find.text('Keranjang (2)'), findsOneWidget);
   });
 
   testWidgets('VA: nomor virtual account demo bisa disalin', (tester) async {

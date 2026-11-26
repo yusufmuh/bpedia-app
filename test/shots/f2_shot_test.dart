@@ -117,6 +117,27 @@ void main() {
       );
     });
 
+    testWidgets('checkout lembar voucher $t', (tester) async {
+      final services = f2Services(rewards: FakeRewards(), dark: dark);
+      services.cart
+        ..add(sunscreen, qty: 2)
+        ..add(nightCream);
+      await pumpShot(
+        tester,
+        BpediaApp(services: services, initialLocation: '/checkout'),
+      );
+      await tester.pump(const Duration(milliseconds: 900));
+      await tester.scrollUntilVisible(
+        find.text('Voucher · 1 dipakai'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Voucher · 1 dipakai'));
+      await tester.pump(const Duration(milliseconds: 900));
+      await settleImages(tester, rounds: 2);
+      await saveShot(tester, 'f2_checkout_voucher_$t');
+    });
+
     testWidgets('bayar QRIS $t', (tester) async {
       final services = f2Services(rewards: FakeRewards(), dark: dark);
       final order = await placeOrder(services);
@@ -188,6 +209,21 @@ void main() {
         BpediaApp(services: guest, initialLocation: '/pesanan'),
         name: 'f2_transaksi_tamu_$t',
       );
+    });
+
+    testWidgets('batalkan pesanan $t', (tester) async {
+      final services = f2Services(rewards: FakeRewards(), dark: dark);
+      final order = await placeOrder(services);
+      await services.orders.pay(order.id);
+      await pumpShot(
+        tester,
+        BpediaApp(services: services, initialLocation: '/pesanan/${order.id}'),
+      );
+      await tester.pump(const Duration(milliseconds: 900));
+      await tester.tap(find.text('Batalkan pesanan'));
+      await tester.pump(const Duration(milliseconds: 900));
+      await settleImages(tester, rounds: 2);
+      await saveShot(tester, 'f2_pesanan_batal_$t');
     });
 
     testWidgets('detail pesanan $t', (tester) async {

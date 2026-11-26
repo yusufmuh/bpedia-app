@@ -6,6 +6,7 @@ library;
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../design/design.dart';
 
@@ -281,6 +282,20 @@ class _FloatingBipyState extends State<FloatingBipy>
         },
         child: image,
       ),
+    );
+  }
+}
+
+/// Chip "Produk misi" berikon bendera.
+class MissionChip extends StatelessWidget {
+  const MissionChip({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StatusChip(
+      label: 'Produk misi',
+      tone: StatusTone.gold,
+      icon: Icon(LucideIcons.flag, size: 12, color: context.bp.onGoldTint),
     );
   }
 }

@@ -125,6 +125,13 @@ class OrderRepository extends DocumentRepository {
   /// Alasan batal karena lewat batas bayar.
   static const String expiredReason = 'Batas waktu pembayaran habis';
 
+  /// Berapa nomor berikutnya dicoba bila nomor pesanan sudah tercatat di
+  /// gateway hadiah (dokumen app hilang atau diatur ulang).
+  static const int maxNumberRetries = 50;
+
+  /// Rute riwayat Kelopak (kabar pesanan yang hilang dari perangkat).
+  static const String ledgerRoute = '/hadiah/riwayat';
+
   final WibClock _clock;
   final RewardsGateway _rewards;
   final InboxRepository _inbox;
@@ -136,6 +143,7 @@ class OrderRepository extends DocumentRepository {
   List<Order> _orders = const <Order>[];
   int _seq = 0;
   bool _placing = false;
+  bool _reconciled = false;
 
   @override
   String get sectionKey => 'orders';
@@ -162,7 +170,9 @@ class OrderRepository extends DocumentRepository {
   /// Pesanan berstatus [status] (null = semua), terbaru di atas.
   List<Order> byStatus(OrderStatus? status) => status == null
       ? _orders
-      : _orders.where((order) => order.status == status).toList(growable: false);
+      : _orders
+            .where((order) => order.status == status)
+            .toList(growable: false);
 
   /// Jumlah pesanan berstatus [status] (lencana tab dan strip Akun).
   int countOf(OrderStatus status) =>
@@ -186,16 +196,26 @@ class OrderRepository extends DocumentRepository {
     try {
       final quote = draft.quote;
       final now = _clock.instant.toUtc();
-      final id = _numberFor(_seq + 1, now);
       final voucherTitle = _voucherTitle(quote);
-      final commit = await _rewards.commit(id, quote);
+      var seq = _seq;
+      String id;
+      CommitResult commit;
+      var retries = 0;
+      while (true) {
+        seq++;
+        id = _numberFor(seq, now);
+        if (byId(id) != null || _rewards.hasOrder(id)) continue;
+        commit = await _rewards.commit(id, quote);
+        if (commit.ok || !commit.duplicateOrder) break;
+        if (++retries > maxNumberRetries) break;
+      }
       if (!commit.ok) {
         return OrderResult.failed(
           OrderProblem.rewardsRejected,
           message: commit.message,
         );
       }
-      _seq++;
+      _seq = seq;
       final nowMs = now.millisecondsSinceEpoch;
       final payment = quote.total == 0 ? null : draft.payment;
       final packsNow = payment == null || payment.isCod;
@@ -264,31 +284,34 @@ class OrderRepository extends DocumentRepository {
 
   /// Menandai pesanan dibayar (simulasi): menunggu pembayaran → dikemas.
   /// Pesanan yang lewat batas bayar dibatalkan.
-  Future<OrderResult> pay(String orderId) => _transition(orderId, (order) async {
-    if (order.status != OrderStatus.awaitingPayment) {
-      return const OrderResult.failed(OrderProblem.wrongStatus);
-    }
-    if (_isOverdue(order)) {
-      await _cancelNow(order, reason: expiredReason);
-      return const OrderResult.failed(OrderProblem.expired);
-    }
-    final paid = _replace(
-      order.copyWith(status: OrderStatus.packing, paidAtMs: _nowMs()),
-    );
-    _inbox.add(
-      kind: InboxKind.order,
-      title: 'Pembayaran diterima',
-      body:
-          'Pembayaran ${rupiah(paid.total)} untuk pesanan #${paid.id} '
-          'diterima. Pesananmu sedang dikemas.',
-      route: routeOf(paid.id),
-    );
-    _logPurchase(paid);
-    return OrderResult.ok(paid);
-  });
+  Future<OrderResult> pay(String orderId) =>
+      _transition(orderId, (order) async {
+        if (order.status != OrderStatus.awaitingPayment) {
+          return const OrderResult.failed(OrderProblem.wrongStatus);
+        }
+        if (_isOverdue(order)) {
+          await _cancelNow(order, reason: expiredReason);
+          return const OrderResult.failed(OrderProblem.expired);
+        }
+        final paid = _replace(
+          order.copyWith(status: OrderStatus.packing, paidAtMs: _nowMs()),
+        );
+        _inbox.add(
+          kind: InboxKind.order,
+          title: 'Pembayaran diterima',
+          body:
+              'Pembayaran ${rupiah(paid.total)} untuk pesanan #${paid.id} '
+              'diterima. Pesananmu sedang dikemas.',
+          route: routeOf(paid.id),
+        );
+        _logPurchase(paid);
+        return OrderResult.ok(paid);
+      });
 
   /// Menandai pesanan dikirim (simulasi): dikemas → dikirim.
-  Future<OrderResult> ship(String orderId) => _transition(orderId, (order) async {
+  Future<OrderResult> ship(String orderId) => _transition(orderId, (
+    order,
+  ) async {
     if (order.status != OrderStatus.packing) {
       return const OrderResult.failed(OrderProblem.wrongStatus);
     }
@@ -325,8 +348,7 @@ class OrderRepository extends DocumentRepository {
         _inbox.add(
           kind: InboxKind.order,
           title: 'Pesanan selesai',
-          body:
-              'Terima kasih, Babes. Pesanan #${done.id} sudah kamu terima.',
+          body: 'Terima kasih, Babes. Pesanan #${done.id} sudah kamu terima.',
           route: routeOf(done.id),
         );
         final mission = completion.missionMessage;
@@ -354,7 +376,11 @@ class OrderRepository extends DocumentRepository {
   /// Membatalkan semua pesanan yang lewat batas bayar. Mengembalikan nomor
   /// pesanan yang dibatalkan. Dipanggil saat app dibuka dan saat daftar
   /// pesanan ditampilkan.
+  ///
+  /// Panggilan pertama juga membatalkan pesanan yang tercatat di gateway
+  /// hadiah tetapi tidak ada di app ([reconcileRewards]).
   Future<List<String>> cancelOverdue() async {
+    if (!_reconciled) await reconcileRewards();
     final cancelled = <String>[];
     for (final order in List<Order>.of(_orders)) {
       if (order.status != OrderStatus.awaitingPayment || !_isOverdue(order)) {
@@ -362,6 +388,40 @@ class OrderRepository extends DocumentRepository {
       }
       final result = await cancel(order.id, reason: expiredReason);
       if (result.ok) cancelled.add(order.id);
+    }
+    return cancelled;
+  }
+
+  /// Membatalkan pesanan yang masih berjalan di gateway hadiah tetapi tidak
+  /// ada di app, sehingga Kelopak, voucher, dan hadiahnya kembali. Terjadi
+  /// bila simpanan tertunda dokumen app hilang atau seksi pesanan diatur
+  /// ulang karena rusak. Mengembalikan nomor yang dibatalkan.
+  Future<List<String>> reconcileRewards() async {
+    final cancelled = <String>[];
+    try {
+      for (final id in _rewards.cancellableOrderIds) {
+        if (byId(id) != null) continue;
+        final refund = await _rewards.cancelAndReport(id);
+        cancelled.add(id);
+        final returned = refund == null
+            ? const <String>[]
+            : _refundParts(refund);
+        final lead =
+            'Pesanan #$id tidak ditemukan di perangkat ini, jadi '
+            'dibatalkan.';
+        _inbox.add(
+          kind: InboxKind.order,
+          title: 'Pesanan dibatalkan',
+          body: returned.isEmpty
+              ? lead
+              : '$lead ${_joinList(returned)} sudah dikembalikan.',
+          route: ledgerRoute,
+        );
+      }
+      _reconciled = true;
+    } on Exception {
+      // Gateway hadiah belum bisa dihubungi: dicoba lagi pada panggilan
+      // berikutnya.
     }
     return cancelled;
   }
@@ -469,7 +529,7 @@ class OrderRepository extends DocumentRepository {
   }
 
   Future<Order> _cancelNow(Order order, {String? reason}) async {
-    await _rewards.cancel(order.id);
+    final refund = await _rewards.cancelAndReport(order.id);
     final cancelled = _replace(
       order.copyWith(
         status: OrderStatus.cancelled,
@@ -477,24 +537,39 @@ class OrderRepository extends DocumentRepository {
         cancelReason: reason,
       ),
     );
-    final returned = <String>[
+    final expected = <String>[
       if (cancelled.kelopakUsed > 0) kelopakLabel(cancelled.kelopakUsed),
       if (cancelled.voucherAmount > 0) 'voucher',
       if (cancelled.gifts.isNotEmpty) 'hadiah gratis',
     ];
+    final returned = refund == null ? expected : _refundParts(refund);
     final lead = reason == null
         ? 'Pesanan #${cancelled.id} dibatalkan.'
         : 'Pesanan #${cancelled.id} dibatalkan: $reason.';
+    final String body;
+    if (returned.isNotEmpty) {
+      body = '$lead ${_joinList(returned)} sudah dikembalikan.';
+    } else if (expected.isNotEmpty) {
+      body =
+          '$lead Catatan Kelopak pesanan ini tidak ditemukan, jadi tidak ada '
+          'yang dikembalikan.';
+    } else {
+      body = lead;
+    }
     _inbox.add(
       kind: InboxKind.order,
       title: 'Pesanan dibatalkan',
-      body: returned.isEmpty
-          ? lead
-          : '$lead ${_joinList(returned)} sudah dikembalikan.',
+      body: body,
       route: routeOf(cancelled.id),
     );
     return cancelled;
   }
+
+  static List<String> _refundParts(CancelRefund refund) => <String>[
+    if (refund.kelopak > 0) kelopakLabel(refund.kelopak),
+    if (refund.voucher) 'voucher',
+    if (refund.gifts > 0) 'hadiah gratis',
+  ];
 
   Order _replace(Order next) {
     _orders = List<Order>.unmodifiable(<Order>[

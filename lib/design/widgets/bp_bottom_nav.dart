@@ -169,7 +169,6 @@ class _NavTab extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 6),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
                 width: 40,
@@ -274,15 +273,18 @@ class _RewardTab extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: BpFest.candy,
-                        border: Border.all(color: c.surface, width: 3),
+                        border: Border.all(
+                          color: c.surface,
+                          width: BpSize.rewardRing,
+                        ),
                         boxShadow: BpShadows.candy,
                       ),
                       child: Center(
                         child: AssetPicture(
                           imageAsset,
                           package: imagePackage,
-                          width: 36,
-                          height: 36,
+                          width: 32,
+                          height: 32,
                           fit: BoxFit.contain,
                           showSkeleton: false,
                         ),
@@ -290,8 +292,8 @@ class _RewardTab extends StatelessWidget {
                     ),
                     if (showDot)
                       const PositionedDirectional(
-                        top: 2,
-                        end: 2,
+                        top: 1,
+                        end: 1,
                         child: DotBadge(size: 12),
                       ),
                   ],
@@ -299,15 +301,15 @@ class _RewardTab extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 7),
+              padding: const EdgeInsets.only(bottom: 6),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   label,
                   maxLines: 1,
                   style: BpText.label.copyWith(
-                    color: selected ? c.brandStrong : c.textMuted,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                    color: selected ? c.brandStrong : c.text,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),

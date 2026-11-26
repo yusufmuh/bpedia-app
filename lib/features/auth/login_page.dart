@@ -118,7 +118,6 @@ class _LoginPageState extends State<LoginPage> {
                 fieldKey: const ValueKey<String>('login-password'),
                 label: 'Kata sandi',
                 controller: _password,
-                hint: 'Kata sandi akunmu',
                 textInputAction: TextInputAction.done,
                 errorText: _errors[AuthField.password],
                 onChanged: (_) => _revalidate(),

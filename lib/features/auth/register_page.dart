@@ -36,6 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
   late bool _full = widget.full;
   bool _terms = false;
   bool _busy = false;
+  bool _googleBusy = false;
   bool _submitted = false;
   Map<AuthField, String> _errors = const <AuthField, String>{};
 
@@ -115,10 +116,21 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Future<void> _google() async {
+    if (_googleBusy) return;
+    final auth = AppScope.of(context).auth;
+    setState(() => _googleBusy = true);
+    final result = await auth.signInWithGoogle();
+    if (!mounted) return;
+    setState(() => _googleBusy = false);
+    await finishAuthFlow(context, next: widget.next, message: result.message);
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.bp;
-    final router = AppScope.of(context).router;
+    final services = AppScope.of(context);
+    final router = services.router;
     return AuthScaffold(
       title: 'Daftar',
       children: <Widget>[
@@ -129,6 +141,10 @@ class _RegisterPageState extends State<RegisterPage> {
               : 'Cukup nama, nomor HP, dan email. Kata sandi bisa dibuat nanti.',
           artHeight: 104,
         ),
+        if (services.rewards.available) ...<Widget>[
+          const SizedBox(height: BpSpace.x5),
+          const MemberPerksCard(),
+        ],
         const SizedBox(height: BpSpace.x5),
         Semantics(
           container: true,
@@ -298,6 +314,15 @@ class _RegisterPageState extends State<RegisterPage> {
           busy: _busy,
           onPressed: _submit,
         ),
+        const OrDivider(),
+        PillButton(
+          label: 'Daftar dengan Google (demo)',
+          variant: PillButtonVariant.neutral,
+          expand: true,
+          busy: _googleBusy,
+          icon: const Icon(LucideIcons.circleUserRound),
+          onPressed: _google,
+        ),
         const SizedBox(height: BpSpace.x4),
         AuthLinkRow(
           prompt: 'Sudah punya akun?',
@@ -313,6 +338,90 @@ class _RegisterPageState extends State<RegisterPage> {
                     'Data tersimpan di perangkat ini saja.',
         ),
       ],
+    );
+  }
+}
+
+/// Kartu "Untung jadi member Bpedia": tiga manfaat Zona Hadiah berikon 3D.
+class MemberPerksCard extends StatelessWidget {
+  const MemberPerksCard({super.key});
+
+  static const List<(String, String, String)> _perks =
+      <(String, String, String)>[
+        ('assets/icons3d/checkin.webp', 'Check-in harian', '+1 Kelopak/hari'),
+        ('assets/icons3d/roda.webp', 'Roda Sabtu', 'Produk gratis'),
+        ('assets/icons3d/misi.webp', 'Misi Belanja', 'Voucher belanja'),
+      ];
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        BpSpace.x2,
+        BpSpace.x3,
+        BpSpace.x2,
+        BpSpace.x3,
+      ),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BpRadius.cardAll,
+        border: Border.all(color: c.line),
+      ),
+      child: Column(
+        children: <Widget>[
+          Semantics(
+            header: true,
+            child: Text(
+              'Untung jadi member Bpedia',
+              textAlign: TextAlign.center,
+              style: BpText.bodyS.copyWith(
+                color: c.textMuted,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(height: BpSpace.x2),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              for (final (art, title, subtitle) in _perks)
+                Expanded(
+                  child: MergeSemantics(
+                    child: Column(
+                      children: <Widget>[
+                        AssetPicture(
+                          art,
+                          width: 32,
+                          height: 32,
+                          fit: BoxFit.contain,
+                          cacheWidth: 96,
+                          showSkeleton: false,
+                        ),
+                        const SizedBox(height: BpSpace.x1),
+                        Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          style: BpText.caption.copyWith(
+                            color: c.text,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          subtitle,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          style: BpText.caption.copyWith(color: c.textMuted),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

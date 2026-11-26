@@ -93,16 +93,21 @@ class BpediaKelopakHost extends KelopakHost implements KelopakGameActions {
     return cart.add(productCode, qty: quantity).added > 0;
   }
 
+  /// Jumlah dari halaman misi berlaku untuk pesanan berikutnya, jadi produk
+  /// itu ikut dicentang.
   @override
   Future<bool> setCartQuantity(String productCode, int quantity) async {
     if (catalog.byCode(productCode) == null) return false;
     final change = cart.setQty(productCode, quantity);
+    if (change.qty > 0) cart.setSelected(productCode, true);
     return quantity < 1 || change.qty > 0;
   }
 
+  /// Barang yang dicentang saja: progres misi dihitung per pesanan
+  /// (KEPUTUSAN §3), sama dengan baris yang dikirim ke checkout.
   @override
   List<CheckoutLine> get cartLines => <CheckoutLine>[
-    for (final line in cart.pricedLines)
+    for (final line in cart.linesForCheckout)
       CheckoutLine(
         productCode: line.productCode,
         unitPrice: line.unitPrice,

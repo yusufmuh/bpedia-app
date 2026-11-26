@@ -122,7 +122,7 @@ void main() {
                   wishlisted: index == 1,
                   onToggleWishlist: () {},
                   onAddToCart: () {},
-                  action: index.isEven
+                  action: index < 2
                       ? ProductCardAction.quickAdd
                       : ProductCardAction.addButton,
                   onTap: () {},

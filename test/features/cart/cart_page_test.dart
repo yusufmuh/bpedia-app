@@ -30,19 +30,91 @@ void main() {
     expect(find.text('Checkout (2)'), findsOneWidget);
     expect(find.textContaining('Kirim ke Rumah'), findsOneWidget);
     expect(find.text('Produk misi'), findsOneWidget);
+    expect(find.text('Bpedia Official'), findsOneWidget);
+    expect(find.text('Original'), findsOneWidget);
+    expect(find.byTooltip('Wishlist'), findsOneWidget);
+
+    // Kelopak tampil di bilah lekat, tanpa gulir [K16].
+    expect(find.text('Hemat Rp12.800 di checkout'), findsOneWidget);
+    expect(find.text('128 Kelopak -Rp12.800'), findsOneWidget);
+    // 46.196 + 17.800 = 63.996; −12.800 Kelopak.
+    expect(find.text('Rp51.196'), findsOneWidget);
 
     await scrollTo(tester, find.text('Hadiah gratis (1)'));
     expect(find.text('Gratis'), findsWidgets);
     expect(find.text('Roda Sabtu, 21 Nov'), findsOneWidget);
     expect(find.text('Dikirim bersama pesanan ini'), findsOneWidget);
+    expect(find.textContaining('Pakai 128 Kelopak'), findsNothing);
+  });
 
-    await scrollTo(tester, find.textContaining('Pakai 128 Kelopak'));
-    expect(find.textContaining('hemat Rp12.800'), findsOneWidget);
-    expect(find.text('Misi Belanja'), findsOneWidget);
+  testWidgets(
+    'strip Misi Belanja tampil di layar pertama di atas daftar [K4]',
+    (tester) async {
+      final services = f2Services(rewards: FakeRewards());
+      services.cart
+        ..add(sunscreen)
+        ..add(facialWash)
+        ..add(nightCream);
+      await pumpF2(tester, services, location: '/keranjang');
+
+      final message = find.text(
+        'Tambah Rp31.200 produk misi untuk voucher Rp10.000',
+      );
+      expect(message, findsOneWidget);
+      expect(find.text('Di keranjang Rp43.800 dari Rp75.000'), findsOneWidget);
+      final messageTop = tester.getTopLeft(message).dy;
+      expect(
+        messageTop,
+        lessThan(tester.getTopLeft(find.text('Bpedia Official')).dy),
+      );
+      expect(tester.getBottomLeft(message).dy, lessThan(844 / 2));
+      expect(
+        messageTop,
+        greaterThan(tester.getTopLeft(find.textContaining('Kirim ke')).dy),
+      );
+    },
+  );
+
+  testWidgets('pil Kirim ke menyebut label dan area, bukan penerima', (
+    tester,
+  ) async {
+    final services = f2Services();
+    services.cart.add(nightCream);
+    await pumpF2(tester, services, location: '/keranjang');
     expect(
-      find.text('Tambah Rp57.200 produk misi untuk voucher Rp10.000'),
+      find.textContaining('Rumah · Cilandak, Jakarta Selatan'),
       findsOneWidget,
     );
+    expect(find.textContaining('Sinta Maharani'), findsNothing);
+  });
+
+  testWidgets('bilah lekat: voucher + Kelopak dari kutipan yang sama dengan '
+      'checkout [K16]', (tester) async {
+    final services = f2Services(rewards: FakeRewards());
+    services.cart
+      ..add(sunscreen, qty: 2)
+      ..add(nightCream);
+    await pumpF2(tester, services, location: '/keranjang');
+
+    // 118.392 ≥ Rp100.000: voucher Rp10.000; sisa 108.392; 128 Kelopak.
+    expect(find.text('Hemat Rp22.800 di checkout'), findsOneWidget);
+    expect(find.text('Voucher -Rp10.000'), findsOneWidget);
+    expect(find.text('128 Kelopak -Rp12.800'), findsOneWidget);
+    expect(find.text('Rp95.592'), findsOneWidget);
+    expect(find.text('Rp118.392'), findsOneWidget);
+
+    await tester.tap(find.text('Hemat Rp22.800 di checkout'));
+    await settle(tester);
+    expect(find.text('Rincian harga'), findsOneWidget);
+    expect(find.text('Total sebelum ongkir'), findsOneWidget);
+    await tester.tapAt(const Offset(10, 10));
+    await settle(tester);
+
+    await tester.tap(find.text('Checkout (2)'));
+    await settle(tester);
+    // Ongkir gratis (≥ Rp50.000): total checkout = total keranjang.
+    expect(find.text('Rp95.592'), findsWidgets);
+    expect(find.text('Hemat Rp22.800 · 128 Kelopak'), findsOneWidget);
   });
 
   testWidgets('tanpa barang tercentang: hadiah menunggu, Checkout nonaktif', (
@@ -126,7 +198,7 @@ void main() {
       ..add(nightCream)
       ..add(sunscreen);
     await pumpF2(tester, services, location: '/keranjang');
-    await tester.tap(find.text('Hapus (2)'));
+    await tester.tap(find.text('Hapus'));
     await settle(tester);
     expect(services.cart.isEmpty, isTrue);
     await tester.tap(find.text('Urungkan'));
@@ -144,7 +216,7 @@ void main() {
       find.text('Masuk untuk checkout dan pakai Kelopak, Babes.'),
       findsOneWidget,
     );
-    expect(find.textContaining('Pakai 128 Kelopak'), findsNothing);
+    expect(find.textContaining('di checkout'), findsNothing);
     await tester.tap(find.text('Checkout (1)'));
     await settle(tester);
     expect(find.text('Halaman masuk /checkout'), findsOneWidget);
@@ -178,7 +250,7 @@ void main() {
         expect(tester.takeException(), isNull);
         await scrollTo(tester, find.text('Hadiah gratis (1)'));
         expect(tester.takeException(), isNull);
-        await scrollTo(tester, find.text('Misi Belanja'));
+        await scrollTo(tester, find.text('Kamu mungkin suka'));
         expect(tester.takeException(), isNull);
       },
     );

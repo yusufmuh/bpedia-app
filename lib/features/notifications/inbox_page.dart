@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:kelopak_hub/kelopak_hub.dart' show shortDateLabel;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../app/app_router.dart';
@@ -114,32 +115,26 @@ class _InboxPageState extends State<InboxPage> {
                           ),
                         ),
                       )
-                    : ListView.separated(
-                        padding: const EdgeInsets.only(bottom: BpSpace.x6),
-                        itemCount: shown.length,
-                        separatorBuilder: (context, index) =>
-                            Divider(height: 1, thickness: 1, color: c.line),
-                        itemBuilder: (context, index) {
-                          final message = shown[index];
-                          return Dismissible(
-                            key: ValueKey<String>('inbox-${message.id}'),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              color: c.dangerTint,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: BpSpace.x6),
-                              child: Icon(LucideIcons.trash2, color: c.danger),
-                            ),
-                            onDismissed: (_) {
-                              inbox.remove(message.id);
-                              showAppSnack(context, 'Notifikasi dihapus.');
-                            },
-                            child: InboxTile(
-                              message: message,
-                              onTap: () => _open(context, message),
-                            ),
-                          );
-                        },
+                    : _GroupedList(
+                        groups: groupInboxByDay(shown, services.clock.today),
+                        itemBuilder: (context, message) => Dismissible(
+                          key: ValueKey<String>('inbox-${message.id}'),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            color: c.dangerTint,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: BpSpace.x6),
+                            child: Icon(LucideIcons.trash2, color: c.danger),
+                          ),
+                          onDismissed: (_) {
+                            inbox.remove(message.id);
+                            showAppSnack(context, 'Notifikasi dihapus.');
+                          },
+                          child: InboxTile(
+                            message: message,
+                            onTap: () => _open(context, message),
+                          ),
+                        ),
                       ),
               ),
             ],
@@ -174,6 +169,94 @@ String _kindLabel(InboxKind kind) => switch (kind) {
   InboxKind.promo => 'Promo',
 };
 
+IconData _kindIcon(InboxKind? kind) => switch (kind) {
+  null => LucideIcons.inbox,
+  InboxKind.order => LucideIcons.package,
+  InboxKind.reward => LucideIcons.gift,
+  InboxKind.promo => LucideIcons.megaphone,
+};
+
+const List<String> _weekdays = <String>[
+  'Senin',
+  'Selasa',
+  'Rabu',
+  'Kamis',
+  'Jumat',
+  'Sabtu',
+  'Minggu',
+];
+
+/// Kepala grup hari WIB: "Hari ini", "Kemarin", atau "Kamis, 26 Nov 2026".
+String inboxDayLabel(int wibDay, int today) {
+  if (wibDay == today) return 'Hari ini';
+  if (wibDay == today - 1) return 'Kemarin';
+  final date = dateOfWibDay(wibDay);
+  return '${_weekdays[date.weekday - 1]}, ${shortDateLabel(wibDay)} '
+      '${date.year}';
+}
+
+/// Notifikasi dikelompokkan per hari WIB, urutan asli dipertahankan.
+List<(String, List<InboxMessage>)> groupInboxByDay(
+  List<InboxMessage> messages,
+  int today,
+) {
+  final groups = <(String, List<InboxMessage>)>[];
+  int? currentDay;
+  for (final message in messages) {
+    final day = wibDayOfInstant(message.at);
+    if (day != currentDay || groups.isEmpty) {
+      groups.add((inboxDayLabel(day, today), <InboxMessage>[]));
+      currentDay = day;
+    }
+    groups.last.$2.add(message);
+  }
+  return groups;
+}
+
+/// Daftar notifikasi berkelompok hari dengan kepala tebal `textMuted`.
+class _GroupedList extends StatelessWidget {
+  const _GroupedList({required this.groups, required this.itemBuilder});
+
+  final List<(String, List<InboxMessage>)> groups;
+  final Widget Function(BuildContext context, InboxMessage message) itemBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    final rows = <Widget>[];
+    for (final (label, messages) in groups) {
+      rows.add(
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+            BpSpace.screen,
+            rows.isEmpty ? BpSpace.x3 : BpSpace.x4,
+            BpSpace.screen,
+            BpSpace.x2,
+          ),
+          child: Semantics(
+            header: true,
+            child: Text(
+              label,
+              style: BpText.caption.copyWith(
+                color: c.textMuted,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+      );
+      for (var i = 0; i < messages.length; i++) {
+        if (i > 0) rows.add(Divider(height: 1, thickness: 1, color: c.line));
+        rows.add(itemBuilder(context, messages[i]));
+      }
+    }
+    return ListView(
+      padding: const EdgeInsets.only(bottom: BpSpace.x6),
+      children: rows,
+    );
+  }
+}
+
 class _FilterBar extends StatelessWidget {
   const _FilterBar({
     required this.selected,
@@ -204,6 +287,7 @@ class _FilterBar extends StatelessWidget {
               BpChip(
                 label: kind == null ? 'Semua' : _kindLabel(kind),
                 selected: selected == kind,
+                leading: Icon(_kindIcon(kind), size: 16),
                 trailing: (counts[kind] ?? 0) > 0
                     ? CountBadge(count: counts[kind]!)
                     : null,
@@ -244,7 +328,7 @@ class InboxTile extends StatelessWidget {
     };
     final time = _timeLabel(context, message.at);
     return Material(
-      color: unread ? c.surface : c.surface.withValues(alpha: 0.6),
+      color: unread ? c.brandTint.withValues(alpha: 0.45) : c.surface,
       child: InkWell(
         onTap: onTap,
         child: Semantics(
@@ -274,6 +358,22 @@ class InboxTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      Text.rich(
+                        TextSpan(
+                          text: _kindLabel(message.kind),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          children: <InlineSpan>[
+                            TextSpan(
+                              text: '  \u00b7  ${wibClockLabel(message.at)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                        style: BpText.label.copyWith(color: c.textMuted),
+                      ),
+                      const SizedBox(height: 2),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -306,11 +406,6 @@ class InboxTile extends StatelessWidget {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: BpText.bodyS.copyWith(color: c.textMuted),
-                      ),
-                      const SizedBox(height: BpSpace.x1),
-                      Text(
-                        '${_kindLabel(message.kind)} · $time',
-                        style: BpText.caption.copyWith(color: c.textFaint),
                       ),
                     ],
                   ),

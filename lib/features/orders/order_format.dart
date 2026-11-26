@@ -57,3 +57,21 @@ String? remainingPayLabel(Order order, DateTime now) {
   if (hours == 0) return 'Sisa $minutes menit';
   return 'Sisa $hours jam $minutes menit';
 }
+
+/// Catatan hemat untuk layar bayar: "128 Kelopak dan voucher memotong
+/// Rp22.800. Hadiah gratis ikut di paket ini." Null bila tidak ada potongan
+/// maupun hadiah.
+String? orderSavingsNote(Order order) {
+  final sources = <String>[
+    if (order.kelopakUsed > 0) kelopakAmountLabel(order.kelopakUsed),
+    if (order.voucherAmount > 0) 'voucher',
+  ];
+  final parts = <String>[
+    if (sources.isNotEmpty)
+      '${sources.join(' dan ')} memotong ${formatRupiah(order.savings)}.',
+    if (order.gifts.isNotEmpty) 'Hadiah gratis ikut di paket ini.',
+  ];
+  if (parts.isEmpty) return null;
+  final text = parts.join(' ');
+  return text[0].toUpperCase() + text.substring(1);
+}

@@ -11,12 +11,8 @@ import '../support/shot.dart';
 
 const Size _long = Size(390, 2200);
 
-/// Akun demo pada Sabtu: menang produk roda, 128 Kelopak, satu voucher misi
-/// dari pesanan selesai, dan keranjang berisi produk misi.
-Future<AppServices> _richServices({required bool dark}) async {
-  final services = i1Services(now: saturday, roll: 0, dark: dark);
-  final gateway = await loadKelopak(services);
-  services.cart.add(nightCream, qty: 3);
+/// Membuat pesanan COD dari isi keranjang yang dicentang.
+Future<Order> _placeCod(AppServices services) async {
   final cart = services.cart;
   final shipping = services.shipping
       .options(
@@ -38,8 +34,18 @@ Future<AppServices> _richServices({required bool dark}) async {
       ),
     ),
   );
-  await services.orders.ship(placed.order!.id);
-  await services.orders.complete(placed.order!.id);
+  return placed.order!;
+}
+
+/// Akun demo pada Sabtu: menang produk roda, 128 Kelopak, satu voucher misi
+/// dari pesanan selesai, dan keranjang berisi produk misi.
+Future<AppServices> _richServices({required bool dark}) async {
+  final services = i1Services(now: saturday, roll: 0, dark: dark);
+  final gateway = await loadKelopak(services);
+  services.cart.add(nightCream, qty: 3);
+  final placed = await _placeCod(services);
+  await services.orders.ship(placed.id);
+  await services.orders.complete(placed.id);
   await gateway.controller.spin();
   await gateway.grantKelopak(128);
   services.cart
@@ -72,6 +78,26 @@ void main() {
       final app = BpediaApp(services: services, initialLocation: '/keranjang');
       await shot(tester, app, name: 'i1_keranjang_$t');
       await shot(tester, app, name: 'i1_keranjang_panjang_$t', size: _long);
+    });
+
+    testWidgets('keranjang saat pesanan misi menunggu diterima $t', (
+      tester,
+    ) async {
+      final services = i1Services(dark: dark);
+      await loadKelopak(services);
+      services.cart.add(nightCream, qty: 3);
+      final waiting = await _placeCod(services);
+      services.cart
+        ..add(nightCream, qty: 3)
+        ..add(sunscreen);
+      services.promo.markFlyerShown();
+      final app = BpediaApp(services: services, initialLocation: '/keranjang');
+      await shot(tester, app, name: 'i1_keranjang_misi_menunggu_$t');
+      expect(
+        find.textContaining('Tahap 1 menunggu pesanan #${waiting.id}'),
+        findsOneWidget,
+      );
+      expect(find.text('Target misi tercapai'), findsNothing);
     });
 
     testWidgets('checkout dengan potongan Kelopak $t', (tester) async {

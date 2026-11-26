@@ -107,11 +107,7 @@ class CartItemTile extends StatelessWidget {
                                 label: 'Hot Item',
                                 tone: StatusTone.danger,
                               ),
-                            if (missionProduct)
-                              const StatusChip(
-                                label: 'Produk misi',
-                                tone: StatusTone.gold,
-                              ),
+                            if (missionProduct) const MissionChip(),
                             if (limitNote != null)
                               Text(
                                 limitNote,

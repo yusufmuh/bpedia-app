@@ -1,5 +1,5 @@
-/// Strip dan kartu dorongan di keranjang: alamat kirim, ambang gratis
-/// ongkir, Kelopak, dan Misi Belanja.
+/// Strip dan kartu dorongan di keranjang: alamat kirim, Misi Belanja, ambang
+/// gratis ongkir, dan ringkasan hemat voucher + Kelopak di bilah bawah.
 library;
 
 import 'package:flutter/material.dart';
@@ -85,7 +85,114 @@ class ShipToBar extends StatelessWidget {
   }
 }
 
-/// Strip ambang gratis ongkir kurir pertama (nilai demo).
+/// Teks dengan setiap nominal "RpX" ditebalkan.
+TextSpan boldRupiahSpan(String text, {required TextStyle bold}) {
+  final spans = <InlineSpan>[];
+  var cursor = 0;
+  for (final match in RegExp(r'Rp[0-9.]*[0-9]').allMatches(text)) {
+    if (match.start > cursor) {
+      spans.add(TextSpan(text: text.substring(cursor, match.start)));
+    }
+    spans.add(TextSpan(text: match.group(0), style: bold));
+    cursor = match.end;
+  }
+  if (cursor < text.length) spans.add(TextSpan(text: text.substring(cursor)));
+  return TextSpan(children: spans);
+}
+
+/// Strip Misi Belanja tepat di bawah "Kirim ke" [K4]: pesan misi dengan
+/// nominal tebal, bilah progres 4 dp, "Di keranjang RpX dari RpY", chevron.
+class MissionStrip extends StatelessWidget {
+  const MissionStrip({super.key, required this.hint, required this.onOpen});
+
+  final MissionHint hint;
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    final target = hint.target <= 0 ? 1 : hint.target;
+    final progress = (hint.current / target).clamp(0.0, 1.0);
+    final shown = hint.current > hint.target ? hint.target : hint.current;
+    final progressLabel =
+        'Di keranjang ${formatRupiah(shown)} dari ${formatRupiah(hint.target)}';
+    return ColoredBox(
+      color: c.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          BpSpace.screen,
+          0,
+          BpSpace.screen,
+          BpSpace.x2,
+        ),
+        child: BpTappable(
+          onTap: onOpen,
+          pressScale: false,
+          alignment: Alignment.centerLeft,
+          focusRadius: BpRadius.cardAll,
+          semanticLabel: 'Misi Belanja. ${hint.message}. $progressLabel',
+          builder: (context, states) => Container(
+            padding: const EdgeInsets.fromLTRB(
+              BpSpace.x3,
+              BpSpace.x2,
+              BpSpace.x2,
+              BpSpace.x2,
+            ),
+            decoration: BoxDecoration(
+              color: c.goldTint,
+              borderRadius: BpRadius.cardAll,
+              border: Border.all(color: c.gold.withValues(alpha: 0.45)),
+            ),
+            child: Row(
+              children: <Widget>[
+                const AssetPicture(
+                  'assets/icons3d/misi.webp',
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.contain,
+                  showSkeleton: false,
+                ),
+                const SizedBox(width: BpSpace.x3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text.rich(
+                        boldRupiahSpan(
+                          hint.message,
+                          bold: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        style: BpText.bodyS.copyWith(color: c.onGoldTint),
+                      ),
+                      const SizedBox(height: 6),
+                      CartProgressBar(
+                        value: progress,
+                        color: hint.reached ? c.success : c.gold,
+                        height: 4,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        progressLabel,
+                        style: BpText.caption.copyWith(
+                          color: c.onGoldTint,
+                          fontFeatures: BpText.tabular,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: BpSpace.x1),
+                Icon(LucideIcons.chevronRight, size: 20, color: c.onGoldTint),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Baris tipis ambang gratis ongkir kurir pertama (nilai demo).
 class FreeShippingStrip extends StatelessWidget {
   const FreeShippingStrip({
     super.key,
@@ -103,8 +210,6 @@ class FreeShippingStrip extends StatelessWidget {
     final c = context.bp;
     final reached = subtotal >= freeFrom;
     final left = freeFrom - subtotal;
-    final progress = (subtotal / freeFrom).clamp(0.0, 1.0);
-    final fg = reached ? c.success : c.text;
     return ColoredBox(
       color: c.surface,
       child: Padding(
@@ -112,68 +217,162 @@ class FreeShippingStrip extends StatelessWidget {
           BpSpace.screen,
           0,
           BpSpace.screen,
-          BpSpace.x3,
+          BpSpace.x2,
         ),
-        child: Container(
-          padding: const EdgeInsets.all(BpSpace.x3),
-          decoration: BoxDecoration(
-            color: reached ? c.successTint : c.surface,
-            borderRadius: BpRadius.cardAll,
-            border: Border.all(
-              color: reached ? c.success.withValues(alpha: 0.35) : c.line,
+        child: Row(
+          children: <Widget>[
+            const BrandIcon(
+              BrandGlyph.ongkir,
+              size: 20,
+              style: BrandIconStyle.color,
             ),
+            const SizedBox(width: BpSpace.x2),
+            Expanded(
+              child: Text.rich(
+                reached
+                    ? TextSpan(
+                        text: 'Yay, gratis ongkir $courierName ',
+                        style: TextStyle(color: c.success),
+                        children: <InlineSpan>[
+                          TextSpan(
+                            text: ShippingRepository.demoTag,
+                            style: TextStyle(color: c.textMuted),
+                          ),
+                        ],
+                      )
+                    : TextSpan(
+                        text: 'Belanja ',
+                        children: <InlineSpan>[
+                          TextSpan(
+                            text: '${formatRupiah(left)} lagi',
+                            style: TextStyle(
+                              color: c.brandStrong,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          TextSpan(text: ' untuk gratis ongkir $courierName '),
+                          TextSpan(
+                            text: ShippingRepository.demoTag,
+                            style: TextStyle(color: c.textMuted),
+                          ),
+                        ],
+                      ),
+                style: BpText.caption.copyWith(color: c.text),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Kartu hemat di atas bilah lekat keranjang [K16]: "Hemat RpX di checkout"
+/// dengan chip voucher dan Kelopak dari kutipan yang sama dengan total.
+class CartSavingsCard extends StatelessWidget {
+  const CartSavingsCard({
+    super.key,
+    required this.voucherAmount,
+    required this.kelopakUsed,
+    required this.kelopakValue,
+    required this.onTap,
+  });
+
+  final int voucherAmount;
+  final int kelopakUsed;
+  final int kelopakValue;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.bp;
+    final total = voucherAmount + kelopakValue;
+    final parts = <String>[
+      if (voucherAmount > 0) 'voucher ${formatRupiah(voucherAmount)}',
+      if (kelopakValue > 0)
+        '${kelopakAmountLabel(kelopakUsed)} ${formatRupiah(kelopakValue)}',
+    ];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        BpSpace.screen,
+        BpSpace.x2,
+        BpSpace.screen,
+        0,
+      ),
+      child: BpTappable(
+        onTap: onTap,
+        pressScale: false,
+        alignment: Alignment.centerLeft,
+        focusRadius: BpRadius.cardAll,
+        semanticLabel:
+            'Hemat ${formatRupiah(total)} di checkout: ${parts.join(', ')}. '
+            'Lihat rincian',
+        builder: (context, states) => Container(
+          padding: const EdgeInsets.fromLTRB(
+            BpSpace.x3,
+            BpSpace.x2,
+            BpSpace.x2,
+            BpSpace.x2,
+          ),
+          decoration: BoxDecoration(
+            color: c.surface,
+            borderRadius: BpRadius.cardAll,
+            border: Border.all(color: c.line),
           ),
           child: Row(
             children: <Widget>[
-              const BrandIcon(
-                BrandGlyph.ongkir,
-                size: 28,
-                style: BrandIconStyle.color,
+              Container(
+                width: 28,
+                height: 28,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: c.successTint,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(LucideIcons.badgeCheck, size: 18, color: c.success),
               ),
               const SizedBox(width: BpSpace.x3),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text.rich(
-                      reached
-                          ? TextSpan(
-                              text: 'Yay, gratis ongkir $courierName ',
-                              children: <InlineSpan>[
-                                TextSpan(
-                                  text: ShippingRepository.demoTag,
-                                  style: TextStyle(color: c.textMuted),
-                                ),
-                              ],
-                            )
-                          : TextSpan(
-                              text: 'Belanja ',
-                              children: <InlineSpan>[
-                                TextSpan(
-                                  text: '${formatRupiah(left)} lagi',
-                                  style: TextStyle(
-                                    color: c.brandStrong,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' untuk gratis ongkir $courierName ',
-                                ),
-                                TextSpan(
-                                  text: ShippingRepository.demoTag,
-                                  style: TextStyle(color: c.textMuted),
-                                ),
-                              ],
-                            ),
-                      style: BpText.bodyS.copyWith(color: fg),
+                    Text(
+                      'Hemat ${formatRupiah(total)} di checkout',
+                      style: BpText.bodyS.copyWith(
+                        color: c.text,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                    if (!reached) ...<Widget>[
-                      const SizedBox(height: 6),
-                      _ProgressBar(value: progress, color: c.brand),
-                    ],
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: <Widget>[
+                        if (voucherAmount > 0)
+                          SavingChip(
+                            icon: BrandIcon(
+                              BrandGlyph.voucher,
+                              size: 14,
+                              color: c.info,
+                            ),
+                            label: 'Voucher -${formatRupiah(voucherAmount)}',
+                            color: c.info,
+                            background: c.infoTint,
+                          ),
+                        if (kelopakValue > 0)
+                          SavingChip(
+                            label:
+                                '${kelopakAmountLabel(kelopakUsed)} '
+                                '-${formatRupiah(kelopakValue)}',
+                            color: c.onGoldTint,
+                            background: c.goldTint,
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
+              Icon(LucideIcons.chevronRight, size: 20, color: c.textMuted),
             ],
           ),
         ),
@@ -182,89 +381,42 @@ class FreeShippingStrip extends StatelessWidget {
   }
 }
 
-/// Kartu dorongan berikon 3D: judul, isi, bar progres opsional, aksi.
-class NudgeCard extends StatelessWidget {
-  const NudgeCard({
+/// Chip kecil berwarna untuk potongan (voucher, Kelopak).
+class SavingChip extends StatelessWidget {
+  const SavingChip({
     super.key,
-    required this.icon3d,
-    required this.title,
-    this.message,
-    this.progress,
-    this.actionLabel,
-    this.onAction,
-    this.tinted = false,
+    required this.label,
+    required this.color,
+    required this.background,
+    this.icon,
   });
 
-  /// Nama ikon 3D di `assets/icons3d/<icon3d>.webp`.
-  final String icon3d;
-  final String title;
-  final String? message;
-
-  /// 0..1; null tanpa bar.
-  final double? progress;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  /// Latar `goldTint` (Kelopak) alih-alih `surface`.
-  final bool tinted;
+  final String label;
+  final Color color;
+  final Color background;
+  final Widget? icon;
 
   @override
   Widget build(BuildContext context) {
-    final c = context.bp;
-    final body = message;
-    final bar = progress;
-    final action = actionLabel;
-    final fg = tinted ? c.onGoldTint : c.text;
+    final lead = icon;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: BpSpace.screen),
-      padding: const EdgeInsets.all(BpSpace.x3),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: tinted ? c.goldTint : c.surface,
-        borderRadius: BpRadius.cardAll,
-        border: Border.all(color: tinted ? c.goldTint : c.line),
+        color: background,
+        borderRadius: BpRadius.badgeAll,
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          AssetPicture(
-            'assets/icons3d/$icon3d.webp',
-            width: 40,
-            height: 40,
-            fit: BoxFit.contain,
-            showSkeleton: false,
-          ),
-          const SizedBox(width: BpSpace.x3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(title, style: BpText.subtitle.copyWith(color: fg)),
-                if (body != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(
-                      body,
-                      style: BpText.caption.copyWith(
-                        color: tinted ? c.onGoldTint : c.textMuted,
-                      ),
-                    ),
-                  ),
-                if (bar != null) ...<Widget>[
-                  const SizedBox(height: BpSpace.x2),
-                  _ProgressBar(value: bar, color: c.gold),
-                ],
-                if (action != null)
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: PillButton(
-                      label: action,
-                      onPressed: onAction,
-                      variant: PillButtonVariant.text,
-                      size: PillButtonSize.small,
-                      trailing: const Icon(LucideIcons.chevronRight, size: 16),
-                    ),
-                  ),
-              ],
+          if (lead != null) ...<Widget>[lead, const SizedBox(width: 4)],
+          Flexible(
+            child: Text(
+              label,
+              style: BpText.label.copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
+                fontFeatures: BpText.tabular,
+              ),
             ),
           ),
         ],
@@ -273,56 +425,18 @@ class NudgeCard extends StatelessWidget {
   }
 }
 
-/// Kartu Kelopak: "Pakai 128 Kelopak, hemat Rp12.800 di checkout".
-class KelopakNudge extends StatelessWidget {
-  const KelopakNudge({super.key, required this.balance, required this.saving});
-
-  final int balance;
-
-  /// Potongan rupiah bila semua barang terpilih di-checkout.
-  final int saving;
-
-  @override
-  Widget build(BuildContext context) {
-    return NudgeCard(
-      icon3d: 'kelopak',
-      tinted: true,
-      title: saving > 0
-          ? 'Pakai ${kelopakAmountLabel(balance)}, hemat ${formatRupiah(saving)} di checkout'
-          : 'Kamu punya ${kelopakAmountLabel(balance)}',
-      message: saving > 0
-          ? 'Sakelar Pakai Kelopak sudah menyala di checkout.'
-          : 'Centang produk untuk memakai Kelopak di checkout.',
-    );
-  }
-}
-
-/// Kartu Misi Belanja dari [MissionHint].
-class MissionNudge extends StatelessWidget {
-  const MissionNudge({super.key, required this.hint, required this.onOpen});
-
-  final MissionHint hint;
-  final VoidCallback onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final target = hint.target <= 0 ? 1 : hint.target;
-    return NudgeCard(
-      icon3d: 'misi',
-      title: hint.reached ? 'Target misi tercapai' : 'Misi Belanja',
-      message: hint.message,
-      progress: (hint.current / target).clamp(0.0, 1.0),
-      actionLabel: 'Lihat misi',
-      onAction: onOpen,
-    );
-  }
-}
-
-class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({required this.value, required this.color});
+/// Bilah progres membulat.
+class CartProgressBar extends StatelessWidget {
+  const CartProgressBar({
+    super.key,
+    required this.value,
+    required this.color,
+    this.height = 6,
+  });
 
   final double value;
   final Color color;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -332,10 +446,12 @@ class _ProgressBar extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BpRadius.pillAll,
         child: SizedBox(
-          height: 6,
+          height: height,
           child: Stack(
             children: <Widget>[
-              Positioned.fill(child: ColoredBox(color: c.surfaceMuted)),
+              Positioned.fill(
+                child: ColoredBox(color: c.surface.withValues(alpha: 0.7)),
+              ),
               FractionallySizedBox(
                 widthFactor: value,
                 heightFactor: 1,

@@ -1,5 +1,8 @@
 import 'package:bpedia_app/app/app_router.dart';
 import 'package:bpedia_app/data/orders/order_repository.dart';
+import 'package:bpedia_app/data/payment/payment_catalog.dart';
+import 'package:bpedia_app/data/rewards/rewards_gateway.dart';
+import 'package:bpedia_app/design/design.dart' show formatRupiah;
 import 'package:bpedia_app/features/order_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,19 +39,67 @@ void main() {
       );
       await pumpF2(tester, services, location: '/pesanan');
 
-      expect(find.text('Menunggu pembayaran (1)'), findsOneWidget);
-      expect(find.text('Dikemas (1)'), findsOneWidget);
-      expect(find.text(unpaid.id), findsOneWidget);
-      expect(find.text(cod.id), findsOneWidget);
-      expect(find.text('Bayar'), findsOneWidget);
-      expect(find.text('Lacak'), findsOneWidget);
+      Finder tab(String label) =>
+          find.descendant(of: find.byType(TabBar), matching: find.text(label));
+      Finder badge(String label) => find.descendant(
+        of: find.ancestor(of: tab(label), matching: find.byType(Row)).first,
+        matching: find.text('1'),
+      );
+      expect(tab('Menunggu pembayaran'), findsOneWidget);
+      expect(badge('Menunggu pembayaran'), findsOneWidget);
+      expect(badge('Dikemas'), findsOneWidget);
+      expect(find.text('Menunggu pembayaran (1)'), findsNothing);
+      expect(find.text('#${unpaid.id}'), findsOneWidget);
+      expect(find.text('#${cod.id}'), findsOneWidget);
+      expect(find.textContaining('Belanja · 25 Nov 2026'), findsNWidgets(2));
+      expect(find.text('Bayar sekarang'), findsOneWidget);
+      expect(find.text('Lihat detail'), findsOneWidget);
+      expect(find.text('Total 2 barang'), findsOneWidget);
       expect(find.text('+1 produk lain'), findsOneWidget);
-      expect(find.text('+1 hadiah gratis'), findsOneWidget);
+      expect(
+        find.text('Hadiah gratis ikut: Pinkflash Duo Lipgloss Pf-L13 - D02'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Bayar di tempat. Pesanan sedang dikemas.'),
+        findsOneWidget,
+      );
+      expect(find.byTooltip('Cari'), findsOneWidget);
+      expect(find.byTooltip('Keranjang'), findsWidgets);
 
-      await tester.tap(find.text('Dikemas (1)'));
+      await tester.tap(tab('Dikemas'));
       await settle(tester);
-      expect(find.text(cod.id), findsOneWidget);
-      expect(find.text(unpaid.id), findsNothing);
+      expect(find.text('#${cod.id}'), findsOneWidget);
+      expect(find.text('#${unpaid.id}'), findsNothing);
+      expect(find.text('1 pesanan menunggu pembayaran'), findsNothing);
+    });
+
+    testWidgets('banner menunggu pembayaran di atas daftar membuka bayar', (
+      tester,
+    ) async {
+      final services = f2Services(rewards: FakeRewards());
+      final unpaid = await placeOrder(services);
+      await placeOrder(
+        services,
+        lines: const <String, int>{facialWash: 1},
+        paymentId: 'cod',
+      );
+      await pumpF2(tester, services, location: '/pesanan');
+
+      final banner = find.text('1 pesanan menunggu pembayaran');
+      expect(banner, findsOneWidget);
+      expect(
+        find.text('#${unpaid.id} · batas 26 Nov, 10.00 WIB'),
+        findsOneWidget,
+      );
+      expect(
+        tester.getTopLeft(banner).dy,
+        lessThan(tester.getTopLeft(find.text('#${unpaid.id}')).dy),
+      );
+      await tester.tap(banner);
+      await settle(tester);
+      expect(find.text('Simulasikan pembayaran (DEMO)'), findsOneWidget);
+      expect(find.text('#${unpaid.id}'), findsOneWidget);
     });
 
     testWidgets('?status= membuka tab yang sesuai', (tester) async {
@@ -62,10 +113,10 @@ void main() {
       final services = f2Services();
       final order = await placeOrder(services);
       await pumpF2(tester, services, location: '/pesanan');
-      await tester.tap(find.text('Bayar'));
+      await tester.tap(find.text('Bayar sekarang'));
       await settle(tester);
       expect(find.text('Simulasikan pembayaran (DEMO)'), findsOneWidget);
-      expect(find.text(order.id), findsOneWidget);
+      expect(find.text('#${order.id}'), findsOneWidget);
     });
   });
 
@@ -78,7 +129,8 @@ void main() {
       final order = await placeOrder(services);
       await pumpF2(tester, services, location: '/pesanan/${order.id}');
 
-      expect(find.text('Kontrol simulasi (DEMO)'), findsOneWidget);
+      expect(find.text('Kontrol simulasi'), findsOneWidget);
+      expect(find.text('DEMO'), findsOneWidget);
       expect(find.text('Status pesanan'), findsOneWidget);
       await tester.tap(find.text('Simulasikan pembayaran'));
       await settle(tester);
@@ -95,7 +147,8 @@ void main() {
       expect(find.text('Misi tuntas'), findsOneWidget);
       await tester.tap(find.text('Mantap'));
       await settle(tester);
-      expect(find.text('Beli lagi'), findsOneWidget);
+      expect(find.text('Beli lagi'), findsWidgets);
+      expect(find.text('Hubungi CS'), findsOneWidget);
       expect(
         find.text('Misi Belanja tahap 1 tuntas. Voucher Rp10.000 masuk.'),
         findsOneWidget,
@@ -114,9 +167,18 @@ void main() {
 
       await tester.tap(find.text('Batalkan pesanan'));
       await settle(tester);
-      expect(find.text('Batalkan pesanan?'), findsOneWidget);
-      expect(find.textContaining('128 Kelopak'), findsOneWidget);
-      expect(find.textContaining('1 hadiah gratis'), findsOneWidget);
+      expect(find.text('Batalkan pesanan ini?'), findsOneWidget);
+      expect(find.text('128 Kelopak kembali ke saldo'), findsOneWidget);
+      expect(
+        find.text('Hadiah gratis kembali menunggu di keranjang'),
+        findsOneWidget,
+      );
+      // Belum dibayar: tidak ada dana yang dikembalikan.
+      expect(find.textContaining('Dana Rp'), findsNothing);
+      expect(
+        find.textContaining('Pembatalan tidak bisa diurungkan'),
+        findsOneWidget,
+      );
       await tester.tap(find.text('Ya, batalkan'));
       await settle(tester);
 
@@ -125,6 +187,83 @@ void main() {
       expect(rewards.pendingGifts, hasLength(1));
       expect(find.text('Dibatalkan'), findsWidgets);
     });
+
+    testWidgets('batal pesanan lunas: dana dan voucher dirinci per butir', (
+      tester,
+    ) async {
+      final rewards = FakeRewards();
+      final services = f2Services(rewards: rewards);
+      services.cart
+        ..add(sunscreen, qty: 2)
+        ..add(nightCream);
+      final cart = services.cart;
+      final shipping = services.shipping
+          .options(
+            weightGrams: cart.selectedWeightGrams,
+            goodsSubtotal: cart.selectedSubtotal,
+          )
+          .first;
+      final placed = await services.orders.place(
+        OrderDraft(
+          items: cart.selectedItems,
+          address: services.addresses.primary,
+          shipping: shipping,
+          payment: PaymentCatalog.byId('qris'),
+          quote: rewards.quote(
+            CheckoutRequest(
+              lines: cart.linesForCheckout,
+              shippingFee: shipping.fee,
+              voucherId: 'V1',
+            ),
+          ),
+        ),
+      );
+      final order = placed.order!;
+      await services.orders.pay(order.id);
+      final paid = services.orders.byId(order.id)!;
+      await pumpF2(tester, services, location: '/pesanan/${order.id}');
+
+      await tester.tap(find.text('Batalkan pesanan'));
+      await settle(tester);
+      expect(find.text('128 Kelopak kembali ke saldo'), findsOneWidget);
+      expect(
+        find.text('Voucher Misi Belanja bisa dipakai lagi'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Dana ${formatRupiah(paid.total)} dikembalikan (simulasi)'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      'Hubungi CS, Beli lagi di kepala Produk, chip misi, hadiah Rp0',
+      (tester) async {
+        final services = f2Services(rewards: FakeRewards());
+        final order = await placeOrder(
+          services,
+          lines: const <String, int>{sunscreen: 1, facialWash: 1},
+          paymentId: 'cod',
+        );
+        await pumpF2(tester, services, location: '/pesanan/${order.id}');
+
+        // Dikemas: Batalkan pesanan + Hubungi CS di kaki, headset di kepala.
+        expect(find.text('Batalkan pesanan'), findsOneWidget);
+        expect(find.text('Hubungi CS'), findsOneWidget);
+        expect(find.byTooltip('Hubungi CS'), findsOneWidget);
+
+        await scrollTo(tester, find.text('Produk misi'));
+        expect(find.text('Produk misi'), findsOneWidget);
+        await scrollTo(tester, find.text('Hadiah gratis (1 barang)'));
+        expect(find.text('Rp0'), findsWidgets);
+
+        await scrollTo(tester, find.text('Beli lagi'));
+        await tester.tap(find.text('Beli lagi'));
+        await settle(tester);
+        expect(services.cart.quantityOf(sunscreen), 1);
+        expect(services.cart.quantityOf(facialWash), 1);
+      },
+    );
 
     testWidgets('batal bisa dibatalkan lewat Kembali', (tester) async {
       final services = f2Services();

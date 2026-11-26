@@ -451,6 +451,61 @@ void main() {
       expect(column.center, const Offset(800, 520));
     });
 
+    for (final size in <Size>[_web, const Size(1600, 1040)]) {
+      testWidgets(
+        'ketukan di kolom ponsel ${size.width.toInt()} tepat sasaran',
+        (tester) async {
+          final services = await _pumpApp(tester, size: size);
+          final column = tester.getRect(
+            find.byKey(const ValueKey<String>('phone-frame-column')),
+          );
+          final nav = tester.getRect(find.byType(BpBottomNav));
+          expect(nav.left, moreOrLessEquals(column.left));
+          expect(nav.right, moreOrLessEquals(column.right));
+          expect(nav.bottom, moreOrLessEquals(column.bottom));
+
+          final lift = tester.getRect(
+            find.byKey(const ValueKey<String>('shell-reward-lift')),
+          );
+          expect(lift.size, const Size(BpSize.rewardButton, BpSize.rewardLift));
+          expect(lift.bottom, moreOrLessEquals(nav.top, epsilon: 0.5));
+          expect(lift.center.dx, moreOrLessEquals(column.center.dx));
+
+          await tester.tapAt(Offset(column.center.dx, nav.top - 2));
+          await _settle(tester);
+          expect(services.router.currentTab, AppTab.rewards);
+
+          final tabWidth = column.width / 5;
+          final labels = <String, AppTab>{
+            'Beranda': AppTab.home,
+            'Katalog': AppTab.catalog,
+            'Transaksi': AppTab.orders,
+            'Akun': AppTab.account,
+          };
+          final slots = <String, int>{
+            'Beranda': 0,
+            'Katalog': 1,
+            'Transaksi': 3,
+            'Akun': 4,
+          };
+          for (final MapEntry(key: label, value: tab) in labels.entries) {
+            final slot = slots[label]!;
+            await tester.tapAt(
+              Offset(column.left + tabWidth * (slot + 0.5), nav.bottom - 4),
+            );
+            await _settle(tester);
+            expect(services.router.currentTab, tab, reason: label);
+          }
+
+          await tester.tapAt(Offset(column.left - 6, nav.center.dy));
+          await tester.tapAt(Offset(column.right + 6, nav.center.dy));
+          await tester.tapAt(Offset(column.center.dx, column.top - 4));
+          await _settle(tester);
+          expect(services.router.currentTab, AppTab.account);
+        },
+      );
+    }
+
     testWidgets('halaman 404 di kolom ponsel web', (tester) async {
       await _pumpApp(tester, size: _web, location: '/x/y/z');
       expect(find.text(NotFoundPage.unknownTitle), findsOneWidget);
