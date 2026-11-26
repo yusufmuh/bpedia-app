@@ -172,9 +172,11 @@ packages:
   daily_checkin:
     dependency: transitive
     description:
-      path: "../bpedia-daily-checkin"
-      relative: true
-    source: path
+      path: "."
+      ref: "v3.0.0"
+      resolved-ref: "552dc5759cf7a4b18c49a9454c395c3fb427c217"
+      url: "https://github.com/yusufmuh/bpedia-daily-checkin.git"
+    source: git
     version: "3.0.0"
   dbus:
     dependency: transitive
@@ -391,9 +393,11 @@ packages:
   kelopak_hub:
     dependency: "direct main"
     description:
-      path: "../bpedia-kelopak-hub"
-      relative: true
-    source: path
+      path: "."
+      ref: "v3.0.0"
+      resolved-ref: "95a2d7102c08c1a7cade6ed09b61058d4db890b6"
+      url: "https://github.com/yusufmuh/bpedia-kelopak-hub.git"
+    source: git
     version: "3.0.0"
   leak_tracker:
     dependency: transitive
@@ -470,9 +474,11 @@ packages:
   misi_belanja:
     dependency: transitive
     description:
-      path: "../bpedia-misi-belanja"
-      relative: true
-    source: path
+      path: "."
+      ref: "v3.0.0"
+      resolved-ref: d8811e6e3dd0d0c8bf92e7df6af64a0205892ae3
+      url: "https://github.com/yusufmuh/bpedia-misi-belanja.git"
+    source: git
     version: "3.0.0"
   objective_c:
     dependency: transitive
@@ -605,9 +611,11 @@ packages:
   roda_sabtu:
     dependency: transitive
     description:
-      path: "../bpedia-roda-sabtu"
-      relative: true
-    source: path
+      path: "."
+      ref: "v3.0.0"
+      resolved-ref: "53b079d59e029f5c3e00d194ad70c0a723c3f946"
+      url: "https://github.com/yusufmuh/bpedia-roda-sabtu.git"
+    source: git
     version: "3.0.0"
   shared_preferences:
     dependency: "direct main"

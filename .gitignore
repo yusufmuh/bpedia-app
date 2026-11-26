@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Override path lokal (lihat pubspec_overrides.example.yaml)
+pubspec_overrides.yaml

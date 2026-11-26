@@ -13,7 +13,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   kelopak_hub:
-    path: ../bpedia-kelopak-hub
+    git:
+      url: https://github.com/yusufmuh/bpedia-kelopak-hub.git
+      ref: v3.0.0
   shared_preferences: ^2.5.6
   flutter_svg: ^2.3.4
   url_launcher: ^6.3.3
